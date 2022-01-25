@@ -1,0 +1,235 @@
+{% extends 'base_app/base.html' %}
+
+{% block title %} Statistiques {% endblock %}
+
+{% load static %}
+
+{% block css_styles %}
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- **************** MAIN CONTENT START **************** -->
+    <!-- =======================
+
+    Page Banner START -->
+    <section class="pt-0">
+        <!-- Main banner background image -->
+        <div class="container-fluid px-0">
+            <div class="bg-blue h-100px h-md-200px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
+            </div>
+        </div>
+        <div class="container mt-n4">
+            <div class="row">
+                <!-- Profile banner START -->
+                <div class="col-12">
+                    <div class="card bg-transparent card-body p-0">
+                        <div class="row d-flex justify-content-between">
+							{% if not mover %}
+								{%if user.is_authenticated %}
+									<!-- Avatar -->
+									<div class="col-auto mt-4 mt-md-0">
+										<div class="avatar avatar-xxl mt-n3">
+											<img class="avatar-img rounded-circle border border-white border-3 shadow" src="{% static 'base_app/assets/images/avatar/01.png' %}" alt="">
+										</div>
+									</div>
+									<!-- Profile info -->
+									<div class="col d-md-flex justify-content-between align-items-center mt-4">
+                                <div>
+                                    <h1 class="my-1 fs-4">
+										{{user.username|capfirst}} <i class="bi bi-patch-check-fill text-info small"></i>
+									</h1>
+                                </div>
+                            </div>
+								{% endif %}
+							{% endif %}
+                        </div>
+                    </div>
+                    <!-- Profile banner END -->
+
+                    <!-- Advanced filter responsive toggler START -->
+                    <!-- Divider -->
+                    <hr class="d-xl-none">
+                    <div class="col-12 col-xl-3 d-flex justify-content-between align-items-center">
+                        <a class="h6 mb-0 fw-bold d-xl-none" href="#">Menu</a>
+                        <button class="btn btn-primary d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                            <i class="fas fa-sliders-h"></i>
+                        </button>
+                    </div>
+                    <!-- Advanced filter responsive toggler END -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =======================
+    Page Banner END -->
+
+    <!-- =======================
+	Page content START -->
+	<section class="pt-2">
+		<div class="container">
+			<div class="row">
+				<!-- Right sidebar START -->
+				<div class="col-xl-3">
+					<!-- Responsive offcanvas body START -->
+					<nav class="navbar navbar-light navbar-expand-xl mx-0">
+						<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+							<!-- Offcanvas header -->
+							<div class="offcanvas-header bg-light">
+								<h5 class="offcanvas-title" id="offcanvasNavbarLabel">Mon profil</h5>
+								<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+							</div>
+							<!-- Offcanvas body -->
+							<div class="offcanvas-body p-3 p-xl-0">
+								<div class="bg-dark border rounded-3 pb-0 p-3 w-100">
+									<!-- Dashboard menu -->
+									<div class="list-group list-group-dark list-group-borderless">
+										{% if mover %}
+											<a class="list-group-item" href="{% url 'profile' %}"><i class="bi bi-ui-checks-grid fa-fw me-2"></i>
+												Tableau de bord
+											</a>
+										{% endif %}
+										<a class="list-group-item" href="{% url 'preview' %}"><i class="bi bi-person-lines-fill fa-fw me-2"></i>
+											Aperçu du profil
+										</a>
+										{% if mover %}
+											<a class="list-group-item active" href="{% url 'statistic' %}"><i class="bi bi-graph-up fa-fw me-2"></i>
+												Évolution de vos activités
+											</a>
+											<a class="list-group-item" href="{% url 'reviews' %}"><i class="bi bi-star fa-fw me-2"></i>
+												Avis des clients
+											</a>
+											<a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
+												Facturation
+											</a>
+										{% endif %}
+										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
+											Demandes de devis
+										</a>
+										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
+											Configuration du profil
+										</a>
+										<a class="list-group-item" href="{% url 'settings' %}"><i class="bi bi-gear fa-fw me-2"></i>
+											Paramètres
+										</a>
+										<a class="list-group-item" href="{% url 'user_password_change' %}"><i class="bi bi-lock fa-fw me-2"></i>
+											Mot de passe
+										</a>
+										<form action="{% url 'logout_user' %}" method="POST">
+                            				{% csrf_token %}
+											<button type="submit" class="list-group-item text-danger bg-danger-soft-hover">
+												<i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion
+											</button>
+                        				</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</nav>
+					<!-- Responsive offcanvas body END -->
+				</div>
+				<!-- Right sidebar END -->
+
+				<!-- Main content START -->
+				<div class="col-xl-9">
+
+					<!-- Earning boxes START -->
+					<div class="row g-4">
+						<!-- Earning item -->
+						<div class="col-sm-6 col-lg-4">
+							<div class="text-center p-4 bg-light rounded-3">
+								<h6 class="text-body">Sales this month</h6>
+								<h2 class="mb-0 fs-1">$899.95</h2>
+							</div>
+						</div>
+
+						<!-- Earning item -->
+						<div class="col-sm-6 col-lg-4">
+							<div class="text-center p-4 bg-light rounded-3">
+								<h6 class="text-body">To be paid
+									<a tabindex="0" class="h6 mb-0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top" data-bs-content="After US royalty withholding tax">
+										<i class="bi bi-info-circle-fill small"></i>
+									</a>
+								</h6>
+								<h2 class="mb-0 fs-1">$750.35</h2>
+							</div>
+						</div>
+
+						<!-- Earning item -->
+						<div class="col-sm-6 col-lg-4">
+							<div class="text-center p-4 bg-light rounded-3">
+								<h6 class="text-body">Lifetime Earnings</h6>
+								<h2 class="mb-0 fs-1">$4882.65</h2>
+							</div>
+						</div>
+					</div>
+					<!-- Earning boxes END -->
+
+					<!-- Chart START -->
+					<div class="card card-body rounded-top border overflow-hidden p-0 mt-5">
+						<div class="row g-4 p-4">
+							<!-- Content -->
+							<div class="col-sm-6 col-md-4">
+								<span class="badge bg-dark text-white">Current Month</span>
+								<h4 class="text-primary my-2">$35000</h4>
+								<p class="mb-0"><span class="text-success me-1">0.20%<i class="bi bi-arrow-up"></i></span>vs last month</p>
+							</div>
+
+							<!-- Content -->
+							<div class="col-sm-6 col-md-4">
+								<span class="badge bg-dark text-white">Last Month</span>
+								<h4 class="my-2">$28000</h4>
+								<p class="mb-0"><span class="text-danger me-1">0.10%<i class="bi bi-arrow-down"></i></span>Then last month</p>
+							</div>
+						</div>
+
+						<!-- Apex chart -->
+						<div id="ChartPayoutEarning"></div>
+
+					</div>
+					<!-- Chart END -->
+
+					<!-- Earning chart START -->
+					<div class="card border rounded-3 mt-5">
+						<!-- Card title -->
+						<div class="card-header">
+							<h5 class="mb-0">Top five earning sources</h5>
+						</div>
+						<!-- Card body -->
+						<div class="card-body">
+							<div class="row g-4 g-md-5 align-items-center">
+								<!-- Chart -->
+								<div class="col-md-6">
+									<div id="ChartPageViews"></div>
+								</div>
+
+								<!-- Content -->
+								<div class="col-md-6">
+									<ul class="list-group list-group-borderless mb-3">
+										<li class="list-group-item"><h6 class="mb-0">Course Name</h6></li>
+										<li class="list-group-item"><i class="text-success fas fa-circle me-2"></i>The Complete Digital Marketing Course - 12 Courses in 1</li>
+										<li class="list-group-item"><i class="text-warning fas fa-circle me-2"></i>Google Ads Training: Become a PPC Expert</li>
+										<li class="list-group-item"><i class="text-danger fas fa-circle me-2"></i>Microsoft Excel - Excel from Beginner to Advanced</li>
+										<li class="list-group-item"><i class="text-primary fas fa-circle me-2"></i>Create a Design System in Figma</li>
+										<li class="list-group-item"><i class="text-secondary fas fa-circle me-2"></i>Deep Learning with React-Native</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Earning chart END -->
+
+				</div>
+				<!-- Main content END -->
+			</div><!-- Row END -->
+		</div>
+	</section>
+	<!-- =======================
+	Page content END -->
+
+    ======================= -->
+    <!-- **************** MAIN CONTENT END **************** -->
+
+
+{% endblock %}

@@ -1,0 +1,529 @@
+{% extends 'base_app/base.html' %}
+
+{% block title %} Aperçu du profil {% endblock %}
+
+{% load static %}
+
+{% block css_styles %}
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- **************** MAIN CONTENT START **************** -->
+    <!-- =======================
+
+    Page Banner START -->
+    <section class="pt-0">
+        <!-- Main banner background image -->
+        <div class="container-fluid px-0">
+            <div class="bg-blue h-100px h-md-200px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
+            </div>
+        </div>
+        <div class="container mt-n4">
+            <div class="row">
+                <!-- Profile banner START -->
+                <div class="col-12">
+                    <div class="card bg-transparent card-body p-0">
+                        <div class="row d-flex justify-content-between">
+							{% if not mover %}
+								{%if user.is_authenticated %}
+									<!-- Avatar -->
+									<div class="col-auto mt-4 mt-md-0">
+										<div class="avatar avatar-xxl mt-n3">
+											<img class="avatar-img rounded-circle border border-white border-3 shadow" src="{% static 'base_app/assets/images/avatar/01.png' %}" alt="">
+										</div>
+									</div>
+									<!-- Profile info -->
+									<div class="col d-md-flex justify-content-between align-items-center mt-4">
+                                <div>
+                                    <h1 class="my-1 fs-4">
+										{{user.username|capfirst}} <i class="bi bi-patch-check-fill text-info small"></i>
+									</h1>
+                                </div>
+                            </div>
+								{% endif %}
+							{% endif %}
+                        </div>
+                    </div>
+                    <!-- Profile banner END -->
+
+                    <!-- Advanced filter responsive toggler START -->
+                    <!-- Divider -->
+                    <hr class="d-xl-none">
+                    <div class="col-12 col-xl-3 d-flex justify-content-between align-items-center">
+                        <a class="h6 mb-0 fw-bold d-xl-none" href="#">Menu</a>
+                        <button class="btn btn-primary d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                            <i class="fas fa-sliders-h"></i>
+                        </button>
+                    </div>
+                    <!-- Advanced filter responsive toggler END -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =======================
+    Page Banner END -->
+
+	{% if error %}
+		<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+			{{ error }}
+		</div>
+	{% else %}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+					{{message}}
+				</div>
+			{% endfor %}
+		{% endif %}
+	{% endif %}
+
+    <!-- =======================
+	Page content START -->
+	<section class="pt-2">
+		<div class="container">
+			<div class="row">
+				<!-- Right sidebar START -->
+				<div class="col-xl-3">
+					<!-- Responsive offcanvas body START -->
+					<nav class="navbar navbar-light navbar-expand-xl mx-0">
+						<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+							<!-- Offcanvas header -->
+							<div class="offcanvas-header bg-light">
+								<h5 class="offcanvas-title" id="offcanvasNavbarLabel">Mon profil</h5>
+								<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+							</div>
+							<!-- Offcanvas body -->
+							<div class="offcanvas-body p-3 p-xl-0">
+								<div class="bg-dark border rounded-3 pb-0 p-3 w-100">
+									<!-- Dashboard menu -->
+									<div class="list-group list-group-dark list-group-borderless">
+										{% if mover %}
+											<a class="list-group-item" href="{% url 'profile' %}"><i class="bi bi-ui-checks-grid fa-fw me-2"></i>
+												Tableau de bord
+											</a>
+										{% endif %}
+										<a class="list-group-item active" href="{% url 'preview' %}"><i class="bi bi-person-lines-fill fa-fw me-2"></i>
+											Aperçu du profil
+										</a>
+										{% if mover %}
+											<a class="list-group-item" href="{% url 'statistic' %}"><i class="bi bi-graph-up fa-fw me-2"></i>
+												Évolution de vos activités
+											</a>
+											<a class="list-group-item" href="{% url 'reviews' %}"><i class="bi bi-star fa-fw me-2"></i>
+												Avis des clients
+											</a>
+											<a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
+												Facturation
+											</a>
+										{% endif %}
+										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
+											Demandes de devis
+										</a>
+										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
+											Configuration du profil
+										</a>
+										<a class="list-group-item" href="{% url 'settings' %}"><i class="bi bi-gear fa-fw me-2"></i>
+											Paramètres
+										</a>
+										<a class="list-group-item" href="{% url 'user_password_change' %}"><i class="bi bi-lock fa-fw me-2"></i>
+											Mot de passe
+										</a>
+										<form action="{% url 'logout_user' %}" method="POST">
+                            				{% csrf_token %}
+											<button type="submit" class="list-group-item text-danger bg-danger-soft-hover">
+												<i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion
+											</button>
+                        				</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</nav>
+					<!-- Responsive offcanvas body END -->
+				</div>
+				<!-- Right sidebar END -->
+
+				<!-- Main content START -->
+				<div class="col-xl-9">
+
+					{% if mover %}
+						<!-- =======================
+						Mover account START -->
+
+							<!-- =======================
+							Page content START -->
+							<section class="pt-4 pb-0">
+								<div class="container">
+									<div class="row g-0 g-lg-5">
+
+										<!-- Left sidebar START -->
+										<div class="col-lg-4">
+											<div class="row">
+												<div class="col-md-6 col-lg-12">
+													<!-- Instructor image START -->
+													<div class="card shadow p-2 mb-4 text-center">
+														<div class="rounded-3">
+															<!-- Image -->
+															{% if mover.logo %}
+																<img src="{{mover.logo.url}}" class="card-img" alt="logo">
+															{%else%}
+																<img src="{% static 'user/images/random_image.png' %}" class="card-img" alt="logo">
+															{% endif %}
+														</div>
+
+														<!-- Card body -->
+														<div class="card-body px-3">
+															<!-- Rating -->
+															<ul class="list-inline">
+																<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
+																<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
+																<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
+																<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
+																<li class="list-inline-item me-0 small"><i class="fas fa-star-half-alt text-warning"></i></li>
+																<li class="list-inline-item ms-2 h6 fw-light mb-0">4.5/5.0</li>
+															</ul>
+															<!-- Social media button -->
+															<ul class="list-inline mb-0">
+																{% if mover.facebook_link %}
+																	<li class="list-inline-item">
+																		<a class="btn px-2 btn-sm bg-facebook" href="{{mover.facebook_link}}">
+																			<i class="fab fa-fw fa-facebook-f"></i>
+																		</a>
+																	</li>
+																{% endif %}
+																{% if mover.instagram_link %}
+																	<li class="list-inline-item">
+																		<a class="btn px-2 btn-sm bg-instagram-gradient" href="{{mover.instagram_link}}">
+																			<i class="fab fa-fw fa-instagram"></i>
+																		</a>
+																	</li>
+																{% endif %}
+																{% if mover.twitter_link %}
+																	<li class="list-inline-item">
+																		<a class="btn px-2 btn-sm bg-twitter" href="{{mover.twitter_link}}">
+																			<i class="fab fa-fw fa-twitter"></i>
+																		</a>
+																	</li>
+																{% endif %}
+																{% if mover.linkedin_link %}
+																	<li class="list-inline-item">
+																		<a class="btn px-2 btn-sm bg-linkedin" href="{{mover.linkedin_link}}">
+																			<i class="fab fa-fw fa-linkedin-in"></i>
+																		</a>
+																	</li>
+																{% endif %}
+															</ul>
+														</div>
+													</div>
+													<!-- Instructor image END -->
+												</div>
+
+												<div class="col-md-6 col-lg-12">
+													<div class="card card-body shadow p-4 mb-4">
+
+														<!-- Skills START -->
+														<h4 class="mb-3">Avis des clients</h4>
+
+														<!-- Progress item -->
+														<div class="overflow-hidden mb-4">
+															<h6 class="uppercase">Rapidité</h6>
+															<div class="progress progress-sm bg-primary bg-opacity-10">
+																<div class="progress-bar bg-primary aos" role="progressbar" data-aos="slide-right" data-aos-delay="200" data-aos-duration="1000" data-aos-easing="ease-in-out" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
+																	<span class="progress-percent-simple h6 mb-0">90%</span>
+																</div>
+															</div>
+														</div>
+
+														<!-- Progress item -->
+														<div class="overflow-hidden mb-4">
+															<h6 class="uppercase">Fiabilité</h6>
+															<div class="progress progress-sm bg-success bg-opacity-10">
+																<div class="progress-bar bg-success aos" role="progressbar" data-aos="slide-right" data-aos-delay="200" data-aos-duration="1000" data-aos-easing="ease-in-out" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">
+																	<span class="progress-percent-simple h6 mb-0">80%</span>
+																</div>
+															</div>
+														</div>
+
+														<!-- Progress item -->
+														<div class="overflow-hidden mb-4">
+															<h6 class="uppercase">Organisation</h6>
+															<div class="progress progress-sm bg-warning bg-opacity-15">
+																<div class="progress-bar bg-warning aos" role="progressbar" data-aos="slide-right" data-aos-delay="200" data-aos-duration="1000" data-aos-easing="ease-in-out" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+																	<span class="progress-percent-simple h6 mb-0">60%</span>
+																</div>
+															</div>
+														</div>
+
+														<!-- Progress item -->
+														<div class="overflow-hidden mb-4">
+															<h6 class="uppercase">Qualité du service</h6>
+															<div class="progress progress-sm bg-danger bg-opacity-10">
+																<div class="progress-bar bg-info aos" role="progressbar" data-aos="slide-right" data-aos-delay="200" data-aos-duration="1000" data-aos-easing="ease-in-out" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">
+																	<span class="progress-percent-simple h6 mb-0">80%</span>
+																</div>
+															</div>
+														</div>
+														<!-- Skills END -->
+
+													</div>
+												</div>
+											</div> <!-- Row End -->
+										</div>
+										<!-- Left sidebar END -->
+
+										<!-- Main content START -->
+										<div class="col-lg-8">
+
+											<!-- Title -->
+											<h1 class="mb-0">{{mover.company_name|capfirst}}</h1>
+											<p>
+												<span class="mb-0 h6 fw-light">Référence:</span> {{mover.ref}}
+											</p>
+											<!-- Content -->
+											<p class="mt-4">
+												{% if mover.company_description == "0" %}
+													<span class="badge bg-danger bg-opacity-10 text-danger">
+														Description non renseignée
+													</span>
+												{%else%}
+													{{mover.company_description|capfirst}}
+												{% endif %}
+											</p>
+											<!-- Personal info -->
+											<ul class="list-group list-group-borderless">
+												<li class="list-group-item px-0">
+													<span class="h6 fw-light"><i class="fas fa-fw fa-map-marker-alt text-primary me-1 me-sm-3"></i>Adresse:</span>
+													<span>{{mover.Adresse|capfirst}}</span>
+												</li>
+												<li class="list-group-item px-0">
+													<span class="h6 fw-light"><i class="fas fa-fw fa-envelope text-primary me-1 me-sm-3"></i>Email:</span>
+													<span>{{mover.company_email}}</span>
+												</li>
+												<li class="list-group-item px-0">
+													<span class="h6 fw-light"><i class="fas fa-fw fa-headphones text-primary me-1 me-sm-3"></i>Téléphone:</span>
+													<span>{{mover.company_phone_number_indicatif}} {{mover.employee_number}}</span>
+												</li>
+												<li class="list-group-item px-0">
+													<span class="h6 fw-light"><i class="fas fa-fw fa-globe text-primary me-1 me-sm-3"></i>Site web:</span>
+													{% if mover.website == "0" %}
+														<span class="badge bg-danger bg-opacity-10 text-danger">
+															non renseigné
+														</span>
+													{%else%}
+														<a href="{{mover.website}}" target="_blank">{{mover.website}}</a>
+													{% endif %}
+												</li>
+												<li class="list-group-item px-0">
+													<span class="h6 fw-light"><i class="fas fa-info text-primary me-1 me-sm-3"></i>Statut:</span>
+													{% if mover.company_statut == "0" %}
+														<span class="badge bg-danger bg-opacity-10 text-danger">
+															non renseigné
+														</span>
+													{%else%}
+														{{mover.company_statut|upper}}
+													{% endif %}
+												</li>
+											</ul>
+
+											<!-- Counter START -->
+											<div class="row mt-4 g-3">
+												<!-- Counter item -->
+												<div class="col-sm-6 col-lg-4">
+													<div class="d-flex align-items-center">
+														<span class="icon-lg text-success mb-0 bg-success bg-opacity-10 rounded-3"><i class="fas fa-folder"></i></span>
+														<div class="ms-3">
+															<div class="d-flex">
+																<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="10"	data-purecounter-delay="200">0</h5>
+																<span class="mb-0 h5">+</span>
+															</div>
+															<p class="mb-0 h6 fw-light">Demande(s) de devis</p>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- Counter END -->
+											<hr>
+											<h3 class="mb-0" align="center">Zones d'intervention</h3>
+											<div class="accordion accordion-icon accordion-shadow mt-4 text-start position-relative" id="accordionExample2">
+
+												{% for country in countries %}
+													{% for mover_country in mover_countries %}
+														{% if mover_country.country_id == country.id %}
+															<!-- Item -->
+															<div class="accordion-item mb-3">
+																<h5 class="accordion-header font-base" id="heading-{{country.id}}">
+																	<button class="accordion-button fw-bold collapsed rounded pe-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{country.id}}" aria-expanded="false" aria-controls="collapse-{{country.id}}">
+																		{{country.name}}
+																	</button>
+																</h5>
+																<!-- Body -->
+																<div id="collapse-{{country.id}}" class="accordion-collapse collapse" aria-labelledby="heading-{{country.id}}" data-bs-parent="#accordionExample2">
+																	<div class="accordion-body mt-3">
+																		<p>
+																		{% for mover_region in mover_regions %}
+																			{% for region in regions %}
+																				{% if mover_region.region_id == region.id %}
+
+																					{% if mover_region.country_id == country.id %}
+
+																						<h3 class="badge bg-info bg-opacity-10 text-info">
+																							{{region.name}}
+																						</h3></br>
+
+																					{% endif %}
+
+																				{% endif %}
+																			{% endfor %}
+																		{% endfor %}
+																		</p>
+																	</div>
+																</div>
+															</div>
+														{%endif%}
+													{%endfor%}
+												{% endfor %}
+
+                                			</div>
+								  		</div>
+										<!-- Main content END -->
+
+									</div><!-- Row END -->
+								</div>
+							</section>
+							<!-- =======================
+							Page content END -->
+
+						<!-- =======================
+						End Mover account -->
+					{% else %}
+						<!-- =======================
+						Simple User account START -->
+
+						{%if user.is_authenticated %}
+							<!-- =======================
+							Page content START -->
+							<section class="pt-5 pb-0">
+								<div class="container">
+									<div class="row g-0 g-lg-5">
+
+										<!-- Main content START -->
+										<div class="col-lg-12">
+
+											<!-- Title -->
+											<h1 class="mb-0">{{user.first_name|capfirst}} {{user.last_name|capfirst}}</h1>
+											<!-- Personal info -->
+											<ul class="list-group list-group-borderless">
+												<div class="row">
+													<div class="col-sm-6">
+														<li class="list-group-item px-0">
+															<span class="h6 fw-light">
+																<i class="fas fa-fw fa-map text-primary me-1 me-sm-3"></i>
+																Pays: {{user_info.country|capfirst}}
+															</span>
+															<span></span>
+														</li>
+														<li class="list-group-item px-0">
+															<span class="h6 fw-light">
+																<i class="fas fa-fw fa-map-marker-alt text-primary me-1 me-sm-3"></i>
+																Adresse: {{user_info.Adresse|capfirst}}
+															</span>
+															<span></span>
+														</li>
+														<li class="list-group-item px-0">
+															<span class="h6 fw-light">
+																<i class="fas fa-fw fa-envelope text-primary me-1 me-sm-3"></i>
+																Email: {{user.email|capfirst}}
+															</span>
+															<span></span>
+														</li>
+														<li class="list-group-item px-0">
+															<span class="h6 fw-light">
+																<i class="fas fa-fw fa-phone-square text-primary me-1 me-sm-3"></i>
+																Indicatif: {{user_info.indicatif|capfirst}}
+															</span>
+															<span></span>
+														</li>
+														<li class="list-group-item px-0">
+															<span class="h6 fw-light">
+																<i class="fas fa-fw fa-headphones text-primary me-1 me-sm-3"></i>
+																Numéro de téléphone: {{user_info.phone_number|capfirst}}
+															</span>
+															<span></span>
+														</li>
+														<li class="list-group-item px-0">
+															<span class="h6 fw-light">
+																<i class="fas fa-fw fa-clock text-primary me-1 me-sm-3"></i>
+																Profil créer le:
+																{% load i18n %}
+																{% language 'fr' %}
+																	{{user_info.created|date:'d F Y'}}
+																{% endlanguage %}
+															</span>
+															<span></span>
+														</li>
+													</div>
+												</div>
+											</ul>
+
+											<!-- Counter START -->
+											<div class="row mt-4 g-3">
+												<!-- Counter item -->
+												<div class="col-sm-6 col-lg-4">
+													<div class="d-flex align-items-center">
+														<span class="icon-lg text-success mb-0 bg-success bg-opacity-10 rounded-3">
+															<i class="bi bi-cart-plus-fill text-orange"></i>
+														</span>
+														<div class="ms-3">
+															<div class="d-flex">
+																<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="10" data-purecounter-delay="200">0</h5>
+																<span class="mb-0 h5">+</span>
+															</div>
+															<p class="mb-0 h6 fw-light">Demande de devis effectuée(s)</p>
+														</div>
+													</div>
+												</div>
+												<!-- Counter item -->
+												<div class="col-sm-6 col-lg-4">
+													<div class="d-flex align-items-center">
+														<span class="icon-lg text-purple bg-purple bg-opacity-10 rounded-3 mb-0">
+															<i class="fas fa-star text-warning"></i>
+														</span>
+														<div class="ms-3">
+															<div class="d-flex">
+																<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="36"	data-purecounter-delay="200">0</h5>
+																<span class="mb-0 h5">K+</span>
+															</div>
+															<p class="mb-0 h6 fw-light">Avis donné(s)</p>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- Counter END -->
+								  		</div>
+										<!-- Main content END -->
+
+									</div><!-- Row END -->
+								</div>
+							</section>
+							<!-- =======================
+							Page content END -->
+
+						{% endif %}
+						<!-- =======================
+						End Simple User account -->
+					{% endif %}
+
+				</div>
+				<!-- Main content END -->
+			</div><!-- Row END -->
+		</div>
+	</section>
+	<!-- =======================
+	Page content END --></br></br></br></br></br></br></br></br></br></br></br>
+
+    <!-- **************** MAIN CONTENT END **************** -->
+
+
+{% endblock %}

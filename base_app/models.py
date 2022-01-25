@@ -1,0 +1,96 @@
+from django.contrib.auth.models import User
+from django.db import models
+
+
+class Gender(models.Model):
+    name = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.name
+
+
+class Country(models.Model):
+    name = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.name
+
+
+class RegionOrProvince(models.Model):
+    name = models.CharField(max_length=300)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class Moving_Type1(models.Model): #can be national opr international
+    name = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.name
+
+
+class Moving_Type2(models.Model): #can be 'particulier' or 'professionnel'
+    name = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.name
+
+
+class Mover(models.Model):
+    ref = models.CharField(max_length=30, default="")
+    company_name = models.CharField(max_length=300)
+    company_email = models.EmailField()
+    Adresse = models.CharField(max_length=300, default="")
+    City = models.CharField(max_length=300, default="")
+    country = models.CharField(max_length=300, default="")
+    company_phone_number = models.CharField(max_length=50)
+    Postal_Code = models.IntegerField(default=0)
+    employee_number = models.IntegerField(default=0)
+    TVA_number = models.CharField(max_length=30, default="")
+    company_description = models.TextField(default="")
+    website = models.CharField(max_length=300, default="")
+    company_statut = models.CharField(max_length=300, default="")
+
+    facebook_link = models.CharField(max_length=500, default="")
+    instagram_link = models.CharField(max_length=500, default="")
+    twitter_link = models.CharField(max_length=500, default="")
+    linkedin_link = models.CharField(max_length=500, default="")
+
+    logo = models.ImageField(upload_to='base_app/images/', blank=True, default="")
+    validated = models.BooleanField(default=False)
+    activated = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default="")
+
+    def __str__(self):
+        return self.company_name
+
+
+class Mover_Images(models.Model):
+    image = models.ImageField(upload_to='base_app/images/', blank=True)
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE, default="")
+
+
+class Mover_Moving_Type1(models.Model):
+    moving_type1_name = models.CharField(max_length=300, default="")
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
+
+
+class Mover_Moving_Type2(models.Model):
+    moving_type2_name = models.CharField(max_length=300, default="")
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
+
+
+class Mover_Country(models.Model):
+    country_name = models.CharField(max_length=300)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
+
+
+class Mover_Region(models.Model):
+    region_name = models.CharField(max_length=300)
+    region = models.ForeignKey(RegionOrProvince, on_delete=models.CASCADE, default="")
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)

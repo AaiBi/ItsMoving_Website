@@ -1,0 +1,188 @@
+{% extends 'base_app/base.html' %}
+
+{% block title %} Paramètres - Modifications {% endblock %}
+
+{% load static %}
+
+{% block css_styles %}
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- **************** MAIN CONTENT START **************** -->
+    <!-- =======================
+
+	Page Banner START -->
+    <section class="pt-0">
+        <!-- Main banner background image -->
+        <div class="container-fluid px-0">
+            <div class="bg-blue h-100px h-md-200px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
+            </div>
+        </div>
+        <div class="container mt-n4">
+            <div class="row">
+                <!-- Profile banner START -->
+                <div class="col-12">
+                    <div class="card bg-transparent card-body p-0">
+                        <div class="row d-flex justify-content-between">
+							{% if not mover %}
+								{%if user.is_authenticated %}
+									<!-- Avatar -->
+									<div class="col-auto mt-4 mt-md-0">
+										<div class="avatar avatar-xxl mt-n3">
+											<img class="avatar-img rounded-circle border border-white border-3 shadow" src="{% static 'base_app/assets/images/avatar/01.png' %}" alt="">
+										</div>
+									</div>
+									<!-- Profile info -->
+									<div class="col d-md-flex justify-content-between align-items-center mt-4">
+                                <div>
+                                    <h1 class="my-1 fs-4">
+										{{user.username|capfirst}} <i class="bi bi-patch-check-fill text-info small"></i>
+									</h1>
+                                </div>
+                            </div>
+								{% endif %}
+							{% endif %}
+                        </div>
+                    </div>
+                    <!-- Profile banner END -->
+
+                    <!-- Advanced filter responsive toggler START -->
+                    <!-- Divider -->
+                    <hr class="d-xl-none">
+                    <div class="col-12 col-xl-3 d-flex justify-content-between align-items-center">
+                        <a class="h6 mb-0 fw-bold d-xl-none" href="#">Menu</a>
+                        <button class="btn btn-primary d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                            <i class="fas fa-sliders-h"></i>
+                        </button>
+                    </div>
+                    <!-- Advanced filter responsive toggler END -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =======================
+    Page Banner END -->
+
+	{% if error %}
+		<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+			{{ error }}
+		</div>
+	{% else %}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+					{{message}}
+				</div>
+			{% endfor %}
+		{% endif %}
+	{% endif %}
+
+    <!-- =======================
+	Page content START -->
+	<section class="pt-2">
+		<div class="container">
+			<div class="row">
+				<!-- Right sidebar START -->
+				<div class="col-xl-3">
+					<!-- Responsive offcanvas body START -->
+					<nav class="navbar navbar-light navbar-expand-xl mx-0">
+						<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+							<!-- Offcanvas header -->
+							<div class="offcanvas-header bg-light">
+								<h5 class="offcanvas-title" id="offcanvasNavbarLabel">Mon profil</h5>
+								<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+							</div>
+							<!-- Offcanvas body -->
+							<div class="offcanvas-body p-3 p-xl-0">
+								<div class="bg-dark border rounded-3 pb-0 p-3 w-100">
+									<!-- Dashboard menu -->
+									<div class="list-group list-group-dark list-group-borderless">
+										{% if mover %}
+											<a class="list-group-item" href="{% url 'profile' %}"><i class="bi bi-ui-checks-grid fa-fw me-2"></i>
+												Tableau de bord
+											</a>
+										{% endif %}
+										<a class="list-group-item" href="{% url 'preview' %}"><i class="bi bi-person-lines-fill fa-fw me-2"></i>
+											Aperçu du profil
+										</a>
+										{% if mover %}
+											<a class="list-group-item" href="{% url 'statistic' %}"><i class="bi bi-graph-up fa-fw me-2"></i>
+												Évolution de vos activités
+											</a>
+											<a class="list-group-item" href="{% url 'reviews' %}"><i class="bi bi-star fa-fw me-2"></i>
+												Avis des clients
+											</a>
+											<a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
+												Facturation
+											</a>
+										{% endif %}
+										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
+											Demandes de devis
+										</a>
+										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
+											Configuration du profil
+										</a>
+										<a class="list-group-item active" href="{% url 'settings' %}"><i class="bi bi-gear fa-fw me-2"></i>
+											Paramètres
+										</a>
+										<a class="list-group-item" href="{% url 'user_password_change' %}"><i class="bi bi-lock fa-fw me-2"></i>
+											Mot de passe
+										</a>
+										<form action="{% url 'logout_user' %}" method="POST">
+                            				{% csrf_token %}
+											<button type="submit" class="list-group-item text-danger bg-danger-soft-hover">
+												<i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion
+											</button>
+                        				</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</nav>
+					<!-- Responsive offcanvas body END -->
+				</div>
+				<!-- Right sidebar END -->
+
+				<!-- Main content START -->
+				<div class="col-xl-9">
+
+					{% if mover %}
+						<!-- Edit profile START -->
+						<div class="card border rounded-3">
+							<!-- Card header -->
+							<div class="card-header border-bottom">
+								<h3 class="card-header-title mb-0">Modification de vos pays d'intervention</h3>
+							</div>
+							<!-- Card header END -->
+
+							<!-- Card body START -->
+							<div class="card-body">
+								<form method="POST">
+            						{% csrf_token %}
+									<h5 class="text-danger">
+										Voulez-vous vraiment supprimer cette Region/Province
+										<span class="badge bg-info"><b>{{mover_region.region_name}}</b></span>
+										de vos zones d'intervention ?
+									</h5></br>
+									<button type="submit" class="btn btn text-white d-block w-100 btn-danger">Supprimer</button>
+        						</form>
+							</div>
+							<!-- Card body END -->
+						</div>
+						<!-- Edit profile END -->
+					{% endif %}
+
+				</div>
+				<!-- Main content END -->
+			</div><!-- Row END -->
+		</div>
+	</section>
+	<!-- =======================
+	Page content END --></br></br></br></br></br></br></br></br></br></br></br>
+
+    <!-- **************** MAIN CONTENT END **************** -->
+
+
+{% endblock %}
