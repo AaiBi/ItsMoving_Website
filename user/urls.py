@@ -21,4 +21,7 @@ urlpatterns = [
     path('delete_mover_region/<int:mover_region_pk>/<int:mover_pk>', views.delete_mover_region, name='delete_mover_region'),
     path('delete_mover_moving_type1/<int:moving_type_pk>/<int:mover_pk>', views.delete_mover_moving_type1, name='delete_mover_moving_type1'),
     path('delete_mover_moving_type2/<int:moving_type_pk>/<int:mover_pk>', views.delete_mover_moving_type2, name='delete_mover_moving_type2'),
+
+    # Messages
+
 ]

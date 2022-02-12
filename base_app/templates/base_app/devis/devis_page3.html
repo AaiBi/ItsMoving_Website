@@ -132,13 +132,13 @@
 
 							<div class="row" style="display: flex; align-items: center;">
 								<div class="col-sm-3">
-									<span class="badge bg-primary text-dark"><h3>1</h3></span>
+									<span class="badge bg-light text-dark"><h3>1</h3></span>
 								</div>
 								<div class="col-sm-3">
 									<span class="badge bg-light text-dark"><h3>2</h3></span>
 								</div>
 								<div class="col-sm-3">
-									<span class="badge bg-light text-dark"><h3>3</h3></span>
+									<span class="badge bg-primary text-dark"><h3>3</h3></span>
 								</div>
 								<div class="col-sm-3">
 									<span class="badge bg-light text-dark"><h3>4</h3></span>
@@ -146,7 +146,7 @@
 							</div></br></br>
 
 							<!-- Title -->
-							<h2 class="mb-3 text-primary" align="center"></h2></br>
+							<h2 class="mb-3 text-primary" align="center">Informations du lieu d'arrivée</h2></br>
 
 							{% if error %}
                                 <div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
@@ -165,50 +165,46 @@
 							<!-- Form START -->
 							<form class="row g-3 position-relative" method="POST">
 								{% csrf_token %}
-								<!-- Moving type -->
+								<!-- City -->
 								<div class="col-md-6 bg-dark-input">
-									<label class="form-label text-white text-opacity-50">
-										Type de déménagement <span class="text-danger">*</span>
-									</label>
-									<select class="form-select form-control text-opacity-50" name="moving_type1_id" required="">
-										<option selected disabled value="">-------------------------</option>
-										{% for data in moving_type1 %}
-											<option value="{{data.id}}" class="text-dark">{{data.name}}</option>
-										{% endfor %}
-									</select>
+									<label class="form-label text-white text-opacity-50">Ville <span class="text-danger">*</span></label>
+									<input type="text" class="form-control" name="City_Arrival" required>
 								</div>
 
-								<!--Customer type-->
+								<!-- Adresse -->
 								<div class="col-md-6 bg-dark-input">
-									<label class="form-label text-white text-opacity-50">
-										Je suis... <span class="text-danger">*</span>
-									</label>
-									<select class="form-select form-control text-opacity-50" name="moving_type2_id" required="">
-										<option selected disabled value="">-------------------------</option>
-										{% for data in moving_type2 %}
-											<option value="{{data.id}}" class="text-dark">{{data.name}}</option>
-										{% endfor %}
-									</select>
+									<label class="form-label text-white text-opacity-50">Adresse complète <span class="text-danger">*</span></label>
+									<input type="text" class="form-control" name="Adresse_Arrival" required>
 								</div>
 
-								<!--Country-->
+								<!-- Postal code -->
+								<div class="col-md-6 bg-dark-input">
+									<label class="form-label text-white text-opacity-50">Code Postal <span class="text-danger">*</span></label>
+									<input type="number" class="form-control" name="Postal_Code_Arrival" required>
+								</div>
+
+								<!-- Residence number -->
+								<div class="col-md-6 bg-dark-input">
+									<label class="form-label text-white text-opacity-50">Numéro/nom résidence <span class="text-danger">*</span></label>
+									<input type="text" class="form-control" name="Residence_Number_or_Name_Arrival" required>
+								</div>
+
+								<!--Residence type-->
 								<div class="col-md-12 bg-dark-input">
 									<label class="form-label text-white text-opacity-50">
-										Pays <span class="text-danger">*</span>
+										Type de résidence <span class="text-danger">*</span>
 									</label>
-									<select class="form-select form-control text-opacity-50" name="country_id" required="">
+									<select class="form-select form-control text-opacity-50" name="Residence_Arrival" required="">
 										<option selected disabled value="">-------------------------</option>
-										{% for data in country %}
-											<option value="{{data.id}}" class="text-dark">{{data.name}}</option>
-										{% endfor %}
+										<option value="Maison" class="text-dark">Maison</option>
+										<option value="Appartement" class="text-dark">Appartement</option>
 									</select>
 								</div>
-								</br></br></br>
 
 								<!-- Button -->
 								<div class="col-12 bg-dark-input">
 									<div class="d-grid">
-										<button class="btn btn-lg btn-primary" type="submit">Commencer une demande de devis</button>
+										<button class="btn btn-lg btn-primary" type="submit">Aller vers l'étape 4</button>
 									</div>
 									<p class="mb-0 text-white text-opacity-50" align="center">100% gratuit</p>
 								</div>
