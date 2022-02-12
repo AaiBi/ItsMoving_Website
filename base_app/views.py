@@ -368,7 +368,6 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                      Additional_informations, moving_date=moving_date, moving_date1=moving_date1, moving_date2=
                                      moving_date2, moving_type1=moving_type1, moving_type2=moving_type2, country=country)
             savedata.save()
-            messages.success(request, 'Informations ajoutées avec succès !')
             return redirect('devis_page6')
 
         elif request.POST.get('moving_date1') and request.POST.get('moving_date1'):
@@ -388,7 +387,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                      Additional_informations, moving_date=moving_date, moving_date1=moving_date1, moving_date2=
                                      moving_date2, moving_type1=moving_type1, moving_type2=moving_type2, country=country)
             savedata.save()
-            messages.success(request, 'Informations ajoutées avec succès !')
+            return redirect('devis_page6')
 
         else:
             messages.error(request, 'Veuillez choisir une date de déménagement !')
