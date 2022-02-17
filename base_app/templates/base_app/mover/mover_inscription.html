@@ -231,68 +231,133 @@
                             <!-- Form START -->
                             <form class="row g-3 mt-2 position-relative z-index-9" method="POST">
                                 {% csrf_token %}
-                                <!-- Company Name -->
-                                <div class="col-lg-12">
-                                    <label class="form-label">Nom de votre entreprise *</label>
-                                    <input type="text" class="form-control" name="company_name" required>
-                                </div>
-                                <!-- Email -->
-                                <div class="col-lg-6">
-                                    <label class="form-label">Email *</label>
-                                    <input type="email" class="form-control" name="company_email" required>
-                                </div>
-                                <!-- Phone Number -->
-                                <div class="col-lg-6">
-                                    <label class="form-label">Numéro de téléphone *</label>
-                                    <input type="tel" class="form-control" name="company_phone_number" required>
-                                </div>
-                                <!-- City -->
-                                <div class="col-lg-6">
-                                    <label class="form-label">Pays *</label>
-                                    <input type="text" class="form-control" name="country" required>
-                                </div>
-                                <!-- City -->
-                                <div class="col-lg-6">
-                                    <label class="form-label">Ville *</label>
-                                    <input type="text" class="form-control" name="City" required>
-                                </div>
-                                <!-- adresse -->
-                                <div class="col-lg-6">
-                                    <label class="form-label">Adresse *</label>
-                                    <input type="text" class="form-control" name="Adresse" required>
-                                </div>
-                                <!-- Postal Code -->
-                                <div class="col-lg-6">
-                                    <label class="form-label">Code Postal *</label>
-                                    <input type="number" class="form-control" name="Postal_Code" required>
-                                </div>
-                                <!-- Postal Code -->
-                                <div class="col-lg-6">
-                                    <label class="form-label">Nombre d'employés *</label>
-                                    <input type="number" class="form-control" name="employee_number" required>
-                                </div>
-                                <!-- Postal Code -->
-                                <div class="col-lg-6">
-                                    <label class="form-label">Numéro de TVA *</label>
-                                    <input type="text" class="form-control" name="TVA_number" required>
-                                </div>
-                                <!-- other informations -->
-                                <input type="hidden" name="website" value="0">
-                                <input type="hidden" name="ref" value="{{ref}}">
-                                <input type="hidden" name="company_statut" value="0">
-                                <input type="hidden" name="company_description" value="0">
-                                <input type="hidden" name="facebook_link" value="0">
-                                <input type="hidden" name="instagram_link" value="0">
-                                <input type="hidden" name="twitter_link" value="0">
-                                <input type="hidden" name="linkedin_link" value="0">
-                                <input type="hidden" name="logo" value="/user/images/profil_image/random_image.png">
+                                {% if user.is_authenticated %}
+                                    <!-- first name -->
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Prénom *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-user"></i></span>
+                                            <input class="form-control border-0 bg-light rounded-end ps-1" name="first_name" type="text" placeholder="Entrez votre prénom" disabled>
+                                        </div>
+                                    </div>
+                                    <!-- last name -->
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Nom de famille *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-user"></i></span>
+                                            <input class="form-control border-0 bg-light rounded-end ps-1" name="last_name" type="text" placeholder="Nom de famille" disabled>
+                                        </div>
+                                    </div>
+                                    <p></p>
+                                    <!-- username -->
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Nom d'utilisateur *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-user"></i></span>
+                                            <input class="form-control border-0 bg-light rounded-end ps-1" name="username" type="text" placeholder="Nom d'utilisateur" disabled>
+                                        </div>
+                                    </div>
+                                    <!-- email -->
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Email d'entreprise *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-user"></i></span>
+                                            <input class="form-control border-0 bg-light rounded-end ps-1" name="email" type="email" placeholder="Entrez votre email" disabled>
+                                        </div>
+                                    </div>
+                                    <!-- Password -->
+                                    <div class="col-sm-6">
+                                        <label for="inputPassword5" class="form-label">Mot de passe *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-lock"></i></span>
+                                            <input type="password" name="password1" class="form-control border-0 bg-light rounded-end ps-1" placeholder="Mot de passe" disabled>
+                                        </div>
+                                        <div class="form-text">
+                                            Votre mot de passe doit comporter au moins 8 caractères
+                                        </div>
+                                    </div>
+                                    <!-- Password -->
+                                    <div class="col-sm-6">
+                                        <label for="inputPassword51" class="form-label">Confirmer votre mot de passe *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-lock"></i></span>
+                                            <input type="password" name="password" class="form-control border-0 bg-light rounded-end ps-1" placeholder="Mot de passe" disabled>
+                                        </div>
+                                        <div class="form-text">
+                                            Votre mot de passe doit comporter au moins 8 caractères
+                                        </div>
+                                    </div>
 
-                                <!-- Button -->
-                                <div class="col-12"></br>
-                                    <center>
-                                        <button type="submit" class="btn btn-primary mb-0">Commencer l'essai gratuit de 20 jours</button>
-                                    </center>
-                                </div>
+                                    <!-- Button -->
+                                    <div class="col-12"></br>
+                                        <center>
+                                            <button type="submit" class="btn btn-primary mb-0" disabled>Commencer l'essai gratuit de 20 jours</button>
+                                        </center>
+                                    </div>
+                                {% else %}
+                                    <!-- first name -->
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Prénom *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-user"></i></span>
+                                            <input class="form-control border-0 bg-light rounded-end ps-1" name="first_name" type="text" placeholder="Entrez votre prénom" required>
+                                        </div>
+                                    </div>
+                                    <!-- last name -->
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Nom de famille *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-user"></i></span>
+                                            <input class="form-control border-0 bg-light rounded-end ps-1" name="last_name" type="text" placeholder="Nom de famille" required>
+                                        </div>
+                                    </div>
+                                    <p></p>
+                                    <!-- username -->
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Nom d'utilisateur *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-user"></i></span>
+                                            <input class="form-control border-0 bg-light rounded-end ps-1" name="username" type="text" placeholder="Nom d'utilisateur" id="exampleInputEmail1" required>
+                                        </div>
+                                    </div>
+                                    <!-- email -->
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Email d'entreprise *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-user"></i></span>
+                                            <input class="form-control border-0 bg-light rounded-end ps-1" name="email" type="email" placeholder="Entrez votre email" required>
+                                        </div>
+                                    </div>
+                                    <!-- Password -->
+                                    <div class="col-sm-6">
+                                        <label for="inputPassword5" class="form-label">Mot de passe *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-lock"></i></span>
+                                            <input type="password" name="password1" class="form-control border-0 bg-light rounded-end ps-1" placeholder="Mot de passe" id="inputPassword5">
+                                        </div>
+                                        <div id="passwordHelpBlock" class="form-text">
+                                            Votre mot de passe doit comporter au moins 8 caractères
+                                        </div>
+                                    </div>
+                                    <!-- Password -->
+                                    <div class="col-sm-6">
+                                        <label for="inputPassword51" class="form-label">Confirmer votre mot de passe *</label>
+                                        <div class="input-group input-group-lg">
+                                            <span class="input-group-text bg-light rounded-start border-0 text-secondary px-3"><i class="fas fa-lock"></i></span>
+                                            <input type="password" name="password" class="form-control border-0 bg-light rounded-end ps-1" placeholder="Mot de passe" id="inputPassword51">
+                                        </div>
+                                        <div id="passwordHelpBlock1" class="form-text">
+                                            Votre mot de passe doit comporter au moins 8 caractères
+                                        </div>
+                                    </div>
+
+                                    <!-- Button -->
+                                    <div class="col-12"></br>
+                                        <center>
+                                            <button type="submit" class="btn btn-primary mb-0">Commencer l'essai gratuit de 20 jours</button>
+                                        </center>
+                                    </div>
+                                {% endif %}
                             </form>
                             <!-- Form END -->
                         </div>

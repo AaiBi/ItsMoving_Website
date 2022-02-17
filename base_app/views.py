@@ -1,11 +1,14 @@
+import datetime
 from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from base_app.forms import Mover_Form
 from base_app.models import Mover, Moving_Type1, Mover_Moving_Type1, Moving_Type2, Mover_Moving_Type2, Country, \
-    RegionOrProvince, Mover_Country, Mover_Region, Quote_Request
+    RegionOrProvince, Mover_Country, Mover_Region, Quote_Request, Mover_Quote_Request
 import random
+from user.models import User_Info
 
 
 def index(request):
@@ -13,146 +16,187 @@ def index(request):
 
 
 def mover_inscription(request):
-    # creation of the ref
-    characters = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-    characters.extend(list('1234567890'))
-    size = 10
-    ref = ''
-    for x in range(size):
-        ref += random.choice(characters)
-    ref = ref
+    if request.method == 'GET':
+        return render(request, 'base_app/mover/mover_inscription.html', {'form': UserCreationForm()})
+    else:
+        if request.POST['password'] == request.POST['password1']:
+            if User.objects.filter(username=request.POST.get('username')):
+                messages.error(request, 'Erreur ! Ce nom d\'utilisateur existe déjà, veuillez utiliser un autre !')
+                return redirect('sign_up_user')
+            elif User.objects.filter(email=request.POST.get('email')):
+                messages.error(request, 'Erreur ! Cet email existe déjà, veuillez utiliser un autre !')
+                return redirect('sign_up_user')
+            else:
+                try:
+                    username = request.POST['username']
+                    first_name = request.POST['first_name']
+                    last_name = request.POST['last_name']
+                    email = request.POST['email']
+                    password = request.POST['password']
 
-    if request.method == 'POST':
-        form = Mover_Form(request.POST)
-        if request.user.is_authenticated:
-            if form.is_valid():
-                form = form.save(commit=False)
-                if Mover.objects.filter(company_name=request.POST.get('company_name')):
-                    messages.error(request, 'Erreur ! Ce nom d\'entreprise existe déjà dans notre base de données !')
-                    return redirect('mover_inscription')
-                elif Mover.objects.filter(company_email=request.POST.get('company_email')):
-                    messages.error(request, 'Erreur ! Cet email existe déjà dans notre base de données !')
-                    return redirect('mover_inscription')
-                elif Mover.objects.filter(company_phone_number=request.POST.get('company_phone_number')):
-                    messages.error(request, 'Erreur ! Cet email existe déjà dans notre base de données !')
-                    return redirect('mover_inscription')
-                else:
-                    form.user = get_object_or_404(User, id=request.user.id)
-                    form.save()
-                    messages.success(request, 'Informations ajoutées avec succès !')
-                    return redirect('mover_inscription_step1', mover_pk=form.id)
+                    # creating the blanck user_info table
+                    indicatif = 0
+                    phone_number = 0
+                    Adresse = "null"
+                    country = "null"
+                    activated = True
+                    profil_picture = "/user/images/profil_image/random_image.png"
+
+                    # Creation of the user account
+                    user = User.objects.create_user(username=username, password=password, first_name=first_name,
+                                                    last_name=last_name, email=email)
+
+                    user_info = User_Info(indicatif=indicatif, phone_number=phone_number, Adresse=Adresse,
+                                          country=country,
+                                          activated=activated, profil_picture=profil_picture, user_id=user.id)
+                    user.save()
+                    user_info.save()
+
+                    return redirect('mover_inscription_step1', new_user_id=user.id)
+                except ValueError:
+                    return render(request, 'base_app/mover/mover_inscription.html', {'form': UserCreationForm(), 'error': 'Bad data passed in'})
         else:
-            messages.error(request, 'Veuillez vous connectez d\'abord, si vous n\'en avez pas veuillez en créer !')
-            return redirect('login_user')
-    return render(request, 'base_app/mover/mover_inscription.html', {'ref': ref})
+            return render(request, 'base_app/mover/mover_inscription.html', {'form': UserCreationForm(), 'error': 'Les deux mots de passe ne correspondent pas !'})
 
 
-def mover_inscription_step1(request, mover_pk):
-    mover_information = get_object_or_404(Mover, pk=mover_pk)
-    moving_type1 = Moving_Type1.objects.all()
-    if request.method == 'POST':
-        mover_id = request.POST.get('mover_id')
-        moving_type1_name = request.POST.getlist('moving_type1_name[]')
-        if request.POST.getlist('moving_type1_name[]'):
-            for data in moving_type1_name:
-                if Mover_Moving_Type1.objects.filter(moving_type1_name=data, mover=mover_information):
-                    messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
-                    return redirect('mover_inscription_step1', mover_pk=mover_id)
-                else:
-                    mover = get_object_or_404(Mover, id=request.POST.get('mover_id'))
-                    savedata = Mover_Moving_Type1(moving_type1_name=data, mover=mover)
-                    savedata.save()
-                    messages.success(request, 'Informations ajoutées avec succès !')
-            return redirect('mover_inscription_step2', mover_pk=mover_id)
-        else:
-            messages.error(request, 'Veuillez faire au moins une sélection !')
-            return redirect('mover_inscription_step1', mover_pk=mover_id)
+def mover_inscription_step1(request, new_user_id):
+    if get_object_or_404(User, id=new_user_id):
+        user = get_object_or_404(User, id=new_user_id)
+        if request.method == 'POST':
+            company_name = request.POST['company_name']
+            company_phone_number = request.POST['company_phone_number']
+            country = request.POST['country']
+            City = request.POST['City']
+            Adresse = request.POST['Adresse']
+            Postal_Code = request.POST['Postal_Code']
+            employee_number = request.POST['employee_number']
+            TVA_number = request.POST['TVA_number']
 
-    return render(request, 'base_app/mover/mover_inscription_step1.html', {'mover_information': mover_information,
-                                                                           'moving_type1': moving_type1})
+            if Mover.objects.filter(company_name=request.POST.get('company_name')):
+                messages.error(request, 'Erreur ! Ce nom d\'entreprise existe déjà dans notre base de données !')
+                return redirect('mover_inscription')
+            elif Mover.objects.filter(company_phone_number=request.POST.get('company_phone_number')):
+                messages.error(request, 'Erreur ! Ce numéro de téléphone existe déjà dans notre base de données !')
+                return redirect('mover_inscription')
+            else:
+                # Mover table filling
+                # creation of the ref
+                characters = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+                characters.extend(list('1234567890'))
+                size = 10
+                ref = ''
+                for x in range(size):
+                    ref += random.choice(characters)
+                ref = ref
 
+                website = 0
+                company_statut = 0
+                company_description = 0
+                facebook_link = 0
+                instagram_link = 0
+                twitter_link = 0
+                linkedin_link = 0
+                logo = "/user/images/profil_image/random_image.png"
 
-def mover_inscription_step2(request, mover_pk):
-    mover_information = get_object_or_404(Mover, pk=mover_pk)
-    moving_type2 = Moving_Type2.objects.all()
-    if request.method == 'POST':
-        mover_id = request.POST.get('mover_id')
-        moving_type2_name = request.POST.getlist('moving_type2_name[]')
-        if request.POST.getlist('moving_type2_name[]'):
-            for data in moving_type2_name:
-                if Mover_Moving_Type2.objects.filter(moving_type2_name=data, mover=mover_information):
-                    messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
-                    return redirect('mover_inscription_step2', mover_pk=mover_id)
-                else:
-                    mover = get_object_or_404(Mover, id=request.POST.get('mover_id'))
-                    savedata = Mover_Moving_Type2(moving_type2_name=data, mover=mover)
-                    savedata.save()
-                    messages.success(request, 'Informations ajoutées avec succès !')
-            return redirect('mover_inscription_step3', mover_pk=mover_id)
-        else:
-            messages.error(request, 'Veuillez faire au moins une sélection !')
-            return redirect('mover_inscription_step2', mover_pk=mover_id)
-    return render(request, 'base_app/mover/mover_inscription_step2.html', {'mover_information': mover_information,
-                                                                           'moving_type2': moving_type2})
+                mover = Mover(ref=ref, company_name=company_name, Adresse=Adresse, City=City, country=country,
+                              company_phone_number=company_phone_number, Postal_Code=Postal_Code, employee_number=employee_number,
+                              TVA_number=TVA_number, website=website, company_statut=company_statut, company_description=
+                              company_description, facebook_link=facebook_link, instagram_link=instagram_link, twitter_link=twitter_link,
+                              linkedin_link=linkedin_link, logo=logo, user=user)
+                mover.save()
 
-
-def mover_inscription_step3(request, mover_pk):
-    mover_information = get_object_or_404(Mover, pk=mover_pk)
-    countries = Country.objects.all()
-    if request.method == 'POST':
-        country_name = request.POST.getlist('country_name[]')
-        mover_id = request.POST.get('mover_id')
-        if request.POST.getlist('country_name[]'):
-            for data in country_name:
-                if Mover_Country.objects.filter(country_name=data, mover=mover_information):
-                    messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
-                    return redirect('mover_inscription_step3', mover_pk=mover_id)
-                else:
-                    country = Country.objects.filter(name=data).last()
-                    mover = get_object_or_404(Mover, id=request.POST.get('mover_id'))
-                    savedata = Mover_Country(country_name=data, country=country, mover=mover)
-                    savedata.save()
-                    messages.success(request, 'Informations ajoutées avec succès !')
-            return redirect('mover_inscription_step4', mover_pk=mover_id)
-        else:
-            messages.error(request, 'Veuillez faire au moins une sélection !')
-            return redirect('mover_inscription_step3', mover_pk=mover_id)
-    return render(request, 'base_app/mover/mover_inscription_step3.html', {'mover_information': mover_information,
-                                                                           'countries': countries})
+                return redirect('mover_inscription_step2', new_user_id=user.id, mover_id=mover.id)
+    else:
+        messages.error(request, 'Utilisateur non reconnu !')
+        return redirect('mover_inscription')
+    return render(request, 'base_app/mover/mover_inscription_step1.html')
 
 
-def mover_inscription_step4(request, mover_pk):
-    mover_information = get_object_or_404(Mover, pk=mover_pk)
-    countries = Country.objects.all()
-    regions = RegionOrProvince.objects.all()
-    mover_countries = Mover_Country.objects.filter(mover=mover_information)
+def mover_inscription_step2(request, new_user_id, mover_id):
+    if get_object_or_404(User, id=new_user_id) and get_object_or_404(Mover, id=mover_id):
+        user = get_object_or_404(User, id=new_user_id)
+        mover_info = get_object_or_404(Mover, id=mover_id)
+        moving_type1 = Moving_Type1.objects.all()
 
-    if request.method == 'POST':
-        mover_id = request.POST.get('mover_id')
-        region_name = request.POST.getlist('region_name[]')
-        if request.POST.getlist('region_name[]'):
-            for data in region_name:
-                if Mover_Region.objects.filter(region_name=data, mover=mover_information):
-                    messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
-                    return redirect('mover_inscription_step4', mover_pk=mover_id)
-                else:
-                    region = RegionOrProvince.objects.filter(name=data).last()
-                    for country in countries:
-                        if country.id == region.country_id:
-                            country = Country.objects.filter(id=country.id).last()
-                            mover = get_object_or_404(Mover, id=request.POST.get('mover_id'))
-                            savedata = Mover_Region(region_name=data, region=region, country=country, mover=mover)
-                            savedata.save()
-                            messages.success(request,
-                                             'Felicitations, l\'inscription est presque terminée, il ne vous reste qu\'à renseigner'
-                                             ' les provinces ou les communes dans lesquelles vous intervenez !')
-            return redirect('preview')
-        else:
-            messages.error(request, 'Veuillez faire au moins une sélection !')
-            return redirect('mover_inscription_step4', mover_pk=mover_id)
-    return render(request, 'base_app/mover/mover_inscription_step4.html', {'mover_information': mover_information,
-                                                                           'countries': countries, 'regions': regions,
-                                                                           'mover_countries': mover_countries})
+        if request.method == 'POST':
+            moving_type1_name = request.POST.getlist('moving_type1_name[]')
+            if moving_type1_name:
+                # Filling Mover_Moving_Type1 table
+                for data in moving_type1_name:
+                    if Mover_Moving_Type1.objects.filter(moving_type1_name=data, mover=mover_info):
+                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
+                        return redirect('mover_inscription_step1', new_user_id=user.id, mover_id=mover_info.id)
+                    else:
+                        savedata = Mover_Moving_Type1(moving_type1_name=data, mover=mover_info)
+                        savedata.save()
+                return redirect('mover_inscription_step3', new_user_id=user.id, mover_id=mover_info.id)
+            else:
+                messages.error(request, 'Veuillez faire au moins une sélection !')
+                return redirect('mover_inscription_step2', new_user_id=user.id, mover_id=mover_info.id)
+    else:
+        messages.error(request, 'Utilisateur non reconnu !')
+        return redirect('mover_inscription')
+    return render(request, 'base_app/mover/mover_inscription_step2.html', {'moving_type1': moving_type1})
+
+
+def mover_inscription_step3(request, new_user_id, mover_id):
+    if get_object_or_404(User, id=new_user_id) and get_object_or_404(Mover, id=mover_id):
+        moving_type2 = Moving_Type2.objects.all()
+        user = get_object_or_404(User, id=new_user_id)
+        mover_info = get_object_or_404(Mover, id=mover_id)
+
+        if request.method == 'POST':
+            moving_type2_name = request.POST.getlist('moving_type2_name[]')
+            if moving_type2_name:
+                # Filling Mover_Moving_Type2 table
+                for data in moving_type2_name:
+                    if Mover_Moving_Type2.objects.filter(moving_type2_name=data, mover=mover_info):
+                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
+                        return redirect('mover_inscription_step2', new_user_id=user.id, mover_id=mover_info.id)
+                    else:
+                        savedata = Mover_Moving_Type2(moving_type2_name=data, mover=mover_info)
+                        savedata.save()
+                return redirect('mover_inscription_step4', new_user_id=user.id, mover_id=mover_info.id)
+            else:
+                messages.error(request, 'Veuillez faire au moins une sélection !')
+                return redirect('mover_inscription_step3', new_user_id=user.id, mover_id=mover_info.id)
+    else:
+        messages.error(request, 'Utilisateur non reconnu !')
+        return redirect('mover_inscription')
+    return render(request, 'base_app/mover/mover_inscription_step3.html', {'moving_type2': moving_type2})
+
+
+def mover_inscription_step4(request, new_user_id, mover_id):
+    if get_object_or_404(User, id=new_user_id) and get_object_or_404(Mover, id=mover_id):
+        countries = Country.objects.all()
+        user = get_object_or_404(User, id=new_user_id)
+        mover_info = get_object_or_404(Mover, id=mover_id)
+
+        if request.method == 'POST':
+            country_name = request.POST.getlist('country_name[]')
+            if country_name:
+                # Filling Mover_Moving_Type2 table
+                for data in country_name:
+                    if Mover_Country.objects.filter(country_name=data, mover=mover_info):
+                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
+                        return redirect('mover_inscription_step3', new_user_id=user.id, mover_id=mover_info.id)
+                    else:
+                        country_info = Country.objects.filter(name=data).last()
+                        savedata = Mover_Country(country_name=data, country=country_info, mover=mover_info)
+                        savedata.save()
+
+                messages.success(request,
+                                 'Félicitations, l\'inscription est terminée, il ne vous reste qu\'à renseigner'
+                                 ' les regions dans lesquelles vous allez intervenir !')
+                return redirect('login_user')
+
+            else:
+                messages.error(request, 'Veuillez faire au moins une sélection !')
+                return redirect('mover_inscription_step4', new_user_id=user.id, mover_id=mover_info.id)
+    else:
+        messages.error(request, 'Utilisateur non reconnu !')
+        return redirect('mover_inscription')
+    return render(request, 'base_app/mover/mover_inscription_step4.html', {'countries': countries})
 
 
 def contact_page(request):
@@ -235,7 +279,13 @@ def devis_page3(request, moving_type1_id, moving_type2_id, country_id, City_Depa
     moving_type1 = get_object_or_404(Moving_Type1, pk=moving_type1_id)
     moving_type2 = get_object_or_404(Moving_Type2, pk=moving_type2_id)
     country = get_object_or_404(Country, pk=country_id)
+    countries = Country.objects.all()
     if request.method == 'POST':
+        if request.POST.get('Country_Arrival'):
+            Country_Arrival = request.POST.get('Country_Arrival')
+        else:
+            Country_Arrival = 0
+
         City_Arrival = request.POST.get('City_Arrival')
         Adresse_Arrival = request.POST.get('Adresse_Arrival')
         Postal_Code_Arrival = request.POST.get('Postal_Code_Arrival')
@@ -248,8 +298,8 @@ def devis_page3(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                             City_Departure=City_Departure, Adresse_Departure=Adresse_Departure,
                             Postal_Code_Departure=Postal_Code_Departure
                             , Residence_Number_or_Name_Departure=Residence_Number_or_Name_Departure,
-                            Number_Room_Departure=
-                            Number_Room_Departure, Residence_Departure=Residence_Departure, City_Arrival=City_Arrival
+                            Number_Room_Departure=Number_Room_Departure, Residence_Departure=Residence_Departure,
+                            Country_Arrival=Country_Arrival, City_Arrival=City_Arrival
                             , Adresse_Arrival=Adresse_Arrival, Postal_Code_Arrival=Postal_Code_Arrival,
                             Residence_Number_or_Name_Arrival=
                             Residence_Number_or_Name_Arrival, Residence_Arrival=Residence_Arrival)
@@ -258,20 +308,21 @@ def devis_page3(request, moving_type1_id, moving_type2_id, country_id, City_Depa
             return redirect('devis_page3')
     return render(request, 'base_app/devis/devis_page3.html',
                   {'City_Departure': City_Departure, 'Adresse_Departure': Adresse_Departure,
-                   'Postal_Code_Departure': Postal_Code_Departure,
+                   'Postal_Code_Departure': Postal_Code_Departure, 'countries': countries,
                    'Residence_Number_or_Name_Departure': Residence_Number_or_Name_Departure,
                    'Number_Room_Departure': Number_Room_Departure, 'Residence_Departure':
-                       Residence_Departure})
+                       Residence_Departure, 'moving_type1_id': moving_type1_id})
 
 
 def devis_page4(request, moving_type1_id, moving_type2_id, country_id, City_Departure, Adresse_Departure,
                 Postal_Code_Departure,
-                Residence_Number_or_Name_Departure, Number_Room_Departure, Residence_Departure, City_Arrival,
-                Adresse_Arrival,
+                Residence_Number_or_Name_Departure, Number_Room_Departure, Residence_Departure, Country_Arrival,
+                City_Arrival, Adresse_Arrival,
                 Postal_Code_Arrival, Residence_Number_or_Name_Arrival, Residence_Arrival):
     moving_type1 = get_object_or_404(Moving_Type1, pk=moving_type1_id)
     moving_type2 = get_object_or_404(Moving_Type2, pk=moving_type2_id)
     country = get_object_or_404(Country, pk=country_id)
+
     if request.method == 'POST':
         firstname = request.POST.get('firstname')
         lastname = request.POST.get('lastname')
@@ -285,9 +336,9 @@ def devis_page4(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                             Postal_Code_Departure=Postal_Code_Departure
                             , Residence_Number_or_Name_Departure=Residence_Number_or_Name_Departure,
                             Number_Room_Departure=
-                            Number_Room_Departure, Residence_Departure=Residence_Departure, City_Arrival=City_Arrival
-                            , Adresse_Arrival=Adresse_Arrival, Postal_Code_Arrival=Postal_Code_Arrival,
-                            Residence_Number_or_Name_Arrival=
+                            Number_Room_Departure, Residence_Departure=Residence_Departure, Country_Arrival=
+                            Country_Arrival, City_Arrival=City_Arrival, Adresse_Arrival=Adresse_Arrival,
+                            Postal_Code_Arrival=Postal_Code_Arrival, Residence_Number_or_Name_Arrival=
                             Residence_Number_or_Name_Arrival, Residence_Arrival=Residence_Arrival, firstname=firstname,
                             lastname=
                             lastname, email=email, phone_number=phone_number)
@@ -297,8 +348,8 @@ def devis_page4(request, moving_type1_id, moving_type2_id, country_id, City_Depa
     return render(request, 'base_app/devis/devis_page4.html',
                   {'City_Departure': City_Departure, 'Adresse_Departure': Adresse_Departure,
                    'Postal_Code_Departure': Postal_Code_Departure,
-                   'Residence_Number_or_Name_Departure': Residence_Number_or_Name_Departure,
-                   'City_Arrival': City_Arrival, 'Adresse_Arrival': Adresse_Arrival,
+                   'Residence_Number_or_Name_Departure': Residence_Number_or_Name_Departure, 'Country_Arrival':
+                       Country_Arrival, 'City_Arrival': City_Arrival, 'Adresse_Arrival': Adresse_Arrival,
                    'Postal_Code_Arrival': Postal_Code_Arrival, 'Residence_Number_or_Name_Arrival':
                        Residence_Number_or_Name_Arrival, 'Residence_Arrival': Residence_Arrival,
                    'Residence_Departure': Residence_Departure, 'Number_Room_Departure':
@@ -307,13 +358,15 @@ def devis_page4(request, moving_type1_id, moving_type2_id, country_id, City_Depa
 
 def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Departure, Adresse_Departure,
                 Postal_Code_Departure,
-                Residence_Number_or_Name_Departure, Number_Room_Departure, Residence_Departure, City_Arrival,
-                Adresse_Arrival,
+                Residence_Number_or_Name_Departure, Number_Room_Departure, Residence_Departure, Country_Arrival,
+                City_Arrival, Adresse_Arrival,
                 Postal_Code_Arrival, Residence_Number_or_Name_Arrival, Residence_Arrival, firstname, lastname, email,
                 phone_number):
     moving_type1 = get_object_or_404(Moving_Type1, pk=moving_type1_id)
     moving_type2 = get_object_or_404(Moving_Type2, pk=moving_type2_id)
-    country = get_object_or_404(Country, pk=country_id)
+    country_departure_request = get_object_or_404(Country, pk=country_id)
+    current_date = datetime.datetime.today()
+
     if request.method == 'POST':
         furniture_assembly_disassembly = request.POST.get('furniture_assembly_disassembly')
         furniture_storage = request.POST.get('furniture_storage')
@@ -356,9 +409,16 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
             moving_date1 = "1000-10-10"
             moving_date2 = "1000-10-10"
 
+            if Country_Arrival == "0":
+                country_arrival_name = ""
+            else:
+                country_arrival_info = Country.objects.filter(id=Country_Arrival).last()
+                country_arrival_name = country_arrival_info.name
+
             savedata = Quote_Request(ref=ref, City_Departure=City_Departure, Postal_Code_Departure=Postal_Code_Departure,
                                      Adresse_Departure=Adresse_Departure, Residence_Number_or_Name_Departure=
-                                     Residence_Number_or_Name_Departure, City_Arrival=City_Arrival, Adresse_Arrival=Adresse_Arrival,
+                                     Residence_Number_or_Name_Departure, Country_Arrival=country_arrival_name,
+                                     City_Arrival=City_Arrival, Adresse_Arrival=Adresse_Arrival,
                                      Residence_Number_or_Name_Arrival=Residence_Number_or_Name_Arrival, Postal_Code_Arrival=
                                      Postal_Code_Arrival, Residence_Departure=Residence_Departure, Number_Room_Departure=
                                      Number_Room_Departure, Residence_Arrival=Residence_Arrival, packing_service=packing_service,
@@ -366,8 +426,46 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                      furniture_assembly_disassembly, furniture_storage=furniture_storage, firstname=firstname,
                                      lastname=lastname, email=email, phone_number=phone_number, Additional_informations=
                                      Additional_informations, moving_date=moving_date, moving_date1=moving_date1, moving_date2=
-                                     moving_date2, moving_type1=moving_type1, moving_type2=moving_type2, country=country)
-            savedata.save()
+                                     moving_date2, moving_type1=moving_type1, moving_type2=moving_type2, country=
+                                     country_departure_request)
+
+            # Automatic distribution of the quote request to the movers
+            if moving_type1.name == "National":
+                moving_type1_national = Moving_Type1.objects.filter(name="National")
+                movers_countries = Mover_Country.objects.all()
+                countries = Country.objects.all()
+                movers = Mover.objects.all()
+
+                for mover in movers:
+                    for mover_country in movers_countries:
+                        if mover_country.mover_id == mover.id:
+
+                            for country in countries:
+                                if country.id == mover_country.country_id:
+
+                                    # we select only the movers that one of the departure countries are the same to the
+                                    # departure country of the request
+                                    if mover_country.country_name == country_departure_request.name \
+                                            and mover_country.departure == True:
+                                        movers_quotes_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id)
+
+                                        if movers_quotes_requests:
+                                            for mover_request in movers_quotes_requests:
+
+                                                #we verify if the mover didnt reach his max quote request of the day
+                                                if mover_request.created.date() == current_date.date():
+
+                                                    number_quote_request_received = Mover_Quote_Request.objects.filter(
+                                                        mover_id=mover.id).count()
+
+                                                    if number_quote_request_received < mover.number_max_quote_request:
+                                                        print(number_quote_request_received)
+                                                        print(mover.company_name)
+
+                                                        #number_request_received_per_day
+
+
+            #savedata.save()
             return redirect('devis_page6')
 
         elif request.POST.get('moving_date1') and request.POST.get('moving_date1'):
@@ -375,24 +473,34 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
             moving_date1 = request.POST.get('moving_date1')
             moving_date2 = request.POST.get('moving_date2')
 
-            savedata = Quote_Request(ref=ref, City_Departure=City_Departure, Postal_Code_Departure=Postal_Code_Departure,
+            country_arrival_info = Country.objects.filter(id=Country_Arrival).last()
+
+            savedata = Quote_Request(ref=ref, City_Departure=City_Departure,
+                                     Postal_Code_Departure=Postal_Code_Departure,
                                      Adresse_Departure=Adresse_Departure, Residence_Number_or_Name_Departure=
-                                     Residence_Number_or_Name_Departure, City_Arrival=City_Arrival, Adresse_Arrival=Adresse_Arrival,
-                                     Residence_Number_or_Name_Arrival=Residence_Number_or_Name_Arrival, Postal_Code_Arrival=
-                                     Postal_Code_Arrival, Residence_Departure=Residence_Departure, Number_Room_Departure=
-                                     Number_Room_Departure, Residence_Arrival=Residence_Arrival, packing_service=packing_service,
+                                     Residence_Number_or_Name_Departure, Country_Arrival=country_arrival_info.name,
+                                     City_Arrival=City_Arrival, Adresse_Arrival=Adresse_Arrival,
+                                     Residence_Number_or_Name_Arrival=Residence_Number_or_Name_Arrival,
+                                     Postal_Code_Arrival=
+                                     Postal_Code_Arrival, Residence_Departure=Residence_Departure,
+                                     Number_Room_Departure=
+                                     Number_Room_Departure, Residence_Arrival=Residence_Arrival,
+                                     packing_service=packing_service,
                                      packaging_materials=packaging_materials, furniture_assembly_disassembly=
-                                     furniture_assembly_disassembly, furniture_storage=furniture_storage, firstname=firstname,
+                                     furniture_assembly_disassembly, furniture_storage=furniture_storage,
+                                     firstname=firstname,
                                      lastname=lastname, email=email, phone_number=phone_number, Additional_informations=
-                                     Additional_informations, moving_date=moving_date, moving_date1=moving_date1, moving_date2=
-                                     moving_date2, moving_type1=moving_type1, moving_type2=moving_type2, country=country)
+                                     Additional_informations, moving_date=moving_date, moving_date1=moving_date1,
+                                     moving_date2=
+                                     moving_date2, moving_type1=moving_type1, moving_type2=moving_type2,
+                                     country=country_departure_request)
             savedata.save()
             return redirect('devis_page6')
 
         else:
             messages.error(request, 'Veuillez choisir une date de déménagement !')
             return redirect('devis_page5', moving_type1_id=moving_type1.id, moving_type2_id=moving_type2.id,
-                            country_id=country.id,
+                            country_id=country_departure_request.id,
                             City_Departure=City_Departure, Adresse_Departure=Adresse_Departure,
                             Postal_Code_Departure=Postal_Code_Departure
                             , Residence_Number_or_Name_Departure=Residence_Number_or_Name_Departure,

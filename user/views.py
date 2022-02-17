@@ -20,10 +20,17 @@ def login_user(request):
     else:
         user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
         if user is None:
-            return render(request, 'user/login_user.html', {'form': AuthenticationForm(), 'error': 'Votre nom d\'utilisateur et mot de passe ne correspondent pas !'})
+            return render(request, 'user/login_user.html', {'form': AuthenticationForm(),
+                                                            'error': 'Votre nom d\'utilisateur et mot de passe '
+                                                                     'ne correspondent pas !'})
         else:
             login(request, user)
-            return redirect('preview')
+            if Mover.objects.filter(user_id=request.user.id).last():
+                return redirect('preview')
+            else:
+                messages.error(request, 'Profil non disponible !')
+                logout(request)
+                return redirect('login_user')
 
 
 def sign_up_user(request):
@@ -116,89 +123,14 @@ def settings(request):
     mover_regions = Mover_Region.objects.filter(mover=mover)
     mover_moving_types2 = Mover_Moving_Type2.objects.filter(mover=mover)
     mover_moving_types2_number = Mover_Moving_Type2.objects.filter(mover=mover).count()
-    mover_moving_types1 = Mover_Moving_Type1.objects.filter(mover=mover)
     mover_moving_types1_number = Mover_Moving_Type1.objects.filter(mover=mover).count()
     moving_type1 = Moving_Type1.objects.all()
     moving_type2 = Moving_Type2.objects.all()
 
-    if 'add_country' in request.POST:
-        if request.method == 'POST':
-            country_name = request.POST.getlist('country_name[]')
-            if request.POST.getlist('country_name[]'):
-                for data in country_name:
-                    if Mover_Country.objects.filter(country_name=data, mover=mover):
-                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
-                        return redirect('settings')
-                    else:
-                        country = Country.objects.filter(name=data).last()
-                        savedata = Mover_Country(country_name=data, country=country, mover=mover)
-                        savedata.save()
-                        messages.success(request, 'Nouveau pays ajouté avec succès !')
-                return redirect('settings')
-            else:
-                messages.error(request, 'Veuillez faire au moins une sélection !')
-                return redirect('settings')
-
-    if 'add_region' in request.POST:
-        if request.method == 'POST':
-            region_name = request.POST.get('region_name')
-            if request.POST.get('region_name'):
-                if Mover_Region.objects.filter(region_name=region_name, mover=mover):
-                    messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
-                    return redirect('settings')
-                else:
-                    region = RegionOrProvince.objects.filter(name=region_name).last()
-                    for country in countries:
-                        if region.country_id == country.id:
-                            country = Country.objects.filter(id=country.id).last()
-                            mover = get_object_or_404(Mover, id=mover.id)
-                            savedata = Mover_Region(region_name=region_name, region=region, country=country, mover=mover)
-                            savedata.save()
-                    messages.success(request, 'Nouvelle region ajoutée avec succès !')
-                return redirect('settings')
-            else:
-                messages.error(request, 'Veuillez faire au moins une sélection !')
-                return redirect('settings')
-
-    if 'add_moving_type1' in request.POST:
-        if request.method == 'POST':
-            moving_type1_name = request.POST.getlist('moving_type1_name[]')
-            if request.POST.getlist('moving_type1_name[]'):
-                for data in moving_type1_name:
-                    if Mover_Moving_Type1.objects.filter(moving_type1_name=data, mover=mover):
-                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
-                        return redirect('settings')
-                    else:
-                        savedata = Mover_Moving_Type1(moving_type1_name=data, mover=mover)
-                        savedata.save()
-                        messages.success(request, 'Nouveau type de déménagement ajouté avec succès !')
-                return redirect('settings')
-            else:
-                messages.error(request, 'Veuillez faire au moins une sélection !')
-                return redirect('settings')
-
-    if 'add_moving_type2' in request.POST:
-        if request.method == 'POST':
-            moving_type2_name = request.POST.getlist('moving_type2_name[]')
-            if request.POST.getlist('moving_type2_name[]'):
-                for data in moving_type2_name:
-                    if Mover_Moving_Type2.objects.filter(moving_type2_name=data, mover=mover):
-                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
-                        return redirect('settings')
-                    else:
-                        savedata = Mover_Moving_Type2(moving_type2_name=data, mover=mover)
-                        savedata.save()
-                        messages.success(request, 'Nouveau type de déménagement ajouté avec succès !')
-                return redirect('settings')
-            else:
-                messages.error(request, 'Veuillez faire au moins une sélection !')
-                return redirect('settings')
-
     return render(request, 'user/profile/settings.html', {'mover': mover, 'user_info': user_info, 'countries': countries,
                                                           'regions': regions, 'mover_countries': mover_countries,
                                                           'mover_regions': mover_regions, 'mover_countries_number':
-                                                          mover_countries_number, 'mover_moving_types1':
-                                                          mover_moving_types1, 'mover_moving_types2': mover_moving_types2,
+                                                          mover_countries_number,'mover_moving_types2': mover_moving_types2,
                                                           'moving_type1': moving_type1, 'mover_moving_types1_number':
                                                           mover_moving_types1_number, 'mover_moving_types2_number':
                                                           mover_moving_types2_number, 'moving_type2': moving_type2})
@@ -356,6 +288,39 @@ def user_password_change(request):
     return render(request, 'user/profile/user_password_change.html', {'form': form})
 
 
+#################################################  SETTINGS START  #####################################################
+
+@login_required
+def area_intervention(request):
+    mover = Mover.objects.filter(user_id=request.user.id).last()
+    countries = Country.objects.all()
+    mover_countries = Mover_Country.objects.filter(mover=mover)
+    mover_countries_number = Mover_Country.objects.filter(mover=mover).count()
+
+    if request.method == 'GET':
+        return render(request, 'user/mover/settings/area_intervention.html',
+                      {'mover': mover, 'countries': countries, 'mover_countries': mover_countries,
+                       'mover_countries_number': mover_countries_number})
+
+    if 'add_country' in request.POST:
+        if request.method == 'POST':
+            country_name = request.POST.getlist('country_name[]')
+            if request.POST.getlist('country_name[]'):
+                for data in country_name:
+                    if Mover_Country.objects.filter(country_name=data, mover=mover):
+                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
+                        return redirect('area_intervention')
+                    else:
+                        country = Country.objects.filter(name=data).last()
+                        savedata = Mover_Country(country_name=data, country=country, mover=mover)
+                        savedata.save()
+                        messages.success(request, 'Nouveau pays ajouté avec succès !')
+                return redirect('area_intervention')
+            else:
+                messages.error(request, 'Veuillez faire au moins une sélection !')
+                return redirect('area_intervention')
+
+
 @login_required
 def delete_mover_country(request, mover_country_pk, mover_pk):
     mover = get_object_or_404(Mover, pk=mover_pk)
@@ -368,22 +333,36 @@ def delete_mover_country(request, mover_country_pk, mover_pk):
     if request.method == 'POST':
         mover_country.delete()
         messages.success(request, 'Suppression effectuée !')
-        return redirect('settings')
+        return redirect('area_intervention')
 
 
 @login_required
-def delete_mover_region(request, mover_region_pk, mover_pk):
-    mover = get_object_or_404(Mover, pk=mover_pk)
-    mover_region = get_object_or_404(Mover_Region, pk=mover_region_pk)
-
+def moving_type(request):
+    mover = Mover.objects.filter(user_id=request.user.id).last()
+    mover_moving_types1 = Mover_Moving_Type1.objects.filter(mover=mover)
+    mover_moving_types1_number = Mover_Moving_Type1.objects.filter(mover=mover).count()
+    moving_type1 = Moving_Type1.objects.all()
     if request.method == 'GET':
-        form = EditMoverRegionForm(instance=mover_region)
-        return render(request, 'user/mover/settings/delete_mover_region.html',
-                      {'mover_region': mover_region, 'form': form, 'mover': mover})
-    if request.method == 'POST':
-        mover_region.delete()
-        messages.success(request, 'Suppression effectuée !')
-        return redirect('settings')
+        return render(request, 'user/mover/settings/moving_type.html',
+                      {'mover': mover, 'mover_moving_types1': mover_moving_types1, 'moving_type1': moving_type1,
+                       'mover_moving_types1_number': mover_moving_types1_number})
+
+    if 'add_moving_type1' in request.POST:
+        if request.method == 'POST':
+            moving_type1_name = request.POST.getlist('moving_type1_name[]')
+            if request.POST.getlist('moving_type1_name[]'):
+                for data in moving_type1_name:
+                    if Mover_Moving_Type1.objects.filter(moving_type1_name=data, mover=mover):
+                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
+                        return redirect('moving_type')
+                    else:
+                        savedata = Mover_Moving_Type1(moving_type1_name=data, mover=mover)
+                        savedata.save()
+                        messages.success(request, 'Nouveau type de déménagement ajouté avec succès !')
+                return redirect('moving_type')
+            else:
+                messages.error(request, 'Veuillez faire au moins une sélection !')
+                return redirect('moving_type')
 
 
 @login_required
@@ -398,7 +377,36 @@ def delete_mover_moving_type1(request, moving_type_pk, mover_pk):
     if request.method == 'POST':
         mover_moving_tytpe.delete()
         messages.success(request, 'Suppression effectuée !')
-        return redirect('settings')
+        return redirect('moving_type')
+
+
+@login_required
+def customer_type(request):
+    mover = Mover.objects.filter(user_id=request.user.id).last()
+    mover_moving_types2 = Mover_Moving_Type2.objects.filter(mover=mover)
+    mover_moving_types2_number = Mover_Moving_Type2.objects.filter(mover=mover).count()
+    moving_type2 = Moving_Type2.objects.all()
+    if request.method == 'GET':
+        return render(request, 'user/mover/settings/customer_type.html',
+                      {'mover': mover, 'mover_moving_types2': mover_moving_types2, 'moving_type2': moving_type2,
+                       'mover_moving_types2_number': mover_moving_types2_number})
+
+    if 'add_moving_type2' in request.POST:
+        if request.method == 'POST':
+            moving_type2_name = request.POST.getlist('moving_type2_name[]')
+            if request.POST.getlist('moving_type2_name[]'):
+                for data in moving_type2_name:
+                    if Mover_Moving_Type2.objects.filter(moving_type2_name=data, mover=mover):
+                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
+                        return redirect('customer_type')
+                    else:
+                        savedata = Mover_Moving_Type2(moving_type2_name=data, mover=mover)
+                        savedata.save()
+                        messages.success(request, 'Nouveau type de déménagement ajouté avec succès !')
+                return redirect('customer_type')
+            else:
+                messages.error(request, 'Veuillez faire au moins une sélection !')
+                return redirect('customer_type')
 
 
 @login_required
@@ -412,5 +420,68 @@ def delete_mover_moving_type2(request, moving_type_pk, mover_pk):
                       {'mover_moving_type2': mover_moving_type2, 'form': form, 'mover': mover})
     if request.method == 'POST':
         mover_moving_type2.delete()
+        messages.success(request, 'Suppression effectuée !')
+        return redirect('customer_type')
+
+
+@login_required
+def modify_country_departure(request, mover_country_pk):
+    mover_country = get_object_or_404(Mover_Country, pk=mover_country_pk)
+    form = EditMoverCountryForm(instance=mover_country)
+
+    if request.method == 'POST':
+        form = EditMoverCountryForm(request.POST, instance=mover_country)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Modification effectuée !')
+            return redirect('area_intervention')
+
+    return render(request, 'user/mover/settings/modify_country_departure.html', {'mover_country': mover_country,
+                                                                                 'form': form})
+
+
+@login_required
+def modify_country_arrival(request, mover_country_pk):
+    mover_country = get_object_or_404(Mover_Country, pk=mover_country_pk)
+    form = EditMoverCountryForm(instance=mover_country)
+
+    if request.method == 'POST':
+        form = EditMoverCountryForm(request.POST, instance=mover_country)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Modification effectuée !')
+            return redirect('area_intervention')
+
+    return render(request, 'user/mover/settings/modify_country_arrival.html', {'mover_country': mover_country,
+                                                                                 'form': form})
+
+
+@login_required
+def quote_request_settings(request):
+    mover = Mover.objects.filter(user_id=request.user.id).last()
+    form = Mover_Form(instance=mover)
+
+    if request.method == 'POST':
+        form = Mover_Form(request.POST, instance=mover)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.save()
+            messages.success(request, 'Modification effectuée !')
+            return redirect('quote_request_settings')
+
+    return render(request, 'user/mover/settings/quote_request_settings.html', {'mover': mover, 'form': form})
+
+#################################################  SETTINGS END    #####################################################
+@login_required
+def delete_mover_region(request, mover_region_pk, mover_pk):
+    mover = get_object_or_404(Mover, pk=mover_pk)
+    mover_region = get_object_or_404(Mover_Region, pk=mover_region_pk)
+
+    if request.method == 'GET':
+        form = EditMoverRegionForm(instance=mover_region)
+        return render(request, 'user/mover/settings/delete_mover_region.html',
+                      {'mover_region': mover_region, 'form': form, 'mover': mover})
+    if request.method == 'POST':
+        mover_region.delete()
         messages.success(request, 'Suppression effectuée !')
         return redirect('settings')

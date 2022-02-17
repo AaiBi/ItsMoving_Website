@@ -1,0 +1,346 @@
+{% extends 'base_app/base.html' %}
+
+{% block title %} Paramètres {% endblock %}
+
+{% load static %}
+
+{% block css_styles %}
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- **************** MAIN CONTENT START **************** -->
+    <!-- =======================
+
+	Page Banner START -->
+    <section class="pt-0">
+        <!-- Main banner background image -->
+        <div class="container-fluid px-0">
+            <div class="bg-blue h-100px h-md-200px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
+            </div>
+        </div>
+        <div class="container mt-n4">
+            <div class="row">
+                <!-- Profile banner START -->
+                <div class="col-12">
+                    <!-- Advanced filter responsive toggler START -->
+                    <!-- Divider -->
+                    <hr class="d-xl-none">
+                    <div class="col-12 col-xl-3 d-flex justify-content-between align-items-center">
+                        <a class="h6 mb-0 fw-bold d-xl-none" href="#">Menu</a>
+                        <button class="btn btn-primary d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                            <i class="fas fa-sliders-h"></i>
+                        </button>
+                    </div>
+                    <!-- Advanced filter responsive toggler END -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =======================
+    Page Banner END -->
+
+	{% if error %}
+		<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+			{{ error }}
+		</div>
+	{% else %}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+					{{message}}
+				</div>
+			{% endfor %}
+		{% endif %}
+	{% endif %}
+
+    <!-- =======================
+	Page content START -->
+	<section class="pt-2">
+		<div class="container">
+			<div class="row">
+				<!-- Right sidebar START -->
+				<div class="col-xl-3">
+					<!-- Responsive offcanvas body START -->
+					<nav class="navbar navbar-light navbar-expand-xl mx-0">
+						<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+							<!-- Offcanvas header -->
+							<div class="offcanvas-header bg-light">
+								<h5 class="offcanvas-title" id="offcanvasNavbarLabel">Mon profil</h5>
+								<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+							</div>
+							<!-- Offcanvas body -->
+							<div class="offcanvas-body p-3 p-xl-0">
+								<div class="bg-dark border rounded-3 pb-0 p-3 w-100">
+									<!-- Dashboard menu -->
+									<div class="list-group list-group-dark list-group-borderless">
+                                        <a class="list-group-item" href="{% url 'profile' %}"><i class="bi bi-ui-checks-grid fa-fw me-2"></i>
+                                            Tableau de bord
+                                        </a>
+										<a class="list-group-item" href="{% url 'preview' %}"><i class="bi bi-person-lines-fill fa-fw me-2"></i>
+											Aperçu du profil
+										</a>
+										<a class="list-group-item" href="{% url 'statistic' %}"><i class="bi bi-graph-up fa-fw me-2"></i>
+                                            Évolution de vos activités
+                                        </a>
+                                        <a class="list-group-item" href="{% url 'reviews' %}"><i class="bi bi-star fa-fw me-2"></i>
+                                            Avis des clients
+                                        </a>
+                                        <a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
+                                            Facturation
+                                        </a>
+										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
+											Demandes de devis
+										</a>
+										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
+											Configuration du profil
+										</a>
+										<a class="list-group-item active" href="{% url 'settings' %}"><i class="bi bi-gear fa-fw me-2"></i>
+											Paramètres
+										</a>
+										<a class="list-group-item" href="{% url 'user_password_change' %}"><i class="bi bi-lock fa-fw me-2"></i>
+											Mot de passe
+										</a>
+										<form action="{% url 'logout_user' %}" method="POST">
+                            				{% csrf_token %}
+											<button type="submit" class="list-group-item text-danger bg-danger-soft-hover">
+												<i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion
+											</button>
+                        				</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</nav>
+					<!-- Responsive offcanvas body END -->
+				</div>
+				<!-- Right sidebar END -->
+
+				<!-- Main content START -->
+				<div class="col-xl-9">
+
+					<!-- Counter boxes START -->
+					<div class="row g-4">
+						<!-- Counter item -->
+						<div class="col-sm-12">
+							<a href="{% url 'area_intervention' %}" class="d-flex justify-content-center align-items-center p-4 bg-warning bg-opacity-15 rounded-3">
+								<span class="display-6 text-warning mb-0">
+									<i class='fa fa-globe fa-fw'></i>
+								</span>
+								<div class="ms-4">
+									<h3 class="card-header-title mb-0">Pays d'intervention</h3>
+								</div>
+							</a>
+						</div>
+					</div>
+					<!-- Counter boxes END -->
+
+					<!-- Edit profile START -->
+					<div class="card border rounded-3">
+						<!-- Card body START -->
+						<div class="card-body">
+							<div class="card position-relative d-sm-flex bg-opacity-10">
+								<!-- Card body START -->
+								<div class="card-body">
+									<span class="text-info">
+										*<span class="text-danger">Départ</span> constitue la liste des pays dont
+										les départs de déménagements seront les pays définis*
+									</span></br>
+									<span class="text-info">
+										*<span class="text-danger">Arrivée</span> constitue la liste des pays dont
+										les destinations finales des déménagements seront les pays définis*
+									</span></br>
+									<span class="text-danger">
+										*La modification se fait en appuyant directement sur le bouton dans la colonne de
+										<span class="text-success">Départ</span> ou d'<span class="text-success">Arrivée</span>*
+									</span>
+									<p></p>
+									<div class="table-responsive-lg border-0">
+										<table class="table table-dark-gray align-middle p-4 mb-0 table-hover">
+											<!-- Table head -->
+											<thead align="center">
+												<tr>
+													<th scope="col" class="border-0 rounded-start">Pays</th>
+													<th scope="col" class="border-0 rounded-start">Départ(s)</th>
+													<th scope="col" class="border-0 rounded-start">Arrivée(s)</th>
+													<th scope="col" class="border-0 rounded-end">Action</th>
+												</tr>
+											</thead>
+
+											<!-- Table body START -->
+											<tbody align="center">
+												<!-- Table item -->
+												{% for country in countries %}
+													{% for mover_country in mover_countries %}
+														{% if mover_country.country_id == country.id %}
+															<tr>
+																<!-- Course item -->
+																<td>
+																	<center>{{country.name}}</center>
+																</td>
+																<td>
+																	{% if mover_country.departure == False %}
+																		<a href="{% url 'modify_country_departure' mover_country.id %}" class="btn btn-sm btn-danger-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Ce pays n'est pas dans la liste de Départ, appuyer pour modifier !">
+																			<i class="fa fa-check"></i>
+																		</a>
+																	{% else %}
+																		<a href="{% url 'modify_country_departure' mover_country.id %}" class="btn btn-sm btn-success-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Ce pays est dans la liste de Départ, appuyer pour modifier !">
+																			<i class="fa fa-check"></i>
+																		</a>
+																	{% endif %}
+																</td>
+																<td>
+																	{% if mover_country.arrival == False %}
+																		<a href="{% url 'modify_country_arrival' mover_country.id %}" class="btn btn-sm btn-danger-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Ce pays n'est pas dans la liste d'Arrivée, appuyer pour modifier !">
+																			<i class="fa fa-check"></i>
+																		</a>
+																	{% else %}
+																		<a href="{% url 'modify_country_arrival' mover_country.id %}" class="btn btn-sm btn-success-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Ce pays est dans la liste d'Arrivée, appuyer pour modifier !">
+																			<i class="fa fa-check"></i>
+																		</a>
+																	{% endif %}
+																</td>
+																<!-- Action item -->
+																<td>
+																	<a href="{% url 'delete_mover_country' mover_country.id mover.id %}" class="btn btn-sm btn-danger-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Appuyer pour supprimer">
+																		<i class="fas fa-fw fa-times"></i>
+																	</a>
+																</td>
+															</tr>
+														{% endif %}
+													{% endfor %}
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+
+									{% if mover_countries_number != 5 %}
+										<hr>
+										<!-- Form START -->
+										<form class="row g-3 mt-2 position-relative z-index-9" method="POST">
+											{% csrf_token %}
+											<!-- Company Name -->
+											<div class="col-lg-12">
+												<div class="form-check">
+													{% for data in countries %}
+														<input class="form-check-input" type="checkbox" value="{{data.name}}" name="country_name[]"/>
+														<label class="form-check-label">
+															<h5>{{data.name}}</h5>
+														</label></br>
+													{% endfor %}
+												</div>
+											</div>
+											</br>
+
+											<!-- Button -->
+											<div class="col-12" align="center">
+												<button type="submit" name="add_country" value="add_country" class="btn btn-primary mb-0">Ajouter un autre pays</button>
+											</div>
+										</form>
+										<!-- Form END -->
+									{% endif %}
+								</div>
+								<!-- Card body END -->
+
+<!--								&lt;!&ndash; START &ndash;&gt;-->
+<!--									<div class="card border position-relative mb-4 d-sm-flex bg-primary bg-opacity-10 border border-primary p-3 rounded">-->
+<!--										&lt;!&ndash; Card header &ndash;&gt;-->
+<!--										<div class="card-header bg-primary bg-opacity-10 border-bottom">-->
+<!--											<h4 class="card-header-title mb-0">Regions d'intervention</h4>-->
+<!--										</div>-->
+<!--										&lt;!&ndash; Card body START &ndash;&gt;-->
+<!--										<div class="card-body">-->
+<!--											{% for country in countries %}-->
+<!--												{% for mover_country in mover_countries %}-->
+<!--													{% if mover_country.country_id == country.id %}-->
+<!--														<h5>{{country.name}}</h5>-->
+
+<!--														{% for mover_region in mover_regions %}-->
+<!--															{% for region in regions %}-->
+<!--																{% if mover_region.region_id == region.id %}-->
+
+<!--																	{% if mover_region.country_id == country.id %}-->
+<!--																		<a type="button" class="btn btn-primary badge bg-primary bg-opacity-10" href="{% url 'delete_mover_region' mover_region.id mover.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Message">-->
+<!--																			<h5 class="text-primary">{{region.name}}</h5>-->
+<!--																		</a>-->
+<!--																	{% endif %}-->
+
+<!--																{% endif %}-->
+<!--															{% endfor %}-->
+<!--														{% endfor %}-->
+
+<!--													{% endif %}-->
+<!--												{% endfor %}-->
+<!--											{% endfor %}-->
+
+<!--											<hr>-->
+<!--											&lt;!&ndash; Form START &ndash;&gt;-->
+<!--											<form class="row g-3 mt-2 position-relative z-index-9" method="POST">-->
+<!--												{% csrf_token %}-->
+<!--												&lt;!&ndash; region &ndash;&gt;-->
+<!--												<div class="col-sm-12 mb-3">-->
+<!--													<label class="form-label">Regions<sup class="text-danger ms-1">*</sup></label>-->
+<!--													<select class="form-select form-control" name="region_name" required="">-->
+<!--														<option selected disabled value="">-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
+<!--														{% for country in countries %}-->
+<!--															{% for region in regions %}-->
+<!--																{% if region.country_id == country.id %}-->
+<!--																	<option value="{{region.name}}" class="text-dark">{{region.name}} - {{country.name|upper}}</option>-->
+<!--																{% endif %}-->
+<!--															{% endfor %}-->
+<!--														{% endfor %}-->
+<!--													</select>-->
+<!--												</div>-->
+<!--												</br>-->
+
+<!--												&lt;!&ndash; Button &ndash;&gt;-->
+<!--												<div class="col-12" align="center">-->
+<!--													<button type="submit" name="add_region" value="add_region" class="btn btn-primary mb-0">Ajouter une region</button>-->
+<!--												</div>-->
+<!--											</form>-->
+<!--											&lt;!&ndash; Form END &ndash;&gt;-->
+<!--										</div>-->
+<!--										&lt;!&ndash; Card body END &ndash;&gt;-->
+<!--									</div>-->
+<!--									&lt;!&ndash; END &ndash;&gt;-->
+							</div>
+
+							</br></br></br></br></br>
+						</div>
+						<!-- Card body END -->
+					</div>
+					<!-- Edit profile END -->
+
+					{% if mover %}
+						<!-- =======================
+						Mover account START -->
+
+
+
+						<!-- =======================
+						End Mover account -->
+					{% else %}
+						<!-- =======================
+						Simple User account START -->
+
+						{%if user.is_authenticated %}
+
+
+						{% endif %}
+						<!-- =======================
+						End Simple User account -->
+					{% endif %}
+
+				</div>
+				<!-- Main content END -->
+			</div><!-- Row END -->
+		</div>
+	</section>
+	<!-- =======================
+	Page content END --></br></br></br></br></br></br></br></br></br></br></br>
+
+    <!-- **************** MAIN CONTENT END **************** -->
+
+
+{% endblock %}

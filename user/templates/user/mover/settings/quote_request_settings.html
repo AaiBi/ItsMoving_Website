@@ -1,6 +1,6 @@
 {% extends 'base_app/base.html' %}
 
-{% block title %} Paramètres - Modifications {% endblock %}
+{% block title %} Paramètres {% endblock %}
 
 {% load static %}
 
@@ -24,30 +24,6 @@
             <div class="row">
                 <!-- Profile banner START -->
                 <div class="col-12">
-                    <div class="card bg-transparent card-body p-0">
-                        <div class="row d-flex justify-content-between">
-							{% if not mover %}
-								{%if user.is_authenticated %}
-									<!-- Avatar -->
-									<div class="col-auto mt-4 mt-md-0">
-										<div class="avatar avatar-xxl mt-n3">
-											<img class="avatar-img rounded-circle border border-white border-3 shadow" src="{% static 'base_app/assets/images/avatar/01.png' %}" alt="">
-										</div>
-									</div>
-									<!-- Profile info -->
-									<div class="col d-md-flex justify-content-between align-items-center mt-4">
-                                <div>
-                                    <h1 class="my-1 fs-4">
-										{{user.username|capfirst}} <i class="bi bi-patch-check-fill text-info small"></i>
-									</h1>
-                                </div>
-                            </div>
-								{% endif %}
-							{% endif %}
-                        </div>
-                    </div>
-                    <!-- Profile banner END -->
-
                     <!-- Advanced filter responsive toggler START -->
                     <!-- Divider -->
                     <hr class="d-xl-none">
@@ -99,25 +75,21 @@
 								<div class="bg-dark border rounded-3 pb-0 p-3 w-100">
 									<!-- Dashboard menu -->
 									<div class="list-group list-group-dark list-group-borderless">
-										{% if mover %}
-											<a class="list-group-item" href="{% url 'profile' %}"><i class="bi bi-ui-checks-grid fa-fw me-2"></i>
-												Tableau de bord
-											</a>
-										{% endif %}
+                                        <a class="list-group-item" href="{% url 'profile' %}"><i class="bi bi-ui-checks-grid fa-fw me-2"></i>
+                                            Tableau de bord
+                                        </a>
 										<a class="list-group-item" href="{% url 'preview' %}"><i class="bi bi-person-lines-fill fa-fw me-2"></i>
 											Aperçu du profil
 										</a>
-										{% if mover %}
-											<a class="list-group-item" href="{% url 'statistic' %}"><i class="bi bi-graph-up fa-fw me-2"></i>
-												Évolution de vos activités
-											</a>
-											<a class="list-group-item" href="{% url 'reviews' %}"><i class="bi bi-star fa-fw me-2"></i>
-												Avis des clients
-											</a>
-											<a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
-												Facturation
-											</a>
-										{% endif %}
+										<a class="list-group-item" href="{% url 'statistic' %}"><i class="bi bi-graph-up fa-fw me-2"></i>
+                                            Évolution de vos activités
+                                        </a>
+                                        <a class="list-group-item" href="{% url 'reviews' %}"><i class="bi bi-star fa-fw me-2"></i>
+                                            Avis des clients
+                                        </a>
+                                        <a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
+                                            Facturation
+                                        </a>
 										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
 										</a>
@@ -148,38 +120,83 @@
 				<!-- Main content START -->
 				<div class="col-xl-9">
 
-					<nav aria-label="breadcrumb">
-                        <ol class="py-1 my-2 breadcrumb">
-							<li class="breadcrumb-item"></li>
-                            <li class="breadcrumb-item"><a href="{% url 'area_intervention' %}">Pays d'intervention</a></li>
-                        </ol>
-                    </nav>
-
-					{% if mover %}
-						<!-- Edit profile START -->
-						<div class="card border rounded-3">
-							<!-- Card header -->
-							<div class="card-header border-bottom">
-								<h3 class="card-header-title mb-0">Suppression</h3>
-							</div>
-							<!-- Card header END -->
-
-							<!-- Card body START -->
-							<div class="card-body">
-								<form method="POST">
-            						{% csrf_token %}
-									<h5 class="text-danger">
-										Voulez-vous vraiment supprimer ce type de déménagement
-										<span class="badge bg-info"><b>{{mover_moving_tytpe.moving_type1_name}}</b></span>
-										 ?
-									</h5></br>
-									<button type="submit" class="btn btn text-white d-block w-100 btn-danger">Supprimer</button>
-        						</form>
-							</div>
-							<!-- Card body END -->
+					<!-- Counter boxes START -->
+					<div class="row g-4">
+						<!-- Counter item -->
+						<div class="col-sm-12">
+							<a class="d-flex justify-content-center align-items-center p-4 bg-dark bg-opacity-10 rounded-3">
+								<span class="display-6 text-dark mb-0"><i class='fa fa-list fa-fw'></i></span>
+								<div class="ms-4">
+									<span class="mb-0 h5 fw-light">Devis</span>
+								</div>
+							</a>
 						</div>
-						<!-- Edit profile END -->
-					{% endif %}
+					</div>
+					<!-- Counter boxes END -->
+
+
+					<!-- Edit profile START -->
+					<div class="card border rounded-3">
+						<!-- Card body START -->
+						<div class="card-body">
+							<div class="card position-relative d-sm-flex bg-opacity-10">
+								<!-- Card body START -->
+								<div class="card-body">
+									<h4>
+										Le nombre limite de devis que vous pouvez recevoir par jour est de
+										<span class="text-info">{{mover.number_max_quote_request}}</span>
+									</h4>
+									<hr>
+
+									</br></br>
+									<form class="row g-3 mt-2 position-relative z-index-9" method="POST">
+											{% csrf_token %}
+											<!-- Company Name -->
+											<div class="col-lg-12">
+												<div class="form-check">
+													<label class="form-label text-opacity-50">
+														<h5>Demande de devis maximum par jour</h5>
+													</label>
+													<input type="number" class="form-control" name="number_max_quote_request" placeholder="Modifier le nombre maximum de devis que vous voulez recevoir par jour" required>
+												</div>
+											</div>
+
+											</br>
+											<input type="hidden" name="ref" value="{{mover.ref}}">
+											<input type="hidden" name="company_name" value="{{mover.company_name}}">
+											<input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
+											<input type="hidden" name="Adresse" value="{{mover.Adresse}}">
+											<input type="hidden" name="employee_number" value="{{mover.employee_number}}">
+											<input type="hidden" name="website" value="{{mover.website}}">
+											<input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
+											<input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
+											<input type="hidden" name="City" value="{{mover.City}}">
+											<input type="hidden" name="company_statut" value="{{mover.company_statut}}">
+											<input type="hidden" name="company_description" value="{{mover.company_description}}">
+
+											<input type="hidden" name="country" value="{{mover.country}}">
+
+											<input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
+											<input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
+											<input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
+											<input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
+											<input type="hidden" name="logo" value="{{mover.logo.url}}">
+											<input type="hidden" name="logo" value="{{mover.validated}}">
+											<input type="hidden" name="logo" value="{{mover.activated}}">
+											<!-- Button -->
+											<div class="col-12" align="center">
+												<button type="submit" class="btn btn-primary mb-0">Modifier</button>
+											</div>
+										</form>
+								</div>
+								<!-- Card body END -->
+							</div>
+
+							</br></br></br></br></br>
+						</div>
+						<!-- Card body END -->
+					</div>
+					<!-- Edit profile END -->
 
 				</div>
 				<!-- Main content END -->

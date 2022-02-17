@@ -41,7 +41,6 @@ class Moving_Type2(models.Model): #can be 'particulier' or 'professionnel'
 class Mover(models.Model):
     ref = models.CharField(max_length=30, default="")
     company_name = models.CharField(max_length=300)
-    company_email = models.EmailField()
     Adresse = models.CharField(max_length=300, default="")
     City = models.CharField(max_length=300, default="")
     country = models.CharField(max_length=300, default="")
@@ -52,12 +51,11 @@ class Mover(models.Model):
     company_description = models.TextField(default="")
     website = models.CharField(max_length=300, default="")
     company_statut = models.CharField(max_length=300, default="")
-
     facebook_link = models.CharField(max_length=500, default="")
     instagram_link = models.CharField(max_length=500, default="")
     twitter_link = models.CharField(max_length=500, default="")
     linkedin_link = models.CharField(max_length=500, default="")
-
+    number_max_quote_request = models.IntegerField(default=0)
     logo = models.ImageField(upload_to='base_app/images/', blank=True, default="")
     validated = models.BooleanField(default=False)
     activated = models.BooleanField(default=False)
@@ -85,6 +83,8 @@ class Mover_Moving_Type2(models.Model):
 
 class Mover_Country(models.Model):
     country_name = models.CharField(max_length=300)
+    departure = models.BooleanField(default=False)
+    arrival = models.BooleanField(default=False)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
     mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
 
@@ -103,6 +103,7 @@ class Quote_Request(models.Model):
     Postal_Code_Departure = models.IntegerField()
     Adresse_Departure = models.CharField(max_length=300)
     Residence_Number_or_Name_Departure = models.CharField(max_length=300)
+    Country_Arrival = models.CharField(max_length=300, default="")
     City_Arrival = models.CharField(max_length=300)
     Adresse_Arrival = models.CharField(max_length=300)
     Residence_Number_or_Name_Arrival = models.CharField(max_length=300)
@@ -130,3 +131,15 @@ class Quote_Request(models.Model):
 
     def __str__(self):
         return self.ref
+
+
+class Mover_Quote_Request(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE)
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
+
+
+class Number_Mover_Quote_Request_Per_Day(models.Model):
+    number_quote_received_the_same_day = models.IntegerField()
+    reception_date_quote_request = models.DateTimeField(auto_now_add=True)
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)

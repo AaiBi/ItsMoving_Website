@@ -46,7 +46,7 @@ class EditMoverCountryForm(forms.ModelForm):
     class Meta:
         model = Mover_Country
         fields = [
-            'country_name'
+            'country_name', 'departure', 'arrival'
         ]
 
 

@@ -6,7 +6,7 @@ class Mover_Form(forms.ModelForm):
     class Meta:
         model = Mover
         fields = [
-            'ref', 'company_name', 'company_email', 'company_phone_number', 'Adresse', 'employee_number',
+            'ref', 'company_name', 'company_phone_number', 'Adresse', 'employee_number', 'number_max_quote_request',
             'website', 'TVA_number', 'Postal_Code', 'City', 'company_statut', 'company_description', 'facebook_link',
             'instagram_link', 'twitter_link', 'linkedin_link', 'logo', 'country', 'validated', 'activated'
         ]

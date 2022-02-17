@@ -168,6 +168,20 @@
 							<!-- Form START -->
 							<form class="row g-3 position-relative" method="POST">
 								{% csrf_token %}
+								{% if moving_type1_id == 2 %}
+									<!--Country-->
+									<div class="col-md-12 bg-dark-input">
+										<label class="form-label text-white text-opacity-50">
+											Pays <span class="text-danger">*</span>
+										</label>
+										<select class="form-select form-control text-opacity-50" name="Country_Arrival" required="">
+											<option selected disabled value="">-------------------------</option>
+											{% for data in countries %}
+												<option value="{{data.id}}" class="text-dark">{{data.name}}</option>
+											{% endfor %}
+										</select>
+									</div>
+								{% endif %}
 								<!-- City -->
 								<div class="col-md-6 bg-dark-input">
 									<label class="form-label text-white text-opacity-50">Ville <span class="text-danger">*</span></label>

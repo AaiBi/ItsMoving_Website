@@ -169,7 +169,7 @@
                             </br>
 
                             <!-- Title -->
-                            <h3 class="mb-3" align="center">Sélectionner vos régions d'intervention</h3>
+                            <h3 class="mb-3" align="center">Sélectionnez vos pays d'intervention ?</h3>
                             <h6 class="text-danger" align="center">
                                 *Vos informations seront bien gardées et ne seront jamais partagées, elles serviront à vous
                                 donner le meilleur service possible !*
@@ -178,45 +178,23 @@
                             <!-- Form START -->
                             <form class="row g-3 mt-2 position-relative z-index-9" method="POST">
                                 {% csrf_token %}
-
-                                <div class="accordion accordion-icon accordion-shadow mt-4 text-start position-relative" id="accordionExample2">
-
-                                    {% for country in countries %}
-                                        {% for mover_country in mover_countries %}
-                                            {% if mover_country.country_name == country.name %}
-                                                <!-- Item -->
-                                                <div class="accordion-item mb-3">
-                                                    <h4 class="accordion-header font-base" id="heading-{{country.id}}">
-                                                        <button class="accordion-button fw-bold collapsed rounded pe-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{country.id}}" aria-expanded="false" aria-controls="collapse-{{country.id}}">
-                                                            {{country.name}}
-                                                        </button>
-                                                    </h4>
-                                                    <!-- Body -->
-                                                    <div id="collapse-{{country.id}}" class="accordion-collapse collapse" aria-labelledby="heading-{{country.id}}" data-bs-parent="#accordionExample2">
-                                                        <div class="accordion-body mt-3">
-                                                            <p>
-                                                                <div class="form-check">
-                                                                    {% for region in regions %}
-                                                                        {% if region.country_id == country.id %}
-                                                                            <input class="form-check-input chkvalues" type="checkbox" value="{{region.name}}" name="region_name[]"/>
-                                                                            <label class="form-check-label">
-                                                                                <h5>{{region.name}}</h5>
-                                                                            </label></br>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% endif %}
+                                <!-- Company Name -->
+                                <div class="col-lg-12">
+                                    <div class="form-check">
+                                        {% for data in countries %}
+                                            <input class="form-check-input chkvalues" type="checkbox" value="{{data.name}}" name="country_name[]"/>
+                                            <label class="form-check-label">
+                                                <h4>{{data.name}}</h4>
+                                            </label></br>
                                         {% endfor %}
-                                    {% endfor %}
-
+                                    </div>
                                 </div>
 
                                 <!-- other informations -->
+                                <input type="text" name="name" id="txtvalues"/>
                                 <input type="hidden" name="mover_id" value="{{mover_information.id}}">
+                                </br>
+
                                 <!-- Button -->
                                 <div class="col-12" align="center">
                                     <button type="submit" class="btn btn-primary mb-0">Terminer</button>

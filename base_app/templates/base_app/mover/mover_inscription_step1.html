@@ -167,27 +167,51 @@
                             </div>
                             </br>
 
-                            <h4 class="mb-3">Êtes-vous intéressé par les déménagements nationaux, internationaux ou les deux ?</h4>
+                            <h4 class="mb-3" align="center">Informations sur votre entreprise</h4>
 
                             <!-- Form START -->
                             <form class="row g-3 mt-2 position-relative z-index-9" method="POST">
                                 {% csrf_token %}
                                 <!-- Company Name -->
-                                <div class="col-lg-12">
-                                    <div class="form-check">
-                                        {% for data in moving_type1 %}
-                                            <input class="form-check-input chkvalues" type="checkbox" value="{{data.name}}" name="moving_type1_name[]"/>
-                                            <label class="form-check-label">
-                                                <h4>{{data.name}}</h4>
-                                            </label></br>
-                                        {% endfor %}
-                                    </div>
+                                <div class="col-lg-6">
+                                    <label class="form-label">Nom de votre entreprise *</label>
+                                    <input type="text" class="form-control" name="company_name" required>
                                 </div>
-
-                                <!-- other informations -->
-                                <input type="text" name="name" id="txtvalues"/>
-                                <input type="hidden" name="mover_id" value="{{mover_information.id}}">
-                                </br>
+                                <!-- Phone Number -->
+                                <div class="col-lg-6">
+                                    <label class="form-label">Numéro de téléphone *</label>
+                                    <input type="tel" class="form-control" name="company_phone_number" required>
+                                </div>
+                                <!-- City -->
+                                <div class="col-lg-4">
+                                    <label class="form-label">Pays *</label>
+                                    <input type="text" class="form-control" name="country" required>
+                                </div>
+                                <!-- City -->
+                                <div class="col-lg-4">
+                                    <label class="form-label">Ville *</label>
+                                    <input type="text" class="form-control" name="City" required>
+                                </div>
+                                <!-- adresse -->
+                                <div class="col-lg-4">
+                                    <label class="form-label">Adresse *</label>
+                                    <input type="text" class="form-control" name="Adresse" required>
+                                </div>
+                                <!-- Postal Code -->
+                                <div class="col-lg-4">
+                                    <label class="form-label">Code Postal *</label>
+                                    <input type="number" class="form-control" name="Postal_Code" required>
+                                </div>
+                                <!-- Postal Code -->
+                                <div class="col-lg-4">
+                                    <label class="form-label">Nombre d'employés *</label>
+                                    <input type="number" class="form-control" name="employee_number" required>
+                                </div>
+                                <!-- Postal Code -->
+                                <div class="col-lg-4">
+                                    <label class="form-label">Numéro de TVA *</label>
+                                    <input type="text" class="form-control" name="TVA_number" required>
+                                </div>
 
                                 <!-- Button -->
                                 <div class="col-12" align="center">
