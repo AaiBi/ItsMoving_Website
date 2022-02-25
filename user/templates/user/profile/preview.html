@@ -17,7 +17,7 @@
     <section class="pt-0">
         <!-- Main banner background image -->
         <div class="container-fluid px-0">
-            <div class="bg-blue h-100px h-md-200px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
+            <div class="bg-blue h-100px h-md-100px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
             </div>
         </div>
         <div class="container mt-n4">
@@ -315,8 +315,22 @@
 										</div>
 										<!-- Counter END -->
 										<hr>
-										<h3 class="mb-0" align="center">Zones d'intervention</h3>
-										<div class="accordion accordion-icon accordion-shadow mt-4 text-start position-relative" id="accordionExample2">
+										{% if mover.moving_type1.name == "National" %}
+											<h3 class="mb-0" align="center">Zone d'intervention</h3>
+											<div class="accordion accordion-icon accordion-shadow mt-4 text-start position-relative" id="accordionExample5">
+
+												<!-- Item -->
+												<div class="accordion-item mb-3">
+													<h5 class="accordion-header font-base" id="heading-5">
+														<button class="accordion-button fw-bold collapsed rounded pe-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-5" aria-expanded="false" aria-controls="collapse-5">
+															{{mover.country}}
+														</button>
+													</h5>
+												</div>
+											</div>
+										{% else %}
+											<h3 class="mb-0" align="center">Zones d'intervention</h3>
+											<div class="accordion accordion-icon accordion-shadow mt-4 text-start position-relative" id="accordionExample2">
 
 											{% for country in countries %}
 												{% for mover_country in mover_countries %}
@@ -356,6 +370,7 @@
 											{% endfor %}
 
 										</div>
+										{% endif %}
 									</div>
 									<!-- Main content END -->
 

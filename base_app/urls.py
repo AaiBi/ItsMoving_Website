@@ -7,7 +7,6 @@ urlpatterns = [
     path('mover_inscription_step1/<int:new_user_id>', views.mover_inscription_step1, name='mover_inscription_step1'),
     path('mover_inscription_step2/<int:new_user_id>/<int:mover_id>', views.mover_inscription_step2, name='mover_inscription_step2'),
     path('mover_inscription_step3/<int:new_user_id>/<int:mover_id>', views.mover_inscription_step3, name='mover_inscription_step3'),
-    path('mover_inscription_step4/<int:new_user_id>/<int:mover_id>', views.mover_inscription_step4, name='mover_inscription_step4'),
 
     path('contact/', views.contact_page, name='contact_page'),
     path('international_moving/', views.article1_international_moving, name='article1_international_moving'),

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base_app',
     'user',
+    'administration',
 ]
 
 MESSAGE_TAGS = {

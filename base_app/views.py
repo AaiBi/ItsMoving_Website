@@ -2,13 +2,14 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from base_app.forms import Mover_Form
-from base_app.models import Mover, Moving_Type1, Mover_Moving_Type1, Moving_Type2, Mover_Moving_Type2, Country, \
-    RegionOrProvince, Mover_Country, Mover_Region, Quote_Request, Mover_Quote_Request
+from base_app.models import Mover, Moving_Type1, Moving_Type2, Mover_Moving_Type2, Country, \
+    RegionOrProvince, Mover_Country, Mover_Region, Quote_Request, Mover_Quote_Request, \
+    Number_Mover_Quote_Request_PerDay, Quote_Request_Waiting_Liste, Number_Distribution_Quote_Request
 import random
-from user.models import User_Info
 
 
 def index(request):
@@ -22,10 +23,10 @@ def mover_inscription(request):
         if request.POST['password'] == request.POST['password1']:
             if User.objects.filter(username=request.POST.get('username')):
                 messages.error(request, 'Erreur ! Ce nom d\'utilisateur existe déjà, veuillez utiliser un autre !')
-                return redirect('sign_up_user')
+                return redirect('mover_inscription')
             elif User.objects.filter(email=request.POST.get('email')):
                 messages.error(request, 'Erreur ! Cet email existe déjà, veuillez utiliser un autre !')
-                return redirect('sign_up_user')
+                return redirect('mover_inscription')
             else:
                 try:
                     username = request.POST['username']
@@ -34,38 +35,28 @@ def mover_inscription(request):
                     email = request.POST['email']
                     password = request.POST['password']
 
-                    # creating the blanck user_info table
-                    indicatif = 0
-                    phone_number = 0
-                    Adresse = "null"
-                    country = "null"
-                    activated = True
-                    profil_picture = "/user/images/profil_image/random_image.png"
-
                     # Creation of the user account
                     user = User.objects.create_user(username=username, password=password, first_name=first_name,
                                                     last_name=last_name, email=email)
-
-                    user_info = User_Info(indicatif=indicatif, phone_number=phone_number, Adresse=Adresse,
-                                          country=country,
-                                          activated=activated, profil_picture=profil_picture, user_id=user.id)
                     user.save()
-                    user_info.save()
 
                     return redirect('mover_inscription_step1', new_user_id=user.id)
                 except ValueError:
-                    return render(request, 'base_app/mover/mover_inscription.html', {'form': UserCreationForm(), 'error': 'Bad data passed in'})
+                    return render(request, 'base_app/mover/mover_inscription.html',
+                                  {'form': UserCreationForm(), 'error': 'Bad data passed in'})
         else:
-            return render(request, 'base_app/mover/mover_inscription.html', {'form': UserCreationForm(), 'error': 'Les deux mots de passe ne correspondent pas !'})
+            return render(request, 'base_app/mover/mover_inscription.html',
+                          {'form': UserCreationForm(), 'error': 'Les deux mots de passe ne correspondent pas !'})
 
 
 def mover_inscription_step1(request, new_user_id):
     if get_object_or_404(User, id=new_user_id):
+        country = Country.objects.filter(name='Belgique').last()
+        moving_type1 = Moving_Type1.objects.all()
         user = get_object_or_404(User, id=new_user_id)
         if request.method == 'POST':
             company_name = request.POST['company_name']
             company_phone_number = request.POST['company_phone_number']
-            country = request.POST['country']
             City = request.POST['City']
             Adresse = request.POST['Adresse']
             Postal_Code = request.POST['Postal_Code']
@@ -92,54 +83,26 @@ def mover_inscription_step1(request, new_user_id):
                 website = 0
                 company_statut = 0
                 company_description = 0
-                facebook_link = 0
-                instagram_link = 0
-                twitter_link = 0
-                linkedin_link = 0
-                logo = "/user/images/profil_image/random_image.png"
+                logo = "/user/images/profil_image/09.jpg"
+                country = Country.objects.filter(id=request.POST['country_id']).last()
+                moving_type1 = Moving_Type1.objects.filter(id=request.POST['moving_type1_id']).last()
 
                 mover = Mover(ref=ref, company_name=company_name, Adresse=Adresse, City=City, country=country,
-                              company_phone_number=company_phone_number, Postal_Code=Postal_Code, employee_number=employee_number,
-                              TVA_number=TVA_number, website=website, company_statut=company_statut, company_description=
-                              company_description, facebook_link=facebook_link, instagram_link=instagram_link, twitter_link=twitter_link,
-                              linkedin_link=linkedin_link, logo=logo, user=user)
+                              company_phone_number=company_phone_number, Postal_Code=Postal_Code,
+                              employee_number=employee_number, TVA_number=TVA_number, website=website, company_statut=
+                              company_statut, company_description=company_description, logo=logo, user=user,
+                              moving_type1=moving_type1)
                 mover.save()
 
                 return redirect('mover_inscription_step2', new_user_id=user.id, mover_id=mover.id)
     else:
         messages.error(request, 'Utilisateur non reconnu !')
         return redirect('mover_inscription')
-    return render(request, 'base_app/mover/mover_inscription_step1.html')
+    return render(request, 'base_app/mover/mover_inscription_step1.html', {'country': country, 'moving_type1':
+        moving_type1})
 
 
 def mover_inscription_step2(request, new_user_id, mover_id):
-    if get_object_or_404(User, id=new_user_id) and get_object_or_404(Mover, id=mover_id):
-        user = get_object_or_404(User, id=new_user_id)
-        mover_info = get_object_or_404(Mover, id=mover_id)
-        moving_type1 = Moving_Type1.objects.all()
-
-        if request.method == 'POST':
-            moving_type1_name = request.POST.getlist('moving_type1_name[]')
-            if moving_type1_name:
-                # Filling Mover_Moving_Type1 table
-                for data in moving_type1_name:
-                    if Mover_Moving_Type1.objects.filter(moving_type1_name=data, mover=mover_info):
-                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
-                        return redirect('mover_inscription_step1', new_user_id=user.id, mover_id=mover_info.id)
-                    else:
-                        savedata = Mover_Moving_Type1(moving_type1_name=data, mover=mover_info)
-                        savedata.save()
-                return redirect('mover_inscription_step3', new_user_id=user.id, mover_id=mover_info.id)
-            else:
-                messages.error(request, 'Veuillez faire au moins une sélection !')
-                return redirect('mover_inscription_step2', new_user_id=user.id, mover_id=mover_info.id)
-    else:
-        messages.error(request, 'Utilisateur non reconnu !')
-        return redirect('mover_inscription')
-    return render(request, 'base_app/mover/mover_inscription_step2.html', {'moving_type1': moving_type1})
-
-
-def mover_inscription_step3(request, new_user_id, mover_id):
     if get_object_or_404(User, id=new_user_id) and get_object_or_404(Mover, id=mover_id):
         moving_type2 = Moving_Type2.objects.all()
         user = get_object_or_404(User, id=new_user_id)
@@ -154,19 +117,27 @@ def mover_inscription_step3(request, new_user_id, mover_id):
                         messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
                         return redirect('mover_inscription_step2', new_user_id=user.id, mover_id=mover_info.id)
                     else:
-                        savedata = Mover_Moving_Type2(moving_type2_name=data, mover=mover_info)
-                        savedata.save()
-                return redirect('mover_inscription_step4', new_user_id=user.id, mover_id=mover_info.id)
+                        if mover_info.moving_type1.name == 'National':
+                            messages.success(request,
+                                             'Félicitations, l\'inscription est terminée, il ne vous reste qu\'à '
+                                             'renseigner les regions dans lesquelles vous allez intervenir !')
+                            return redirect('login_user')
+                        else:
+                            savedata = Mover_Moving_Type2(moving_type2_name=data, mover=mover_info)
+                            savedata.save()
+                        continue
+                return redirect('mover_inscription_step3', new_user_id=user.id, mover_id=mover_info.id)
             else:
                 messages.error(request, 'Veuillez faire au moins une sélection !')
-                return redirect('mover_inscription_step3', new_user_id=user.id, mover_id=mover_info.id)
+                return redirect('mover_inscription_step2', new_user_id=user.id, mover_id=mover_info.id)
     else:
         messages.error(request, 'Utilisateur non reconnu !')
         return redirect('mover_inscription')
-    return render(request, 'base_app/mover/mover_inscription_step3.html', {'moving_type2': moving_type2})
+    return render(request, 'base_app/mover/mover_inscription_step2.html', {'moving_type2': moving_type2, 'mover_info':
+        mover_info})
 
 
-def mover_inscription_step4(request, new_user_id, mover_id):
+def mover_inscription_step3(request, new_user_id, mover_id):
     if get_object_or_404(User, id=new_user_id) and get_object_or_404(Mover, id=mover_id):
         countries = Country.objects.all()
         user = get_object_or_404(User, id=new_user_id)
@@ -192,11 +163,11 @@ def mover_inscription_step4(request, new_user_id, mover_id):
 
             else:
                 messages.error(request, 'Veuillez faire au moins une sélection !')
-                return redirect('mover_inscription_step4', new_user_id=user.id, mover_id=mover_info.id)
+                return redirect('mover_inscription_step3', new_user_id=user.id, mover_id=mover_info.id)
     else:
         messages.error(request, 'Utilisateur non reconnu !')
         return redirect('mover_inscription')
-    return render(request, 'base_app/mover/mover_inscription_step4.html', {'countries': countries})
+    return render(request, 'base_app/mover/mover_inscription_step3.html', {'countries': countries})
 
 
 def contact_page(request):
@@ -230,7 +201,7 @@ def contact_page(request):
 def devis_page1(request):
     moving_type1 = Moving_Type1.objects.all()
     moving_type2 = Moving_Type2.objects.all()
-    country = Country.objects.all()
+    country = Country.objects.filter(name='Belgique').last()
     if request.method == 'POST':
         moving_type1_id = request.POST.get('moving_type1_id')
         moving_type2_id = request.POST.get('moving_type2_id')
@@ -373,7 +344,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
         packing_service = request.POST.get('packing_service')
         packaging_materials = request.POST.get('packaging_materials')
         Additional_informations = request.POST.get('Additional_informations')
-        #moving_date2 = request.POST.get('moving_date2')
+        # moving_date2 = request.POST.get('moving_date2')
 
         # creation of the ref
         characters = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
@@ -415,57 +386,262 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                 country_arrival_info = Country.objects.filter(id=Country_Arrival).last()
                 country_arrival_name = country_arrival_info.name
 
-            savedata = Quote_Request(ref=ref, City_Departure=City_Departure, Postal_Code_Departure=Postal_Code_Departure,
+            savedata = Quote_Request(ref=ref, City_Departure=City_Departure,
+                                     Postal_Code_Departure=Postal_Code_Departure,
                                      Adresse_Departure=Adresse_Departure, Residence_Number_or_Name_Departure=
                                      Residence_Number_or_Name_Departure, Country_Arrival=country_arrival_name,
                                      City_Arrival=City_Arrival, Adresse_Arrival=Adresse_Arrival,
-                                     Residence_Number_or_Name_Arrival=Residence_Number_or_Name_Arrival, Postal_Code_Arrival=
-                                     Postal_Code_Arrival, Residence_Departure=Residence_Departure, Number_Room_Departure=
-                                     Number_Room_Departure, Residence_Arrival=Residence_Arrival, packing_service=packing_service,
+                                     Residence_Number_or_Name_Arrival=Residence_Number_or_Name_Arrival,
+                                     Postal_Code_Arrival=
+                                     Postal_Code_Arrival, Residence_Departure=Residence_Departure,
+                                     Number_Room_Departure=
+                                     Number_Room_Departure, Residence_Arrival=Residence_Arrival,
+                                     packing_service=packing_service,
                                      packaging_materials=packaging_materials, furniture_assembly_disassembly=
-                                     furniture_assembly_disassembly, furniture_storage=furniture_storage, firstname=firstname,
+                                     furniture_assembly_disassembly, furniture_storage=furniture_storage,
+                                     firstname=firstname,
                                      lastname=lastname, email=email, phone_number=phone_number, Additional_informations=
-                                     Additional_informations, moving_date=moving_date, moving_date1=moving_date1, moving_date2=
+                                     Additional_informations, moving_date=moving_date, moving_date1=moving_date1,
+                                     moving_date2=
                                      moving_date2, moving_type1=moving_type1, moving_type2=moving_type2, country=
                                      country_departure_request)
+            savedata.save()
 
-            # Automatic distribution of the quote request to the movers
-            if moving_type1.name == "National":
-                moving_type1_national = Moving_Type1.objects.filter(name="National")
-                movers_countries = Mover_Country.objects.all()
-                countries = Country.objects.all()
-                movers = Mover.objects.all()
+            ######################## Automatic distribution for the requests to the movers ####################
+            requests_national = Quote_Request.objects.filter(moving_type1__name='National').order_by('-id')
+            requests_international = Quote_Request.objects.filter(moving_type1__name='International').order_by('-id')
+            movers = Mover.objects.all()
+            international_movers = Mover.objects.filter(moving_type1__name="International")
 
+            #####################NATIONAL REQUEST DISTRIBUTION START#####################
+            for request_national in requests_national:
                 for mover in movers:
-                    for mover_country in movers_countries:
-                        if mover_country.mover_id == mover.id:
 
-                            for country in countries:
-                                if country.id == mover_country.country_id:
+                    max_request_day = Number_Mover_Quote_Request_PerDay.objects.filter(mover_id=mover.id,
+                                            reception_date_quote_request__date=current_date.date()).last()
 
-                                    # we select only the movers that one of the departure countries are the same to the
-                                    # departure country of the request
-                                    if mover_country.country_name == country_departure_request.name \
-                                            and mover_country.departure == True:
-                                        movers_quotes_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id)
+                    # We check if the mover has received a request today
+                    if max_request_day:
 
-                                        if movers_quotes_requests:
-                                            for mover_request in movers_quotes_requests:
+                        print(mover.company_name, ' recieved ', max_request_day.number_quote_received_the_same_day,
+                              ' today ')
+                        if max_request_day.number_quote_received_the_same_day < mover.number_max_quote_request:
 
-                                                #we verify if the mover didnt reach his max quote request of the day
-                                                if mover_request.created.date() == current_date.date():
+                            # we prevent the mover to receive the same request twice
+                            quote_request_info = Quote_Request.objects.filter(id=request_national.id).last()
+                            mover_info = Mover.objects.filter(id=mover.id).last()
+                            number_distribution_request = Number_Distribution_Quote_Request.objects.filter \
+                                (quote_request=quote_request_info.id).last()
 
-                                                    number_quote_request_received = Mover_Quote_Request.objects.filter(
-                                                        mover_id=mover.id).count()
+                            if Mover_Quote_Request.objects.filter(quote_request=quote_request_info, mover=mover_info):
+                                print(mover.company_name, " cant receive the same request more than "
+                                                          "one time")
+                            else:
+                                number = max_request_day.number_quote_received_the_same_day + 1
+                                savedata1 = Number_Mover_Quote_Request_PerDay(
+                                    number_quote_received_the_same_day=number, mover=mover_info)
 
-                                                    if number_quote_request_received < mover.number_max_quote_request:
-                                                        print(number_quote_request_received)
-                                                        print(mover.company_name)
+                                savedata = Mover_Quote_Request(quote_request=quote_request_info, mover=
+                                mover_info)
 
-                                                        #number_request_received_per_day
+                                # we verify if the request hasn't been distributed more than 5 times
+                                if number_distribution_request:
 
+                                    if number_distribution_request.number_distribution < number_distribution_request. \
+                                            number_max_distribution:
 
-            #savedata.save()
+                                        number_distribution = number_distribution_request.number_distribution + 1
+                                        savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                      number_distribution,
+                                                                                      quote_request=
+                                                                                      quote_request_info)
+                                    else:
+                                        print(request_national.ref, ' a atteint le maximum de 5 distributions')
+
+                                else:
+                                    number_distribution = 1
+                                    savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                  number_distribution, quote_request=
+                                                                                  quote_request_info)
+
+                                savedata.save()
+                                savedata1.save()
+                                savedata2.save()
+
+                        else:
+                            print(mover.company_name, " max atteint pour ajourdhui !")
+
+                    else:
+                        quote_request_info = Quote_Request.objects.filter(id=request_national.id).last()
+                        mover_info = Mover.objects.filter(id=mover.id).last()
+                        number_distribution_request = Number_Distribution_Quote_Request.objects.filter \
+                            (quote_request=quote_request_info.id).last()
+
+                        # the request have to be saved maximum 5 time to 5 differents movers
+                        for i in range(5):
+
+                            # we prevent the mover to receive the same request twice
+                            if Mover_Quote_Request.objects.filter(quote_request=quote_request_info, mover=mover_info):
+                                print("you cant receive the same request more than "
+                                      "one time")
+                            else:
+
+                                savedata1 = Number_Mover_Quote_Request_PerDay(number_quote_received_the_same_day=1,
+                                                                              mover=mover_info)
+
+                                savedata = Mover_Quote_Request(quote_request=
+                                                               quote_request_info,
+                                                               mover=mover_info)
+
+                                # we verify if the request hasn't been distributed more than 5 times
+                                if number_distribution_request:
+
+                                    if number_distribution_request.number_distribution < number_distribution_request. \
+                                            number_max_distribution:
+
+                                        number_distribution = number_distribution_request.number_distribution + 1
+                                        savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                      number_distribution,
+                                                                                      quote_request=
+                                                                                      quote_request_info)
+                                    else:
+                                        print(request_national.ref, ' a atteint le maximum de 5 distributions')
+
+                                else:
+                                    number_distribution = 1
+                                    savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                  number_distribution, quote_request=
+                                                                                  quote_request_info)
+
+                                savedata.save()
+                                savedata1.save()
+                                savedata2.save()
+
+            ####################END NATIONAL REQUEST DISTRIBUTION START###################
+
+            #####################INTERNATIONAL REQUEST DISTRIBUTION START#####################
+            for request_international in requests_international:
+                for international_mover in international_movers:
+
+                    #we select the mover who work in the country of the request
+                    mover_countries = Mover_Country.objects.filter(mover_id=international_mover.id)
+                    for mover_country in mover_countries:
+                        if request_international.Country_Arrival == mover_country.country_name:
+
+                            max_request_day = Number_Mover_Quote_Request_PerDay.objects.filter(
+                                mover_id=international_mover.id,
+                                reception_date_quote_request__date=current_date.date()).last()
+
+                            # We check if the mover has received a request today
+                            if max_request_day:
+
+                                print(international_mover.company_name, ' recieved ',
+                                      max_request_day.number_quote_received_the_same_day,
+                                      ' today ')
+                                if max_request_day.number_quote_received_the_same_day < international_mover. \
+                                        number_max_quote_request:
+
+                                    # we prevent the mover to receive the same request twice
+                                    quote_request_info = Quote_Request.objects.filter(
+                                        id=request_international.id).last()
+                                    mover_info = Mover.objects.filter(id=international_mover.id).last()
+                                    number_distribution_request = Number_Distribution_Quote_Request.objects.filter \
+                                        (quote_request=quote_request_info.id).last()
+
+                                    if Mover_Quote_Request.objects.filter(quote_request=quote_request_info,
+                                                                          mover=mover_info):
+                                        print(international_mover.company_name,
+                                              " cant receive the same request more than "
+                                              "one time")
+                                    else:
+                                        number = max_request_day.number_quote_received_the_same_day + 1
+                                        savedata1 = Number_Mover_Quote_Request_PerDay(
+                                            number_quote_received_the_same_day=number, mover=mover_info)
+
+                                        savedata = Mover_Quote_Request(quote_request=quote_request_info,
+                                                                       mover=mover_info)
+
+                                        # we verify if the request hasn't been distributed more than 5 times
+                                        if number_distribution_request:
+
+                                            if number_distribution_request.number_distribution < number_distribution_request. \
+                                                    number_max_distribution:
+
+                                                number_distribution = number_distribution_request.number_distribution + 1
+                                                savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                              number_distribution,
+                                                                                              quote_request=
+                                                                                              quote_request_info)
+                                            else:
+                                                print(request_international.ref,
+                                                      ' a atteint le maximum de 5 distributions')
+
+                                        else:
+                                            number_distribution = 1
+                                            savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                          number_distribution,
+                                                                                          quote_request=
+                                                                                          quote_request_info)
+
+                                        savedata.save()
+                                        savedata1.save()
+                                        savedata2.save()
+
+                                else:
+                                    print(mover.company_name, " max atteint pour ajourdhui !")
+
+                            else:
+                                quote_request_info = Quote_Request.objects.filter(id=request_international.id).last()
+                                mover_info = Mover.objects.filter(id=international_mover.id).last()
+                                number_distribution_request = Number_Distribution_Quote_Request.objects.filter \
+                                    (quote_request=quote_request_info.id).last()
+
+                                # the request have to be saved maximum 5 time to 5 differents movers
+                                for i in range(5):
+
+                                    # we prevent the mover to receive the same request twice
+                                    if Mover_Quote_Request.objects.filter(quote_request=quote_request_info,
+                                                                          mover=mover_info):
+                                        print("you cant receive the same request more than "
+                                              "one time")
+                                    else:
+
+                                        savedata1 = Number_Mover_Quote_Request_PerDay(
+                                            number_quote_received_the_same_day=1,
+                                            mover=mover_info)
+
+                                        savedata = Mover_Quote_Request(quote_request=
+                                                                       quote_request_info,
+                                                                       mover=mover_info)
+
+                                        # we verify if the request hasn't been distributed more than 5 times
+                                        if number_distribution_request:
+
+                                            if number_distribution_request.number_distribution < number_distribution_request. \
+                                                    number_max_distribution:
+
+                                                number_distribution = number_distribution_request.number_distribution + 1
+                                                savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                              number_distribution,
+                                                                                              quote_request=
+                                                                                              quote_request_info)
+                                            else:
+                                                print(request_international.ref,
+                                                      ' a atteint le maximum de 5 distributions')
+
+                                        else:
+                                            number_distribution = 1
+                                            savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                          number_distribution,
+                                                                                          quote_request=
+                                                                                          quote_request_info)
+
+                                        savedata.save()
+                                        savedata1.save()
+                                        savedata2.save()
+
+            ####################END INTERNATIONAL REQUEST DISTRIBUTION START###################
+
             return redirect('devis_page6')
 
         elif request.POST.get('moving_date1') and request.POST.get('moving_date1'):
@@ -495,6 +671,242 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                      moving_date2, moving_type1=moving_type1, moving_type2=moving_type2,
                                      country=country_departure_request)
             savedata.save()
+
+            ######################## Automatic distribution for the requests to the movers ####################
+            requests_national = Quote_Request.objects.filter(moving_type1__name='National').order_by('-id')
+            requests_international = Quote_Request.objects.filter(moving_type1__name='International').order_by('-id')
+            movers = Mover.objects.all()
+            international_movers = Mover.objects.filter(moving_type1__name="International")
+
+            #####################NATIONAL REQUEST DISTRIBUTION START#####################
+            for request_national in requests_national:
+                for mover in movers:
+
+                    max_request_day = Number_Mover_Quote_Request_PerDay.objects.filter(mover_id=mover.id,
+                                                                                       reception_date_quote_request__date=current_date.date()).last()
+
+                    # We check if the mover has received a request today
+                    if max_request_day:
+
+                        print(mover.company_name, ' recieved ', max_request_day.number_quote_received_the_same_day,
+                              ' today ')
+                        if max_request_day.number_quote_received_the_same_day < mover.number_max_quote_request:
+
+                            # we prevent the mover to receive the same request twice
+                            quote_request_info = Quote_Request.objects.filter(id=request_national.id).last()
+                            mover_info = Mover.objects.filter(id=mover.id).last()
+                            number_distribution_request = Number_Distribution_Quote_Request.objects.filter \
+                                (quote_request=quote_request_info.id).last()
+
+                            if Mover_Quote_Request.objects.filter(quote_request=quote_request_info, mover=mover_info):
+                                print(mover.company_name, " cant receive the same request more than "
+                                                          "one time")
+                            else:
+                                number = max_request_day.number_quote_received_the_same_day + 1
+                                savedata1 = Number_Mover_Quote_Request_PerDay(
+                                    number_quote_received_the_same_day=number, mover=mover_info)
+
+                                savedata = Mover_Quote_Request(quote_request=quote_request_info, mover=
+                                mover_info)
+
+                                # we verify if the request hasn't been distributed more than 5 times
+                                if number_distribution_request:
+
+                                    if number_distribution_request.number_distribution < number_distribution_request. \
+                                            number_max_distribution:
+
+                                        number_distribution = number_distribution_request.number_distribution + 1
+                                        savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                      number_distribution,
+                                                                                      quote_request=
+                                                                                      quote_request_info)
+                                    else:
+                                        print(request_national.ref, ' a atteint le maximum de 5 distributions')
+
+                                else:
+                                    number_distribution = 1
+                                    savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                  number_distribution, quote_request=
+                                                                                  quote_request_info)
+
+                                savedata.save()
+                                savedata1.save()
+                                savedata2.save()
+
+                        else:
+                            print(mover.company_name, " max atteint pour ajourdhui !")
+
+                    else:
+                        quote_request_info = Quote_Request.objects.filter(id=request_national.id).last()
+                        mover_info = Mover.objects.filter(id=mover.id).last()
+                        number_distribution_request = Number_Distribution_Quote_Request.objects.filter \
+                            (quote_request=quote_request_info.id).last()
+
+                        # the request have to be saved maximum 5 time to 5 differents movers
+                        for i in range(5):
+
+                            # we prevent the mover to receive the same request twice
+                            if Mover_Quote_Request.objects.filter(quote_request=quote_request_info, mover=mover_info):
+                                print("you cant receive the same request more than "
+                                      "one time")
+                            else:
+
+                                savedata1 = Number_Mover_Quote_Request_PerDay(number_quote_received_the_same_day=1,
+                                                                              mover=mover_info)
+
+                                savedata = Mover_Quote_Request(quote_request=
+                                                               quote_request_info,
+                                                               mover=mover_info)
+
+                                # we verify if the request hasn't been distributed more than 5 times
+                                if number_distribution_request:
+
+                                    if number_distribution_request.number_distribution < number_distribution_request. \
+                                            number_max_distribution:
+
+                                        number_distribution = number_distribution_request.number_distribution + 1
+                                        savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                      number_distribution,
+                                                                                      quote_request=
+                                                                                      quote_request_info)
+                                    else:
+                                        print(request_national.ref, ' a atteint le maximum de 5 distributions')
+
+                                else:
+                                    number_distribution = 1
+                                    savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                  number_distribution, quote_request=
+                                                                                  quote_request_info)
+
+                                savedata.save()
+                                savedata1.save()
+                                savedata2.save()
+
+            ####################END NATIONAL REQUEST DISTRIBUTION START###################
+
+            #####################INTERNATIONAL REQUEST DISTRIBUTION START#####################
+            for request_international in requests_international:
+                for international_mover in international_movers:
+
+                    # we select the mover who work in the country of the request
+                    mover_countries = Mover_Country.objects.filter(mover_id=international_mover.id)
+                    for mover_country in mover_countries:
+                        if request_international.Country_Arrival == mover_country.country_name:
+
+                            max_request_day = Number_Mover_Quote_Request_PerDay.objects.filter(
+                                mover_id=international_mover.id,
+                                reception_date_quote_request__date=current_date.date()).last()
+
+                            # We check if the mover has received a request today
+                            if max_request_day:
+
+                                print(international_mover.company_name, ' recieved ',
+                                      max_request_day.number_quote_received_the_same_day,
+                                      ' today ')
+                                if max_request_day.number_quote_received_the_same_day < international_mover. \
+                                        number_max_quote_request:
+
+                                    # we prevent the mover to receive the same request twice
+                                    quote_request_info = Quote_Request.objects.filter(
+                                        id=request_international.id).last()
+                                    mover_info = Mover.objects.filter(id=international_mover.id).last()
+                                    number_distribution_request = Number_Distribution_Quote_Request.objects.filter \
+                                        (quote_request=quote_request_info.id).last()
+
+                                    if Mover_Quote_Request.objects.filter(quote_request=quote_request_info,
+                                                                          mover=mover_info):
+                                        print(international_mover.company_name,
+                                              " cant receive the same request more than "
+                                              "one time")
+                                    else:
+                                        number = max_request_day.number_quote_received_the_same_day + 1
+                                        savedata1 = Number_Mover_Quote_Request_PerDay(
+                                            number_quote_received_the_same_day=number, mover=mover_info)
+
+                                        savedata = Mover_Quote_Request(quote_request=quote_request_info,
+                                                                       mover=mover_info)
+
+                                        # we verify if the request hasn't been distributed more than 5 times
+                                        if number_distribution_request:
+
+                                            if number_distribution_request.number_distribution < number_distribution_request. \
+                                                    number_max_distribution:
+
+                                                number_distribution = number_distribution_request.number_distribution + 1
+                                                savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                              number_distribution,
+                                                                                              quote_request=
+                                                                                              quote_request_info)
+                                            else:
+                                                print(request_international.ref,
+                                                      ' a atteint le maximum de 5 distributions')
+
+                                        else:
+                                            number_distribution = 1
+                                            savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                          number_distribution,
+                                                                                          quote_request=
+                                                                                          quote_request_info)
+
+                                        savedata.save()
+                                        savedata1.save()
+                                        savedata2.save()
+
+                                else:
+                                    print(mover.company_name, " max atteint pour ajourdhui !")
+
+                            else:
+                                quote_request_info = Quote_Request.objects.filter(id=request_international.id).last()
+                                mover_info = Mover.objects.filter(id=international_mover.id).last()
+                                number_distribution_request = Number_Distribution_Quote_Request.objects.filter \
+                                    (quote_request=quote_request_info.id).last()
+
+                                # the request have to be saved maximum 5 time to 5 differents movers
+                                for i in range(5):
+
+                                    # we prevent the mover to receive the same request twice
+                                    if Mover_Quote_Request.objects.filter(quote_request=quote_request_info,
+                                                                          mover=mover_info):
+                                        print("you cant receive the same request more than "
+                                              "one time")
+                                    else:
+
+                                        savedata1 = Number_Mover_Quote_Request_PerDay(
+                                            number_quote_received_the_same_day=1,
+                                            mover=mover_info)
+
+                                        savedata = Mover_Quote_Request(quote_request=
+                                                                       quote_request_info,
+                                                                       mover=mover_info)
+
+                                        # we verify if the request hasn't been distributed more than 5 times
+                                        if number_distribution_request:
+
+                                            if number_distribution_request.number_distribution < number_distribution_request. \
+                                                    number_max_distribution:
+
+                                                number_distribution = number_distribution_request.number_distribution + 1
+                                                savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                              number_distribution,
+                                                                                              quote_request=
+                                                                                              quote_request_info)
+                                            else:
+                                                print(request_international.ref,
+                                                      ' a atteint le maximum de 5 distributions')
+
+                                        else:
+                                            number_distribution = 1
+                                            savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                                                          number_distribution,
+                                                                                          quote_request=
+                                                                                          quote_request_info)
+
+                                        savedata.save()
+                                        savedata1.save()
+                                        savedata2.save()
+
+            ####################END INTERNATIONAL REQUEST DISTRIBUTION START###################
+
             return redirect('devis_page6')
 
         else:

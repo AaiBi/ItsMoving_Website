@@ -12,6 +12,7 @@
 
     <!-- **************** MAIN CONTENT START **************** -->
     <main>
+
         <!-- =======================
         Main part START -->
         <section class="position-relative pt-4 pt-sm-5">
@@ -161,16 +162,18 @@
                                     <h3>
                                         <span class="text-primary" style="text-transform: uppercase;">Devenez notre partenaire et accéder à une clientèle plus large !</span>
                                         </br>
-                                        <h3><span class="badge bg-primary">Étape 3/4</span></h3>
+                                        <h3><span class="badge bg-primary">Informations supplémentaires</span></h3>
                                     </h3>
                                 </div>
                             </div>
                             </br>
 
                             <!-- Title -->
-                            <h3 class="mb-3" align="center">
-                                Êtes-vous intéressé par les déménagements pour professionels, particuliers ou les deux ?
-                            </h3>
+                            <h3 class="mb-3" align="center">Sélectionnez vos pays d'intervention ?</h3>
+                            <h6 class="text-danger" align="center">
+                                *Vos informations seront bien gardées et ne seront jamais partagées, elles serviront à vous
+                                donner le meilleur service possible !*
+                            </h6>
 
                             <!-- Form START -->
                             <form class="row g-3 mt-2 position-relative z-index-9" method="POST">
@@ -178,8 +181,8 @@
                                 <!-- Company Name -->
                                 <div class="col-lg-12">
                                     <div class="form-check">
-                                        {% for data in moving_type2 %}
-                                            <input class="form-check-input chkvalues" type="checkbox" value="{{data.name}}" name="moving_type2_name[]"/>
+                                        {% for data in countries %}
+                                            <input class="form-check-input chkvalues" type="checkbox" value="{{data.name}}" name="country_name[]"/>
                                             <label class="form-check-label">
                                                 <h4>{{data.name}}</h4>
                                             </label></br>
@@ -192,26 +195,9 @@
                                 <input type="hidden" name="mover_id" value="{{mover_information.id}}">
                                 </br>
 
-<!--                                &lt;!&ndash; Company Name &ndash;&gt;-->
-<!--                                <div class="col-lg-12">-->
-<!--                                    <div class="form-check">-->
-<!--                                        {% for data in countries %}-->
-<!--                                            <input class="form-check-input chkvalues" type="checkbox" value="{{data.name}}" name="country_name[]"/>-->
-<!--                                            <label class="form-check-label">-->
-<!--                                                <h4>{{data.name}}</h4>-->
-<!--                                            </label></br>-->
-<!--                                        {% endfor %}-->
-<!--                                    </div>-->
-<!--                                </div>-->
-
-<!--                                &lt;!&ndash; other informations &ndash;&gt;-->
-<!--                                <input type="text" name="name" id="txtvalues"/>-->
-<!--                                <input type="hidden" name="mover_id" value="{{mover_information.id}}">-->
-<!--                                </br>-->
-
                                 <!-- Button -->
                                 <div class="col-12" align="center">
-                                    <button type="submit" class="btn btn-primary mb-0">Continuer vers l'étape 4</button>
+                                    <button type="submit" class="btn btn-primary mb-0">Terminer</button>
                                 </div>
                             </form>
                             <!-- Form END -->

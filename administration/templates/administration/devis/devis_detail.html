@@ -1,0 +1,434 @@
+{% extends 'administration/admin_base.html' %}
+
+{% block title %} Admin - Devis {% endblock %}
+
+{% load static %}
+
+{% block devis_active %} active {% endblock %}
+
+
+{% block main %}
+
+    <div class="card">
+        <div class="card-header bg-dark" align="center">
+            <h2 class="text-white">DEVIS - {{devis.ref}}</h2>
+        </div>
+
+        <div class="card-body bg-dark">
+
+            <!-- Outer tabs START -->
+            <ul class="nav nav-pills nav-pill-soft mb-3" id="devis-pills-tab" role="tablist">
+                <!-- Tab item -->
+                <li class="nav-item me-2 me-sm-5" role="presentation">
+                    <button class="nav-link active" id="devis-pills-tab-1" data-bs-toggle="pill" data-bs-target="#devis-pills-tab1" type="button" role="tab" aria-controls="devis-pills-tab1" aria-selected="true">
+                        Déménageurs
+                    </button>
+                </li>
+                <!-- Tab item -->
+                <li class="nav-item me-2 me-sm-5" role="presentation">
+                    <button class="nav-link" id="devis-pills-tab-2" data-bs-toggle="pill" data-bs-target="#devis-pills-tab2" type="button" role="tab" aria-controls="devis-pills-tab2" aria-selected="false">
+                        Informations
+                    </button>
+                </li>
+            </ul>
+            <!-- Outer tabs END -->
+
+            <!-- Outer tabs contents START -->
+            <div class="tab-content mb-0" id="devis-pills-tabContent">
+
+                <!-- Outer content START -->
+                <div class="tab-pane fade show active" id="devis-pills-tab1" role="tabpanel" aria-labelledby="devis-pills-tab-1">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row justify-content-between">
+
+                                <div class="table-responsive-lg border-0">
+
+                                    <table class="table table-striped table-dark table-bordered align-middle p-4 mb-0 text-white">
+                                        <!-- Table head -->
+                                        <thead align="center">
+                                            <tr>
+                                                <th scope="col" class="border-0 rounded-start">Déménageur</th>
+                                                <th scope="col" class="border-0 rounded-start">Ville</th>
+                                                <th scope="col" class="border-0 rounded-start">Adresse</th>
+                                                <th scope="col" class="border-0 rounded-start">Code Postal</th>
+                                                <th scope="col" class="border-0 rounded-end">Téléphone</th>
+                                            </tr>
+                                        </thead>
+
+                                        <!-- Table body START -->
+                                        <tbody align="center">
+                                            <!-- Table item -->
+                                            {% for mover_quote_request in mover_quote_requests %}
+                                                <tr>
+                                                    <!-- Course item -->
+                                                    <td>
+                                                        <a href="">
+                                                            {{mover_quote_request.mover.company_name}}
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        {{mover_quote_request.mover.City}}
+                                                    </td>
+                                                    <td>
+                                                        {{mover_quote_request.mover.Adresse}}
+                                                    </td>
+                                                    <td>
+                                                        {{mover_quote_request.mover.Postal_Code}}
+                                                    </td>
+                                                    <td>
+                                                        {{mover_quote_request.mover.company_phone_number}}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> <!-- Row END -->
+                </div>
+                <!-- Outer content END -->
+
+                <!-- Outer content START -->
+                <div class="tab-pane fade" id="devis-pills-tab2" role="tabpanel" aria-labelledby="devis-pills-tab-2">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row justify-content-between">
+
+                                <!--General info-->
+                                <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 mt-5">
+                                    <center><h4>Informations générales</h4></center>
+                                    </br>
+
+                                    <div class="card card-body text-dark">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <ul>
+                                                    <li>
+                                                        <h5>
+                                                            Type déménagement:
+                                                            {% for data1 in moving_type1 %}
+                                                                {% if data1.id == devis.moving_type1_id %}
+                                                                    <span class="text-info">{{data1.name}}</span>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <ul>
+                                                    <li>
+                                                        <h5>
+                                                            Type clientèle:
+                                                            {% for data2 in moving_type2 %}
+                                                                {% if data2.id == devis.moving_type2_id %}
+                                                                    <span class="text-info">{{data2.name}}</span>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <center>
+                                                    <h5>
+                                                        Date :
+                                                        <span class="text-info">
+                                                            {% load i18n %}
+                                                            {% language 'fr' %}
+                                                                {{devis.created|date:'d F Y'}}
+                                                            {% endlanguage %}
+                                                        </span>
+                                                    </h5>
+                                                </center>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!--Departure info-->
+                                <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 mt-5">
+                                    <center><h4>Départ</h4></center>
+                                    </br>
+
+                                    <div class="card card-body text-dark">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <ul>
+                                                    <li>
+                                                        <h5>
+                                                            Pays:
+                                                            {% for country in countries %}
+                                                                {% if country.id == devis.country_id %}
+                                                                    <span class="text-info">{{country.name}}</span>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Ville:
+                                                            <span class="text-info">{{devis.City_Departure|capfirst}}</span>
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Adresse:
+                                                            <span class="text-info">{{devis.Adresse_Departure|capfirst}}</span>
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Code Postal:
+                                                            <span class="text-info">{{devis.Postal_Code_Departure}}</span>
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <ul>
+                                                    <li>
+                                                        <h5>
+                                                            Résidence:
+                                                            <span class="text-info">{{devis.Residence_Number_or_Name_Departure}}</span>
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Type de maison:
+                                                            <span class="text-info">{{devis.Residence_Departure}}</span>
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Nombre de pièces:
+                                                            <span class="text-info">{{devis.Number_Room_Departure}}</span>
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!--Arrival info-->
+                                <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 mt-5">
+                                    <center><h4>Arrivée</h4></center>
+                                    </br>
+
+                                    <div class="card card-body text-dark">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <ul>
+                                                    <li>
+                                                        <h5>
+                                                            Pays:
+                                                            {% for data1 in moving_type1 %}
+                                                                {% if data1.id == devis.moving_type1_id %}
+                                                                    {% if data1.name == "International" %}
+                                                                        <span class="text-info">{{devis.Country_Arrival|capfirst}}</span>
+                                                                    {% else %}
+                                                                        {% for country in countries %}
+                                                                            {% if country.id == devis.country_id %}
+                                                                                <span class="text-info">{{country.name|capfirst}}</span>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Ville:
+                                                            <span class="text-info">{{devis.City_Arrival|capfirst}}</span>
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Adresse:
+                                                            <span class="text-info">{{devis.Adresse_Arrival|capfirst}}</span>
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <ul>
+                                                    <li>
+                                                        <h5>
+                                                            Code Postal:
+                                                            <span class="text-info">{{devis.Postal_Code_Arrival}}</span>
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Résidence:
+                                                            <span class="text-info">{{devis.Residence_Number_or_Name_Arrival}}</span>
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Type de maison:
+                                                            <span class="text-info">{{devis.Residence_Arrival}}</span>
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!--Customer info-->
+                                <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 mt-5">
+                                    <center><h3>Informations sur le Client</h3></center>
+                                    </br>
+
+                                    <div class="card card-body text-dark">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <ul>
+                                                    <li>
+                                                        <h5>
+                                                            Prénom: <span class="text-info">{{devis.firstname|capfirst}}</span>
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Nom: <span class="text-info">{{devis.lastname|capfirst}}</span>
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <ul>
+                                                    <li>
+                                                        <h5>
+                                                            Email: <span class="text-info">{{devis.email}}</span>
+                                                        </h5>
+                                                    </li>
+                                                    <li>
+                                                        <h5>
+                                                            Téléphone: <span class="text-info">{{devis.phone_number}}</span>
+                                                        </h5>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!--info-->
+                                <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 mt-5">
+                <center><h3>Informations supplémentaires</h3></center>
+                </br>
+
+                <div class="card card-body text-dark">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <ul>
+                                <li>
+                                    <h5>
+                                        Service d'emballage:
+                                        <span class="text-info">
+                                            {% if devis.packing_service == True %}
+                                                Oui
+                                            {% else %}
+                                                Non
+                                            {% endif %}
+                                        </span>
+                                    </h5>
+                                </li>
+                                <li>
+                                    <h5>
+                                        Matériels d'emballage:
+                                        <span class="text-info">
+                                            {% if devis.packaging_materials == True %}
+                                                Oui
+                                            {% else %}
+                                                Non
+                                            {% endif %}
+                                        </span>
+                                    </h5>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <ul>
+                                <li>
+                                    <h5>
+                                        Montage/Démontage de meubles:
+                                        <span class="text-info">
+                                            {% if devis.furniture_assembly_disassembly == True %}
+                                                Oui
+                                            {% else %}
+                                                Non
+                                            {% endif %}
+                                        </span>
+                                    </h5>
+                                </li>
+                                <li>
+                                    <h5>
+                                        Garde-meuble:
+                                        <span class="text-info">
+                                            {% if devis.furniture_storage == True %}
+                                                Oui
+                                            {% else %}
+                                                Non
+                                            {% endif %}
+                                        </span>
+                                    </h5>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-12">
+                            <center>
+                                <h5>Date du déménagement :</br>
+                                    {% load i18n %}
+                                    {% language 'fr' %}
+                                        {% if devis.moving_date|date:'d F Y' == '10 octobre 1000' %}
+                                            Entre le <span class="text-info">{{devis.moving_date1|date:'d F Y'}}</span>
+                                            et le <span class="text-info">{{devis.moving_date2|date:'d F Y'}}</span>
+                                        {% else %}
+                                            <span class="text-info">{{devis.moving_date|date:'d F Y'}}</span>
+                                        {% endif %}
+                                    {% endlanguage %}
+                                    </span>
+                                </h5>
+                            </center>
+                        </div>
+                        <div class="col-sm-12">
+                            <center>
+                                <h5>Informations Additionnelles :</br>
+                                    <span class="text-info">
+                                        {{devis.Additional_informations|capfirst}}
+                                    </span>
+                                </h5>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+                            </div>
+                        </div>
+                    </div> <!-- Row END -->
+                </div>
+                <!-- Outer content END -->
+
+            </div>
+		    <!-- Outer tabs contents END -->
+
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -17,7 +17,7 @@
     <section class="pt-0">
         <!-- Main banner background image -->
         <div class="container-fluid px-0">
-            <div class="bg-blue h-100px h-md-200px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
+            <div class="bg-blue h-100px h-md-100px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
             </div>
         </div>
         <div class="container mt-n4">
@@ -137,12 +137,6 @@
 								Informations de connexion
 							</button>
 						</li>
-						<!-- Tab item -->
-						<li class="nav-item me-2 me-sm-5">
-							<button class="nav-link mb-2 mb-md-0" id="edit-profile-pills-tab-3" data-bs-toggle="pill" data-bs-target="#edit-profile-pills-tabs-3" type="button" role="tab" aria-controls="edit-profile-pills-tabs-3" aria-selected="false">
-								bien
-							</button>
-						</li>
 					</ul>
 					<!-- Tabs END -->
 
@@ -185,23 +179,18 @@
 										<!-- Other informations -->
 										<input type="hidden" name="ref" value="{{mover.ref}}">
 										<input type="hidden" name="company_name" value="{{mover.company_name}}">
-										<input type="hidden" name="company_email" value="{{mover.company_email}}">
 										<input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
 										<input type="hidden" name="Adresse" value="{{mover.Adresse}}">
 										<input type="hidden" name="employee_number" value="{{mover.employee_number}}">
-										<input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
-										<input type="hidden" name="City" value="{{mover.City}}">
+										<input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
 										<input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
 										<input type="hidden" name="website" value="{{mover.website}}">
-										<input type="hidden" name="validated" value="{{mover.validated}}">
-										<input type="hidden" name="activated" value="{{mover.activated}}">
+										<input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
+										<input type="hidden" name="City" value="{{mover.City}}">
 										<input type="hidden" name="company_statut" value="{{mover.company_statut}}">
 										<input type="hidden" name="company_description" value="{{mover.company_description}}">
-										<input type="hidden" name="company_phone_number_indicatif" value="{{mover.company_phone_number_indicatif}}">
-										<input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
-										<input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
-										<input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
-										<input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
+										<input type="hidden" name="validated" value="{{mover.validated}}">
+										<input type="hidden" name="activated" value="{{mover.activated}}">
 										<input type="hidden" name="country" value="{{mover.country}}">
 										<!-- Save button -->
 										<div class="d-sm-flex justify-content-end">
@@ -216,17 +205,36 @@
 									<form class="row g-4" method="POST" enctype="multipart/form-data">
 										{% csrf_token %}
 										<!-- Name company -->
-										<div class="col-md-4">
+										<div class="col-md-6">
 											<label class="form-label">Nom de l'entreprise</label>
 											<input type="text" class="form-control" name="company_name" value="{{mover.company_name}}">
 										</div>
 										<!-- country -->
-										<div class="col-md-4">
-											<label class="form-label">Pays</label>
-											<input type="text" class="form-control" name="country" value="{{mover.country}}">
+										<div class="col-md-6">
+											<label class="form-label text-opacity-50">
+												Pays
+											</label>
+											<select class="form-select form-control text-opacity-50" name="country">
+												<option selected value="{{mover.country.id}}" class="text-dark">{{mover.country.name}}</option>
+												{% for country in countries %}
+													<option value="{{country.id}}" class="text-dark">{{country.name}}</option>
+												{% endfor %}
+											</select>
+										</div>
+										<!-- moving type -->
+										<div class="col-md-6">
+											<label class="form-label text-opacity-50">
+												Type de déménagement
+											</label>
+											<select class="form-select form-control text-opacity-50" name="moving_type1">
+												<option selected value="{{mover.country.id}}" class="text-dark">{{mover.moving_type1.name}}</option>
+												{% for data in moving_type1 %}
+													<option value="{{data.id}}" class="text-dark">{{data.name}}</option>
+												{% endfor %}
+											</select>
 										</div>
 										<!-- city -->
-										<div class="col-md-4">
+										<div class="col-md-6">
 											<label class="form-label">Ville</label>
 											<input type="text" class="form-control" name="City" value="{{mover.City}}">
 										</div>
@@ -275,16 +283,12 @@
 										{% if mover.logo %}
 											<input type="hidden" name="logo" value="{{mover.logo.url}}">
 										{%else%}
-											<input type="hidden" name="logo" value="/user/images/random_image.png">
+											<input type="hidden" name="logo" value="/user/images/profil_image/random_image.png">
 										{% endif %}
+										<input type="hidden" name="ref" value="{{mover.ref}}">
 										<input type="hidden" name="validated" value="{{mover.validated}}">
 										<input type="hidden" name="activated" value="{{mover.activated}}">
-										<input type="hidden" name="ref" value="{{mover.ref}}">
-
-										<input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
-										<input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
-										<input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
-										<input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
+										<input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
 										<!-- Save button -->
 										<div class="d-sm-flex justify-content-end">
 											<button type="submit" name="edit_mover_info" value="edit_mover_info" class="btn btn-primary mb-0">Enregistrer les modifications</button>
@@ -294,131 +298,6 @@
 								<!-- Card body END -->
 							</div>
 							<!-- Edit profile END -->
-
-							<div class="row g-4 mt-3">
-								<!-- Social media profile START -->
-								<div class="col-lg-6">
-									<div class="card border rounded-3">
-										<!-- Card header -->
-										<div class="card-header border-bottom">
-											<h5 class="card-header-title mb-0">Reseaux sociaux</h5>
-										</div>
-										<!-- Card body START -->
-										<div class="card-body">
-											<form class="row g-4" method="POST" enctype="multipart/form-data">
-												{% csrf_token %}
-												<!-- Facebook  -->
-												<div class="mb-3">
-													<label class="form-label"><i class="fab fa-facebook text-facebook me-2"></i>Lien de votre compte Facebook</label>
-													<input type="text" class="form-control" name="facebook_link" value="{{mover.facebook_link}}">
-												</div>
-
-												<!-- Twitter  -->
-												<div class="mb-3">
-													<label class="form-label"><i class="bi bi-twitter text-twitter me-2"></i>Lien de votre compte Twitter</label>
-													<input type="text" class="form-control" name="twitter_link" value="{{mover.twitter_link}}">
-												</div>
-
-												<!-- Instagram  -->
-												<div class="mb-3">
-													<label class="form-label"><i class="fab fa-instagram text-instagram-gradient me-2"></i>Lien de votre compte Instagram</label>
-													<input type="text" class="form-control" name="instagram_link" value="{{mover.instagram_link}}">
-												</div>
-
-												<!-- Linkedin -->
-												<div class="mb-3">
-													<label class="form-label"><i class="fab fa-linkedin text-linkedin me-2"></i>Lien de votre compte Linkedin</label>
-													<input type="text" class="form-control" name="linkedin_link" value="{{mover.linkedin_link}}">
-												</div>
-
-												<!-- Button -->
-												{% if mover.logo %}
-													<input type="hidden" name="logo" value="{{mover.logo.url}}">
-												{%endif%}
-												<input type="hidden" name="validated" value="{{mover.validated}}">
-												<input type="hidden" name="activated" value="{{mover.activated}}">
-												<input type="hidden" name="ref" value="{{mover.ref}}">
-												<input type="hidden" name="company_name" value="{{mover.company_name}}">
-												<input type="hidden" name="company_email" value="{{mover.company_email}}">
-												<input type="hidden" name="Adresse" value="{{mover.Adresse}}">
-												<input type="hidden" name="City" value="{{mover.City}}">
-												<input type="hidden" name="country" value="{{mover.country}}">
-												<input type="hidden" name="company_phone_number_indicatif" value="{{mover.company_phone_number_indicatif}}">
-												<input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
-												<input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
-												<input type="hidden" name="employee_number" value="{{mover.employee_number}}">
-												<input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
-												<input type="hidden" name="company_description" value="{{mover.company_description}}">
-												<input type="hidden" name="website" value="{{mover.website}}">
-												<input type="hidden" name="company_statut" value="{{mover.company_statut}}">
-
-												<!-- Button -->
-												<div class="d-flex justify-content-end mt-4">
-													<button type="submit" name="social_media_link_form" class="btn btn-primary mb-0">Enregistrer les modifications</button>
-												</div>
-											</form>
-										</div>
-										<!-- Card body END -->
-									</div>
-								</div>
-								<!-- Social media profile END -->
-
-								<!-- Linked account START -->
-								<div class="col-lg-6">
-									<div class="card border rounded-3">
-										<!-- Card header -->
-										<div class="card-header border-bottom">
-											<h5 class="card-header-title mb-0">Linked account</h5>
-										</div>
-										<!-- Card body START -->
-										<div class="card-body pb-0">
-											<!-- Google -->
-											<div class="position-relative mb-4 d-sm-flex bg-success bg-opacity-10 border border-success p-3 rounded">
-												<!-- Title and content -->
-												<h2 class="fs-1 mb-0 me-3"><i class="fab fa-google text-google-icon"></i></h2>
-												<div>
-													<div class="position-absolute top-0 start-100 translate-middle bg-white rounded-circle lh-1 h-20px">
-														<i class="bi bi-check-circle-fill text-success fs-5"></i>
-													</div>
-														<h6 class="mb-1">Google</h6>
-														<p class="mb-1 small">You are successfully connected to your Google account</p>
-														<!-- Button -->
-														<button type="button" class="btn btn-sm btn-danger mb-0">Invoke</button>
-														<a href="#" class="btn btn-sm btn-link text-body mb-0">Learn more</a>
-												</div>
-											</div>
-
-											<!-- Linkedin -->
-											<div class="mb-4 d-sm-flex border p-3 rounded">
-												<!-- Title and content -->
-												<h2 class="fs-1 mb-0 me-3"><i class="fab fa-linkedin-in text-linkedin"></i></h2>
-												<div>
-													<h6 class="mb-1">Linkedin</h6>
-													<p class="mb-1 small">Connect with Linkedin account for a personalized experience</p>
-													<!-- Button -->
-													<button type="button" class="btn btn-sm btn-primary mb-0">Connect Linkedin</button>
-													<a href="#" class="btn btn-sm btn-link text-body mb-0">Learn more</a>
-												</div>
-											</div>
-
-											<!-- Facebook -->
-											<div class="mb-4 d-sm-flex border p-3 rounded">
-												<!-- Title and content -->
-												<h2 class="fs-1 mb-0 me-3"><i class="fab fa-facebook text-facebook"></i></h2>
-												<div>
-													<h6 class="mb-1">Facebook</h6>
-													<p class="mb-1 small">Connect with Facebook account for a personalized experience</p>
-													<!-- Button -->
-													<button type="button" class="btn btn-sm btn-primary mb-0">Connect Facebook</button>
-													<a href="#" class="btn btn-sm btn-link text-body mb-0">Learn more</a>
-												</div>
-											</div>
-										</div>
-										<!-- Card body END -->
-									</div>
-								</div>
-								<!-- Linked account end -->
-							</div>
 						</div>
 						<!-- Content END -->
 
@@ -460,156 +339,6 @@
 								<div class="col-sm-6">
 
 								</div>
-							</div>
-						</div>
-						<!-- Content END -->
-
-						<!-- Content START -->
-						<div class="tab-pane fade" id="edit-profile-pills-tabs-3" role="tabpanel" aria-labelledby="edit-profile-pills-tab-3">
-							<div class="row g-4">
-								<!-- Card item START -->
-								<div class="col-sm-6 col-lg-4 col-xl-3">
-									<div class="card shadow h-100">
-										<!-- Image -->
-										<img src="assets/images/courses/4by3/08.jpg" class="card-img-top" alt="course image">
-										<div class="card-body pb-0">
-											<!-- Badge and favorite -->
-											<div class="d-flex justify-content-between mb-2">
-												<a href="#" class="badge bg-purple bg-opacity-10 text-purple">All level</a>
-												<a href="#" class="h6 fw-light mb-0"><i class="far fa-heart"></i></a>
-											</div>
-											<!-- Title -->
-											<h5 class="card-title fw-normal"><a href="#">Sketch from A to Z: for app designer</a></h5>
-											<p class="text-truncate-2 mb-2">Proposal indulged no do sociable he throwing settling</p>
-											<!-- Rating star -->
-											<ul class="list-inline mb-0">
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="far fa-star text-warning"></i></li>
-												<li class="list-inline-item ms-2 h6 fw-light mb-0">4.0/5.0</li>
-											</ul>
-										</div>
-										<!-- Card footer -->
-										<div class="card-footer pt-0 pb-3">
-											<hr>
-											<div class="d-flex justify-content-between">
-												<span class="h6 fw-light mb-0"><i class="far fa-clock text-danger me-2"></i>12h 56m</span>
-												<span class="h6 fw-light mb-0"><i class="fas fa-table text-orange me-2"></i>15 lectures</span>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- Card item END -->
-
-								<!-- Card item START -->
-								<div class="col-sm-6 col-lg-4 col-xl-3">
-									<div class="card shadow h-100">
-										<!-- Image -->
-										<img src="assets/images/courses/4by3/04.jpg" class="card-img-top" alt="course image">
-										<div class="card-body pb-0">
-											<!-- Badge and favorite -->
-											<div class="d-flex justify-content-between mb-2">
-												<a href="#" class="badge bg-purple bg-opacity-10 text-purple">All level</a>
-												<a href="#" class="text-danger"><i class="fas fa-heart"></i></a>
-											</div>
-											<!-- Title -->
-											<h5 class="card-title fw-normal"><a href="#">Learn Invision</a></h5>
-											<p class="mb-2">Arrived off she elderly beloved him Course regard to up he hardly.</p>
-											<!-- Rating star -->
-											<ul class="list-inline mb-0">
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star-half-alt text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="far fa-star text-warning"></i></li>
-												<li class="list-inline-item ms-2 h6 fw-light mb-0">3.5/5.0</li>
-											</ul>
-										</div>
-										<!-- Card footer -->
-										<div class="card-footer pt-0 pb-3">
-											<hr>
-											<div class="d-flex justify-content-between mt-2">
-												<span class="h6 fw-light mb-0"><i class="far fa-clock text-danger me-2"></i>6h 56m</span>
-												<span class="h6 fw-light mb-0"><i class="fas fa-table text-orange me-2"></i>82 lectures</span>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- Card item END -->
-
-								<!-- Card item START -->
-								<div class="col-sm-6 col-lg-4 col-xl-3">
-									<div class="card shadow h-100">
-										<!-- Image -->
-										<img src="assets/images/courses/4by3/02.jpg" class="card-img-top" alt="course image">
-										<div class="card-body pb-0">
-											<!-- Badge and favorite -->
-											<div class="d-flex justify-content-between mb-2">
-												<a href="#" class="badge bg-success bg-opacity-10 text-success">Beginner</a>
-												<a href="#" class="text-danger"><i class="fas fa-heart"></i></a>
-											</div>
-											<!-- Title -->
-											<h5 class="card-title fw-normal"><a href="#">Graphic Design Masterclass</a></h5>
-											<p class="text-truncate-2 mb-2">Rooms oh fully taken by worse do. Points afraid but may end.</p>
-											<!-- Rating star -->
-											<ul class="list-inline mb-0">
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star-half-alt text-warning"></i></li>
-												<li class="list-inline-item ms-2 h6 fw-light mb-0">4.5/5.0</li>
-											</ul>
-										</div>
-										<!-- Card footer -->
-										<div class="card-footer pt-0 pb-3">
-											<hr>
-											<div class="d-flex justify-content-between">
-												<span class="h6 fw-light mb-0"><i class="far fa-clock text-danger me-2"></i>9h 56m</span>
-												<span class="h6 fw-light mb-0"><i class="fas fa-table text-orange me-2"></i>65 lectures</span>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- Card item END -->
-
-								<!-- Card item START -->
-								<div class="col-sm-6 col-lg-4 col-xl-3">
-									<div class="card shadow h-100">
-										<!-- Image -->
-										<img src="assets/images/courses/4by3/03.jpg" class="card-img-top" alt="course image">
-										<div class="card-body pb-0">
-											<!-- Badge and favorite -->
-											<div class="d-flex justify-content-between mb-2">
-												<a href="#" class="badge bg-success bg-opacity-10 text-success">Beginner</a>
-												<a href="#" class="h6 fw-light mb-0"><i class="far fa-heart"></i></a>
-											</div>
-											<!-- Title -->
-											<h5 class="card-title fw-normal"><a href="#">Create a Design System in Figma</a></h5>
-											<p class="text-truncate-2 mb-2">Rooms oh fully taken by worse do. Points afraid but may end.</p>
-											<!-- Rating star -->
-											<ul class="list-inline mb-0">
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star text-warning"></i></li>
-												<li class="list-inline-item me-0 small"><i class="fas fa-star-half-alt text-warning"></i></li>
-												<li class="list-inline-item ms-2 h6 fw-light mb-0">4.5/5.0</li>
-											</ul>
-										</div>
-										<!-- Card footer -->
-										<div class="card-footer pt-0 pb-3">
-											<hr>
-											<div class="d-flex justify-content-between">
-												<span class="h6 fw-light mb-0"><i class="far fa-clock text-danger me-2"></i>5h 56m</span>
-												<span class="h6 fw-light mb-0"><i class="fas fa-table text-orange me-2"></i>32 lectures</span>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- Card item END -->
 							</div>
 						</div>
 						<!-- Content END -->

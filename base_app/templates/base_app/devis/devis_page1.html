@@ -200,10 +200,7 @@
 										Pays actuel <span class="text-danger">*</span>
 									</label>
 									<select class="form-select form-control text-opacity-50" name="country_id" required="">
-										<option selected disabled value="">-------------------------</option>
-										{% for data in country %}
-											<option value="{{data.id}}" class="text-dark">{{data.name}}</option>
-										{% endfor %}
+										<option value="{{country.id}}" class="text-dark">{{country.name}}</option>
 									</select>
 								</div>
 								</br></br></br>

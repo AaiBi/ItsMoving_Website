@@ -1,9 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth.models import User
-
-from base_app.models import Mover_Country, Mover_Region, Mover_Moving_Type1, Mover_Moving_Type2
-from user.models import User_Info
+from base_app.models import Mover_Country, Mover_Region, Mover_Moving_Type2
 
 
 class EditUserForm(UserChangeForm):
@@ -11,14 +9,6 @@ class EditUserForm(UserChangeForm):
         model = User
         fields = [
             'first_name', 'last_name', 'email', 'username'
-        ]
-
-
-class User_Info_Form(forms.ModelForm):
-    class Meta:
-        model = User_Info
-        fields = [
-            'indicatif', 'phone_number', 'Adresse', 'country', 'profil_picture'
         ]
 
 
@@ -55,14 +45,6 @@ class EditMoverRegionForm(forms.ModelForm):
         model = Mover_Region
         fields = [
             'region_name'
-        ]
-
-
-class EditMoverMovingType1Form(forms.ModelForm):
-    class Meta:
-        model = Mover_Moving_Type1
-        fields = [
-            'moving_type1_name'
         ]
 
 

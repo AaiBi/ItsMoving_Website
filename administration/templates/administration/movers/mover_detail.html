@@ -1,0 +1,227 @@
+{% extends 'administration/admin_base.html' %}
+
+{% block title %} Admin - Devis {% endblock %}
+
+{% load static %}
+
+{% block demenageur_active %} active {% endblock %}
+
+
+{% block main %}
+
+    <div class="card">
+        <div class="card-header bg-dark" align="center">
+            <h2 class="text-white">{{mover.company_name}} - {{mover.ref}}</h2>
+        </div>
+
+        <div class="card-body bg-dark">
+
+            <!--General info-->
+            <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 ">
+                <center><h4>Informations générales</h4></center>
+                </br>
+
+                <div class="card card-body text-dark">
+                    <center>
+                        <h5>
+                            <span class="text-info">{{mover.company_description|capfirst}}</span>
+                        </h5>
+                    </center>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <img class="avatar-img rounded-circle border border-white border-3 shadow" style="width: 50%" src="{{mover.logo.url}}">
+                        </div>
+                        <div class="col-sm-6">
+                            <ul>
+                                <li>
+                                    <h5>
+                                        Ville:
+                                        <span class="text-info">{{mover.City}}</span>
+                                    </h5>
+                                </li>
+                                <li>
+                                    <h5>
+                                        Adresse:
+                                        <span class="text-info">{{mover.Adresse}}</span>
+                                    </h5>
+                                </li>
+                                <li>
+                                    <h5>
+                                        Code Postal:
+                                        <span class="text-info">{{mover.Postal_Code}}</span>
+                                    </h5>
+                                </li>
+                                <li>
+                                    <h5>
+                                        Numéro de TVA:
+                                        <span class="text-info">{{mover.TVA_number}}</span>
+                                    </h5>
+                                </li>
+                                <li>
+                                    <h5>
+                                        Téléphone:
+                                        <span class="text-info">{{mover.company_phone_number}}</span>
+                                    </h5>
+                                </li>
+                                <li>
+                                    <h5>
+                                        Nombre d'employés:
+                                        <span class="text-info">{{mover.employee_number}}</span>
+                                    </h5>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 mt-5">
+                <center><h4>Informations sur l'utilisateur</h4></center>
+                </br>
+                {% for user in users %}
+                    {% if mover.user_id == user.id %}
+                        <div class="card card-body text-dark">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <ul>
+                                        <li>
+                                            <h5>
+                                                Prénom :
+                                                <span class="text-info">{{user.first_name|capfirst}}</span>
+                                            </h5>
+                                        </li>
+                                        <li>
+                                            <h5>
+                                                Nom :
+                                                <span class="text-info">{{user.last_name|capfirst}}</span>
+                                            </h5>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-sm-6">
+                                    <ul>
+                                        <li>
+                                            <h5>
+                                                Email :
+                                                <span class="text-info">{{user.email}}</span>
+                                            </h5>
+                                        </li>
+                                        <li>
+                                            <h5>
+                                                Nom d'utilisateur :
+                                                <span class="text-info">{{user.username}}</span>
+                                            </h5>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 mt-5">
+                <div class="card card-body text-dark">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <ul>
+                                <li>
+                                    <h5>
+                                        Site Web:
+                                        <a href="{{mover.website}}">{{mover.website}}</a>
+                                    </h5>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6">
+                            <ul>
+                                <li>
+                                    <h5>
+                                        Nombre de devis max:
+                                        <span class="text-info">{{mover.number_max_quote_request}}/jour</span>
+                                    </h5>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-12">
+                            <center>
+                                <h5>
+                                    Inscris le:
+                                    {% load i18n %}
+                                    {% language 'fr' %}
+                                        <span class="text-info">{{mover.created|date:'d F Y'}}</span>
+                                    {% endlanguage %}
+                                </h5>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            </br>
+            {% if mover.activated == False %}
+                <center>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="mover_id" value="{{mover.id}}">
+                    <input type="hidden" name="ref" value="{{mover.ref}}">
+                    <input type="hidden" name="company_name" value="{{mover.company_name}}">
+                    <input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
+                    <input type="hidden" name="Adresse" value="{{mover.Adresse}}">
+                    <input type="hidden" name="employee_number" value="{{mover.employee_number}}">
+                    <input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
+                    <input type="hidden" name="website" value="{{mover.website}}">
+                    <input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
+                    <input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
+                    <input type="hidden" name="City" value="{{mover.City}}">
+                    <input type="hidden" name="company_statut" value="{{mover.company_statut}}">
+                    <input type="hidden" name="company_description" value="{{mover.company_description}}">
+                    <input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
+                    <input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
+                    <input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
+                    <input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
+                    <input type="hidden" name="logo" value="{{mover.logo}}">
+                    <input type="hidden" name="validated" value="{{mover.validated}}">
+                    <input type="hidden" name="activated" value="True">
+                    <button type="submit" class="btn btn-sm btn-success-soft">
+                        Activer ce compte
+                    </button>
+                </form>
+            </center>
+            {% else %}
+                <center>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="mover_id" value="{{mover.id}}">
+                        <input type="hidden" name="ref" value="{{mover.ref}}">
+                        <input type="hidden" name="company_name" value="{{mover.company_name}}">
+                        <input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
+                        <input type="hidden" name="Adresse" value="{{mover.Adresse}}">
+                        <input type="hidden" name="employee_number" value="{{mover.employee_number}}">
+                        <input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
+                        <input type="hidden" name="website" value="{{mover.website}}">
+                        <input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
+                        <input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
+                        <input type="hidden" name="City" value="{{mover.City}}">
+                        <input type="hidden" name="company_statut" value="{{mover.company_statut}}">
+                        <input type="hidden" name="company_description" value="{{mover.company_description}}">
+                        <input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
+                        <input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
+                        <input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
+                        <input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
+                        <input type="hidden" name="logo" value="{{mover.logo}}">
+                        <input type="hidden" name="validated" value="{{mover.validated}}">
+                        <input type="hidden" name="activated" value="False">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Désactiver ce compte
+                        </button>
+                    </form>
+                </center>
+            {% endif %}
+        </div>
+
+    </div>
+
+{% endblock %}
