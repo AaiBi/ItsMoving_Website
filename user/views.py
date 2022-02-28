@@ -78,10 +78,14 @@ def statistic(request):
                                                     current_date.month, rejected=True).count()
     number_quote_request_treated = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=True).count()
     number_quote_request_rejected = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=True).count()
-    treated = number_quote_request_treated / (number_quote_request_treated + number_quote_request_rejected)
-    treated = treated * 100
-    rejected = number_quote_request_rejected / (number_quote_request_treated + number_quote_request_rejected)
-    rejected = rejected * 100
+    if number_quote_request_treated or number_quote_request_rejected:
+        treated = number_quote_request_treated / (number_quote_request_treated + number_quote_request_rejected)
+        treated = treated * 100
+        rejected = number_quote_request_rejected / (number_quote_request_treated + number_quote_request_rejected)
+        rejected = rejected * 100
+    else:
+        treated = 0
+        rejected = 0
 
     return render(request, 'user/profile/statistic.html', {'mover': mover, 'number_quote_request': number_quote_request,
                                                            'treated': treated, 'rejected': rejected,
@@ -416,38 +420,6 @@ def delete_mover_moving_type2(request, moving_type_pk, mover_pk):
 
 
 @login_required
-def modify_country_departure(request, mover_country_pk):
-    mover_country = get_object_or_404(Mover_Country, pk=mover_country_pk)
-    form = EditMoverCountryForm(instance=mover_country)
-
-    if request.method == 'POST':
-        form = EditMoverCountryForm(request.POST, instance=mover_country)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Modification effectuée !')
-            return redirect('area_intervention')
-
-    return render(request, 'user/mover/settings/modify_country_departure.html', {'mover_country': mover_country,
-                                                                                 'form': form})
-
-
-@login_required
-def modify_country_arrival(request, mover_country_pk):
-    mover_country = get_object_or_404(Mover_Country, pk=mover_country_pk)
-    form = EditMoverCountryForm(instance=mover_country)
-
-    if request.method == 'POST':
-        form = EditMoverCountryForm(request.POST, instance=mover_country)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Modification effectuée !')
-            return redirect('area_intervention')
-
-    return render(request, 'user/mover/settings/modify_country_arrival.html', {'mover_country': mover_country,
-                                                                               'form': form})
-
-
-@login_required
 def quote_request_settings(request):
     mover = Mover.objects.filter(user_id=request.user.id).last()
     form = Mover_Form(instance=mover)
@@ -455,23 +427,6 @@ def quote_request_settings(request):
 
     if request.method == 'POST':
         form = Mover_Form(request.POST, instance=mover)
-        print(request.POST.get('ref'))
-        print(request.POST.get('company_name'))
-        print(request.POST.get('company_phone_number'))
-        print(request.POST.get('Adresse'))
-        print(request.POST.get('employee_number'))
-        print(request.POST.get('number_max_quote_request'))
-        print(request.POST.get('website'))
-        print(request.POST.get('TVA_number'))
-        print(request.POST.get('Postal_Code'))
-        print(request.POST.get('City'))
-        print(request.POST.get('company_statut'))
-        print(request.POST.get('company_description'))
-        print(request.POST.get('logo'))
-        print(request.POST.get('validated'))
-        print(request.POST.get('activated'))
-        print(request.POST.get('country'))
-        print(request.POST.get('moving_type1'))
         if form.is_valid():
             form = form.save(commit=False)
             form.country = get_object_or_404(Country, id=request.POST.get('country'))

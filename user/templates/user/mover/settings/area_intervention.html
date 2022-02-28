@@ -143,27 +143,13 @@
 							<div class="card position-relative d-sm-flex bg-opacity-10">
 								<!-- Card body START -->
 								<div class="card-body">
-									<span class="text-info">
-										*<span class="text-danger">Départ</span> constitue la liste des pays dont
-										les départs de déménagements seront les pays définis*
-									</span></br>
-									<span class="text-info">
-										*<span class="text-danger">Arrivée</span> constitue la liste des pays dont
-										les destinations finales des déménagements seront les pays définis*
-									</span></br>
-									<span class="text-danger">
-										*La modification se fait en appuyant directement sur le bouton dans la colonne de
-										<span class="text-success">Départ</span> ou d'<span class="text-success">Arrivée</span>*
-									</span>
-									<p></p>
+
 									<div class="table-responsive-lg border-0">
 										<table class="table table-dark-gray align-middle p-4 mb-0 table-hover">
 											<!-- Table head -->
 											<thead align="center">
 												<tr>
 													<th scope="col" class="border-0 rounded-start">Pays</th>
-													<th scope="col" class="border-0 rounded-start">Départ(s)</th>
-													<th scope="col" class="border-0 rounded-start">Arrivée(s)</th>
 													<th scope="col" class="border-0 rounded-end">Action</th>
 												</tr>
 											</thead>
@@ -178,28 +164,6 @@
 																<!-- Course item -->
 																<td>
 																	<center>{{country.name}}</center>
-																</td>
-																<td>
-																	{% if mover_country.departure == False %}
-																		<a href="{% url 'modify_country_departure' mover_country.id %}" class="btn btn-sm btn-danger-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Ce pays n'est pas dans la liste de Départ, appuyer pour modifier !">
-																			<i class="fa fa-check"></i>
-																		</a>
-																	{% else %}
-																		<a href="{% url 'modify_country_departure' mover_country.id %}" class="btn btn-sm btn-success-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Ce pays est dans la liste de Départ, appuyer pour modifier !">
-																			<i class="fa fa-check"></i>
-																		</a>
-																	{% endif %}
-																</td>
-																<td>
-																	{% if mover_country.arrival == False %}
-																		<a href="{% url 'modify_country_arrival' mover_country.id %}" class="btn btn-sm btn-danger-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Ce pays n'est pas dans la liste d'Arrivée, appuyer pour modifier !">
-																			<i class="fa fa-check"></i>
-																		</a>
-																	{% else %}
-																		<a href="{% url 'modify_country_arrival' mover_country.id %}" class="btn btn-sm btn-success-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Ce pays est dans la liste d'Arrivée, appuyer pour modifier !">
-																			<i class="fa fa-check"></i>
-																		</a>
-																	{% endif %}
 																</td>
 																<!-- Action item -->
 																<td>

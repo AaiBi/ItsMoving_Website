@@ -138,35 +138,37 @@
 					<!-- Earning boxes END -->
 
 					<!-- Earning chart START -->
-					<div class="card border rounded-3 mt-5">
-						<!-- Card title -->
-						<div class="card-header">
-							<h5 class="mb-0">Vos statistiques</h5>
-						</div>
-						<!-- Card body -->
-						<div class="card-body">
-							<div class="row g-4 g-md-5 align-items-center">
-								<!-- Chart -->
-								<div class="col-md-6">
-									<div id="ChartPageViews"></div>
-								</div>
+					{% if treated or rejected %}
+						<div class="card border rounded-3 mt-5">
+							<!-- Card title -->
+							<div class="card-header">
+								<h5 class="mb-0">Vos statistiques</h5>
+							</div>
+							<!-- Card body -->
+							<div class="card-body">
+								<div class="row g-4 g-md-5 align-items-center">
+									<!-- Chart -->
+									<div class="col-md-6">
+										<div id="ChartPageViews"></div>
+									</div>
 
-								<!-- Content -->
-								<div class="col-md-6">
-									<ul class="list-group list-group-borderless mb-3">
-										<li class="list-group-item">
-											<i class="text-success fas fa-circle me-2"></i>
-											Devis traités
-										</li>
-										<li class="list-group-item">
-											<i class="text-danger fas fa-circle me-2"></i>
-											Devis rejetés
-										</li>
-									</ul>
+									<!-- Content -->
+									<div class="col-md-6">
+										<ul class="list-group list-group-borderless mb-3">
+											<li class="list-group-item">
+												<i class="text-success fas fa-circle me-2"></i>
+												Devis traités
+											</li>
+											<li class="list-group-item">
+												<i class="text-danger fas fa-circle me-2"></i>
+												Devis rejetés
+											</li>
+										</ul>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
+					{% endif %}
 					<!-- Earning chart END -->
 
 				</div>
