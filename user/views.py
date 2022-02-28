@@ -33,14 +33,6 @@ def login_user(request):
 
 
 @login_required
-def profile(request):
-    mover = Mover.objects.filter(user_id=request.user.id).last()
-    number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
-
-    return render(request, 'user/profile/profile.html', {'mover': mover, 'number_quote_request': number_quote_request})
-
-
-@login_required
 def reviews(request):
     mover = Mover.objects.filter(user_id=request.user.id).last()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
