@@ -91,40 +91,35 @@ class Mover_Region(models.Model):
 
 class Quote_Request(models.Model):
     ref = models.CharField(max_length=30)
-
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
     City_Departure = models.CharField(max_length=300)
-    Postal_Code_Departure = models.IntegerField()
     Adresse_Departure = models.CharField(max_length=300)
+    Postal_Code_Departure = models.IntegerField()
     Residence_Number_or_Name_Departure = models.CharField(max_length=300)
     Residence_Departure = models.CharField(max_length=300)
     Number_Room_Departure = models.IntegerField()
-
     Country_Arrival = models.CharField(max_length=300, default="")
     City_Arrival = models.CharField(max_length=300)
     Adresse_Arrival = models.CharField(max_length=300)
     Residence_Number_or_Name_Arrival = models.CharField(max_length=300)
     Postal_Code_Arrival = models.IntegerField()
     Residence_Arrival = models.CharField(max_length=300)
-
     packing_service = models.BooleanField(default=False)
     packaging_materials = models.BooleanField(default=False)
     furniture_assembly_disassembly = models.BooleanField(default=False)
     furniture_storage = models.BooleanField(default=False)
-
+    Additional_informations = models.CharField(max_length=300)
     firstname = models.CharField(max_length=300, default="")
     lastname = models.CharField(max_length=300, default="")
     email = models.EmailField(default="")
     phone_number = models.CharField(max_length=30, default="")
-
-    Additional_informations = models.CharField(max_length=300)
+    created = models.DateTimeField(auto_now_add=True)
+    distributed = models.BooleanField(default=False)
     moving_date = models.DateTimeField(auto_now_add=False)
     moving_date1 = models.DateTimeField(auto_now_add=False)
     moving_date2 = models.DateTimeField(auto_now_add=False)
-    created = models.DateTimeField(auto_now_add=True)
-    distributed = models.BooleanField(default=False)
     moving_type1 = models.ForeignKey(Moving_Type1, on_delete=models.CASCADE)
     moving_type2 = models.ForeignKey(Moving_Type2, on_delete=models.CASCADE)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
 
     def __str__(self):
         return self.ref
@@ -133,7 +128,15 @@ class Quote_Request(models.Model):
 class Mover_Quote_Request(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE)
+    treated = models.BooleanField(default=False)
+    rejected = models.BooleanField(default=False)
     mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
+
+
+class Quote_Request_Rejected(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    reason = models.TextField()
+    mover_quote_request = models.ForeignKey(Mover_Quote_Request, on_delete=models.CASCADE, default="")
 
 
 class Number_Mover_Quote_Request_PerDay(models.Model):

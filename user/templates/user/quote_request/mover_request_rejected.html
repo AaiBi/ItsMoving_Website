@@ -1,6 +1,6 @@
 {% extends 'base_app/base.html' %}
 
-{% block title %} Paramètres {% endblock %}
+{% block title %} Les demandes de devis {% endblock %}
 
 {% load static %}
 
@@ -13,11 +13,11 @@
     <!-- **************** MAIN CONTENT START **************** -->
     <!-- =======================
 
-	Page Banner START -->
+    Page Banner START -->
     <section class="pt-0">
         <!-- Main banner background image -->
         <div class="container-fluid px-0">
-            <div class="bg-blue h-100px h-md-200px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
+            <div class="bg-blue h-100px h-md-100px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
             </div>
         </div>
         <div class="container mt-n4">
@@ -40,20 +40,6 @@
     </section>
     <!-- =======================
     Page Banner END -->
-
-	{% if error %}
-		<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
-			{{ error }}
-		</div>
-	{% else %}
-		{% if messages %}
-			{% for message in messages %}
-				<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
-					{{message}}
-				</div>
-			{% endfor %}
-		{% endif %}
-	{% endif %}
 
     <!-- =======================
 	Page content START -->
@@ -90,13 +76,13 @@
                                         <a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
                                             Facturation
                                         </a>
-										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
+										<a class="list-group-item active" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
 										</a>
 										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
 											Configuration du profil
 										</a>
-										<a class="list-group-item active" href="{% url 'settings' %}"><i class="bi bi-gear fa-fw me-2"></i>
+										<a class="list-group-item" href="{% url 'settings' %}"><i class="bi bi-gear fa-fw me-2"></i>
 											Paramètres
 										</a>
 										<a class="list-group-item" href="{% url 'user_password_change' %}"><i class="bi bi-lock fa-fw me-2"></i>
@@ -120,124 +106,80 @@
 				<!-- Main content START -->
 				<div class="col-xl-9">
 
-					<!-- Counter boxes START -->
-					<div class="row g-4">
-						<!-- Counter item -->
-						<div class="col-sm-12">
-							<a class="d-flex justify-content-center align-items-center p-4 bg-purple bg-opacity-10 rounded-3">
-								<span class="display-6 text-purple mb-0"><i class='fa fa-truck fa-fw'></i></span>
-								<div class="ms-4">
-									<div class="d-flex">
-										<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="{{mover_moving_types1_number}}"	data-purecounter-delay="200">0</h5>
-									</div>
-									<span class="mb-0 h6 fw-light">Type(s) de déménagement</span>
-								</div>
-							</a>
-						</div>
-					</div>
-					<!-- Counter boxes END -->
-
-
-					<!-- Edit profile START -->
+					<!-- Card START -->
 					<div class="card border rounded-3">
-						<!-- Card body START -->
-						<div class="card-body">
-							<div class="card position-relative d-sm-flex bg-opacity-10">
-								<!-- Card body START -->
-								<div class="card-body">
-									<div class="table-responsive-lg border-0">
-										<table class="table table-dark-gray align-middle p-4 mb-0 table-hover">
-											<!-- Table head -->
-											<thead align="center">
-												<tr>
-													<th scope="col" class="border-0 rounded-start">Zone(s)</th>
-													<th scope="col" class="border-0 rounded-end">Action</th>
-												</tr>
-											</thead>
 
-											<!-- Table body START -->
-											<tbody align="center">
-												<!-- Table item -->
-												{% for data2 in mover_moving_types1 %}
-													<tr>
-														<!-- Course item -->
-														<td>
-															<center>{{data2.moving_type1_name}}</center>
-														</td>
-														<!-- Action item -->
-														<td>
-															<a href="{% url 'delete_mover_moving_type1' data2.id mover.id %}" class="btn btn-sm btn-danger-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Appuyer pour supprimer">
-																<i class="fas fa-fw fa-times"></i>
-															</a>
-														</td>
-													</tr>
-												{% endfor %}
-											</tbody>
-										</table>
-									</div>
-
-									{% if mover_moving_types1_number != 2 %}
-										<hr>
-										<!-- Form START -->
-										<form class="row g-3 mt-2 position-relative z-index-9" method="POST">
-											{% csrf_token %}
-											<!-- Company Name -->
-											<div class="col-lg-12">
-												<div class="form-check">
-													{% for data in moving_type1 %}
-														<input class="form-check-input" type="checkbox" value="{{data.name}}" name="moving_type1_name[]"/>
-														<label class="form-check-label">
-															<h4>{{data.name}}</h4>
-														</label></br>
-													{% endfor %}
-												</div>
-											</div>
-
-											</br>
-
-											<!-- Button -->
-											<div class="col-12" align="center">
-												<button type="submit" name="add_moving_type1" value="add_moving_type1" class="btn btn-primary mb-0">Ajouter</button>
-											</div>
-										</form>
-									{% endif %}
-								</div>
-								<!-- Card body END -->
+						{% if error %}
+							<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+								{{ error }}
 							</div>
-
-							</br></br></br></br></br>
-						</div>
-						<!-- Card body END -->
-					</div>
-					<!-- Edit profile END -->
-
-					{% if mover %}
-						<!-- =======================
-						Mover account START -->
-
-
-
-						<!-- =======================
-						End Mover account -->
-					{% else %}
-						<!-- =======================
-						Simple User account START -->
-
-						{%if user.is_authenticated %}
-
-
+						{% else %}
+							{% if messages %}
+								{% for message in messages %}
+									<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+										{{message}}
+									</div>
+								{% endfor %}
+							{% endif %}
 						{% endif %}
-						<!-- =======================
-						End Simple User account -->
-					{% endif %}
 
+
+						<!-- Card header START -->
+						<div class="card-header border-bottom">
+							<h3 class="mb-0">Demande de devis - {{mover_quote_request.quote_request.ref}}</h3>
+						</div>
+						<!-- Card header END -->
+
+						<!-- Card body START -->
+						<div class="card-body row">
+							<center style="font-size: 30px"></center>
+							<p></p>
+							<form method="POST" class="row">
+								{% csrf_token %}
+								<!-- email -->
+								<div class="col-sm-12">
+									<label class="form-label">Veuillez sélectionner une raison *</label>
+                                    <select class="form-select form-control text-opacity-50" name="reason">
+										<option value="" class="text-dark">--------</option>
+                                        <option value="Client injoignable" class="text-dark">
+											Client injoignable
+										</option>
+										<option value="Adresse email et/ou numéro de téléphone erronés" class="text-dark">
+											Adresse email et/ou numéro de téléphone erronés
+										</option>
+										<option value="Demande au-delà de nos compétences" class="text-dark">
+											Demande au-delà de nos compétences
+										</option>
+										<option value="Devis erronés" class="text-dark">
+											Devis erronés
+										</option>
+										<option value="Maximum journalier atteint" class="text-dark">
+											Maximum journalier atteint
+										</option>
+										<option value="Autres raisons" class="text-dark">
+											Autres raisons
+										</option>
+                                    </select>
+								</div>
+								<p></p>
+								<p></p>
+								<input type="hidden" name="treated" value="{{mover_quote_request.treated}}">
+								<input type="hidden" name="rejected" value="True">
+								<button type="submit" class="btn btn text-white d-block w-100 btn-danger">
+									Rejeter
+								</button>
+							</form>
+						</div>
+						<!-- Card body START -->
+					</div>
+						<!--Card END  -->
 				</div>
 				<!-- Main content END -->
 			</div><!-- Row END -->
 		</div>
 	</section>
 	<!-- =======================
-	Page content END --></br></br></br></br></br></br></br></br></br></br></br>
+	Page content END -->
 
     <!-- **************** MAIN CONTENT END **************** -->
 

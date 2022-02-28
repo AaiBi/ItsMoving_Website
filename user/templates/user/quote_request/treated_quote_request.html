@@ -131,32 +131,19 @@
 
 						<!-- Card header START -->
 						<div class="card-header border-bottom">
-							<h3 class="mb-0">Demande de devis</h3>
+							<h3 class="mb-0">Demande de devis traitées</h3>
 						</div>
 						<!-- Card header END -->
 
 						<!-- Card body START -->
 						<div class="card-body">
 
-							<!-- Search and select START -->
-							<div class="row g-3 align-items-center justify-content-between mb-4">
-								<!-- Search -->
-								<div class="col-md-8">
-									<form class="rounded position-relative" method="POST">
-										{% csrf_token %}
-										<input class="form-control pe-5 bg-transparent" type="search" name="ref" placeholder="Entrer une référence" aria-label="Search">
-										<button class="btn bg-transparent px-2 py-0 position-absolute top-50 end-0 translate-middle-y" type="submit" name="search" value="search">
-											<i class="fas fa-search fs-6 "></i>
-										</button>
-									</form>
-								</div>
-
-								<!-- Select option -->
-								<div class="col-md-3">
-									<a type="button" class="btn btn-dark-soft" href="{% url 'treated_quote_request' %}">Voir les demandes traitées</a>
-								</div>
-							</div>
-							<!-- Search and select END -->
+							<nav aria-label="breadcrumb">
+								<ol class="py-1 my-2 breadcrumb">
+									<li class="breadcrumb-item"></li>
+									<li class="breadcrumb-item"><a href="{% url 'quote_request' %}">Demande de devis</a></li>
+								</ol>
+							</nav>
 
 							<!-- Order list table START -->
 							<div class="table-responsive border-0">

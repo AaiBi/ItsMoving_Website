@@ -93,6 +93,11 @@
                                         </a>
 										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
+											{% if number_quote_request != 0 %}
+												<span class="btn btn-sm btn-success-soft btn-round me-1 mb-0">
+													{{number_quote_request}}
+												</span>
+											{% endif %}
 										</a>
 										<a class="list-group-item active" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
 											Configuration du profil
@@ -191,7 +196,8 @@
 										<input type="hidden" name="company_description" value="{{mover.company_description}}">
 										<input type="hidden" name="validated" value="{{mover.validated}}">
 										<input type="hidden" name="activated" value="{{mover.activated}}">
-										<input type="hidden" name="country" value="{{mover.country}}">
+										<input type="hidden" name="country" value="{{mover.country.id}}">
+										<input type="hidden" name="moving_type1" value="{{mover.moving_type1.id}}">
 										<!-- Save button -->
 										<div class="d-sm-flex justify-content-end">
 											<button type="submit" name="edit_company_logo" value="edit_company_logo" class="btn btn-primary mb-0">Enregistrer les modifications</button>

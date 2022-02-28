@@ -23,9 +23,10 @@ urlpatterns = [
          '/<str:Country_Arrival>'
          '/<str:City_Arrival>/<str:Adresse_Arrival>/<int:Postal_Code_Arrival>/<str:Residence_Number_or_Name_Arrival>'
          '/<str:Residence_Arrival>', views.devis_page4, name='devis_page4'),
-    path('devis_page5/<int:moving_type1_id>/<int:moving_type2_id>/<int:country_id>/<str:City_Departure>/<str:Adresse_Departure>'
-         '/<int:Postal_Code_Departure>/<str:Residence_Number_or_Name_Departure>/<str:Residence_Departure>/<int:Number_Room_Departure>'
-         '/<str:Country_Arrival>'
+    path('devis_page5/<int:moving_type1_id>/<int:moving_type2_id>/<int:country_id>/<str:City_Departure>/<str'
+         ':Adresse_Departure> '
+         '/<int:Postal_Code_Departure>/<str:Residence_Number_or_Name_Departure>/<str:Residence_Departure>/<int'
+         ':Number_Room_Departure>/<str:Country_Arrival>'
          '/<str:City_Arrival>/<str:Adresse_Arrival>/<int:Postal_Code_Arrival>/<str:Residence_Number_or_Name_Arrival>'
          '/<str:Residence_Arrival>/<str:firstname>/<str:lastname>/<str:email>/<str:phone_number>',
          views.devis_page5, name='devis_page5'),

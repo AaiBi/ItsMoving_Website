@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from base_app.models import Mover_Country, Mover_Region, Mover_Moving_Type2
+from base_app.models import Mover_Country, Mover_Region, Mover_Moving_Type2, Mover_Quote_Request, Quote_Request_Rejected
 
 
 class EditUserForm(UserChangeForm):
@@ -53,4 +53,12 @@ class EditMoverMovingType2Form(forms.ModelForm):
         model = Mover_Moving_Type2
         fields = [
             'moving_type2_name'
+        ]
+
+
+class MoverQuoteRequestForm(forms.ModelForm):
+    class Meta:
+        model = Mover_Quote_Request
+        fields = [
+            'treated', 'rejected'
         ]

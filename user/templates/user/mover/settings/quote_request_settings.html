@@ -92,6 +92,11 @@
                                         </a>
 										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
+											{% if number_quote_request != 0 %}
+												<span class="btn btn-sm btn-success-soft btn-round me-1 mb-0">
+													{{number_quote_request}}
+												</span>
+											{% endif %}
 										</a>
 										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
 											Configuration du profil
@@ -173,14 +178,11 @@
 											<input type="hidden" name="City" value="{{mover.City}}">
 											<input type="hidden" name="company_statut" value="{{mover.company_statut}}">
 											<input type="hidden" name="company_description" value="{{mover.company_description}}">
-											<input type="hidden" name="country" value="{{mover.country}}">
-											<input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
-											<input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
-											<input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
-											<input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
+											<input type="hidden" name="country" value="{{mover.country.id}}">
 											<input type="hidden" name="logo" value="{{mover.logo.url}}">
 											<input type="hidden" name="validated" value="{{mover.validated}}">
 											<input type="hidden" name="activated" value="{{mover.activated}}">
+											<input type="hidden" name="moving_type1" value="{{mover.moving_type1.id}}">
 											<!-- Button -->
 											<div class="col-12" align="center">
 												<button type="submit" class="btn btn-primary mb-0">Modifier</button>

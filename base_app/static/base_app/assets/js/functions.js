@@ -1,3 +1,4 @@
+
 /**
 * Eduport- LMS, Education and Course Theme
 *
@@ -688,7 +689,7 @@ var e = {
         if (e.isVariableDefined(cpv)) {
           // CHART: Page Views
           var options = {
-            series: [50, 20, 20, 10, 10],
+            series: [50, 20, 20, 5, 5],
             labels: ['Course-1', 'Course-2', 'Course-3', 'Course-4', 'Course-5'],
             chart: {
               height: 300,

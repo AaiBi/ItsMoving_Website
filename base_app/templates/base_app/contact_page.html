@@ -129,25 +129,26 @@
                             brefs délais
                         </p>
 
-                        <form>
+                        <form method="POST">
+                            {% csrf_token %}
                             <!-- Name -->
                             <div class="mb-4 bg-light-input">
                                 <label for="yourName" class="form-label">Votre Nom *</label>
-                                <input type="text" class="form-control form-control-lg" id="yourName">
+                                <input type="text" class="form-control form-control-lg" id="yourName" name="full_name">
                             </div>
                             <!-- Email -->
                             <div class="mb-4 bg-light-input">
                                 <label for="emailInput" class="form-label">Adresse Email *</label>
-                                <input type="email" class="form-control form-control-lg" id="emailInput">
+                                <input type="email" class="form-control form-control-lg" id="emailInput" name="email_from">
                             </div>
                             <!-- Message -->
                             <div class="mb-4 bg-light-input">
                                 <label for="textareaBox" class="form-label">Message *</label>
-                                <textarea class="form-control" id="textareaBox" rows="4"></textarea>
+                                <textarea class="form-control" id="textareaBox" rows="4" name="message"></textarea>
                             </div>
                             <!-- Button -->
                             <div class="d-grid">
-                                <button class="btn btn-lg btn-primary mb-0" type="button">Envoyez le Message</button>
+                                <button class="btn btn-lg btn-primary mb-0" type="submit">Envoyez le Message</button>
                             </div>
                         </form>
                     </div>

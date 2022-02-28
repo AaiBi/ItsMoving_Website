@@ -1,6 +1,6 @@
 {% extends 'base_app/base.html' %}
 
-{% block title %} Statistiques {% endblock %}
+{% block title %} Les demandes de devis {% endblock %}
 
 {% load static %}
 
@@ -67,7 +67,7 @@
 										<a class="list-group-item" href="{% url 'preview' %}"><i class="bi bi-person-lines-fill fa-fw me-2"></i>
 											Aperçu du profil
 										</a>
-										<a class="list-group-item active" href="{% url 'statistic' %}"><i class="bi bi-graph-up fa-fw me-2"></i>
+										<a class="list-group-item" href="{% url 'statistic' %}"><i class="bi bi-graph-up fa-fw me-2"></i>
                                             Évolution de vos activités
                                         </a>
                                         <a class="list-group-item" href="{% url 'reviews' %}"><i class="bi bi-star fa-fw me-2"></i>
@@ -76,8 +76,13 @@
                                         <a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
                                             Facturation
                                         </a>
-										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
+										<a class="list-group-item active" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
+											{% if number_quote_request != 0 %}
+												<span class="btn btn-sm btn-success-soft btn-round me-1 mb-0">
+													{{number_quote_request}}
+												</span>
+											{% endif %}
 										</a>
 										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
 											Configuration du profil
@@ -106,69 +111,48 @@
 				<!-- Main content START -->
 				<div class="col-xl-9">
 
-					<!-- Earning boxes START -->
-					<div class="row g-4">
-						<!-- Earning item -->
-						<div class="col-sm-6 col-lg-4">
-							<div class="text-center p-4 bg-light rounded-3">
-								<h6 class="text-body">Ce mois vous aviez reçu</h6>
-								<h2 class="mb-0 fs-1">{{number_quote_request_received_this_month}}</h2>
-								<h6 class="text-body">devis</h6>
-							</div>
-						</div>
+					<!-- Card START -->
+					<div class="card border rounded-3">
 
-						<!-- Earning item -->
-						<div class="col-sm-6 col-lg-4">
-							<div class="text-center p-4 bg-light rounded-3">
-								<h6 class="text-body">Ce mois vous aviez traités</h6>
-								<h2 class="mb-0 fs-1">{{number_quote_request_treated_this_month}}</h2>
-								<h6 class="text-body">devis</h6>
+						{% if error %}
+							<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+								{{ error }}
 							</div>
-						</div>
+						{% else %}
+							{% if messages %}
+								{% for message in messages %}
+									<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+										{{message}}
+									</div>
+								{% endfor %}
+							{% endif %}
+						{% endif %}
 
-						<!-- Earning item -->
-						<div class="col-sm-6 col-lg-4">
-							<div class="text-center p-4 bg-light rounded-3">
-								<h6 class="text-body">Ce mois vous aviez rejetés</h6>
-								<h2 class="mb-0 fs-1">{{number_quote_request_rejected_this_month}}</h2>
-								<h6 class="text-body">devis</h6>
-							</div>
+
+						<!-- Card header START -->
+						<div class="card-header border-bottom">
+							<h3 class="mb-0">Demande de devis - {{mover_quote_request.quote_request.ref}}</h3>
 						</div>
+						<!-- Card header END -->
+
+						<!-- Card body START -->
+						<div class="card-body row">
+							<form method="POST">
+								{% csrf_token %}
+								<h5>
+									Valider que la demande de devis #{{mover_quote_request.quote_request.ref}} a été
+									traitée avec succès
+								</h5></br>
+								<input type="hidden" name="treated" value="True">
+								<input type="hidden" name="rejected" value="False">
+								<button type="submit" class="btn btn text-white d-block w-100 btn-success">
+									Valider
+								</button>
+							</form>
+						</div>
+						<!-- Card body START -->
 					</div>
-					<!-- Earning boxes END -->
-
-					<!-- Earning chart START -->
-					<div class="card border rounded-3 mt-5">
-						<!-- Card title -->
-						<div class="card-header">
-							<h5 class="mb-0">Vos statistiques</h5>
-						</div>
-						<!-- Card body -->
-						<div class="card-body">
-							<div class="row g-4 g-md-5 align-items-center">
-								<!-- Chart -->
-								<div class="col-md-6">
-									<div id="ChartPageViews"></div>
-								</div>
-
-								<!-- Content -->
-								<div class="col-md-6">
-									<ul class="list-group list-group-borderless mb-3">
-										<li class="list-group-item">
-											<i class="text-success fas fa-circle me-2"></i>
-											Devis traités
-										</li>
-										<li class="list-group-item">
-											<i class="text-danger fas fa-circle me-2"></i>
-											Devis rejetés
-										</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- Earning chart END -->
-
+						<!--Card END  -->
 				</div>
 				<!-- Main content END -->
 			</div><!-- Row END -->
@@ -178,5 +162,6 @@
 	Page content END -->
 
     <!-- **************** MAIN CONTENT END **************** -->
+
 
 {% endblock %}

@@ -1,0 +1,386 @@
+{% extends 'base_app/base.html' %}
+
+{% block title %} Les demandes de devis {% endblock %}
+
+{% load static %}
+
+{% block css_styles %}
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- **************** MAIN CONTENT START **************** -->
+    <!-- =======================
+
+    Page Banner START -->
+    <section class="pt-0">
+        <!-- Main banner background image -->
+        <div class="container-fluid px-0">
+            <div class="bg-blue h-100px h-md-100px rounded-0" style="background:url({% static 'base_app/assets/images/pattern/04.png' %}) no-repeat center center; background-size:cover;">
+            </div>
+        </div>
+        <div class="container mt-n4">
+            <div class="row">
+                <!-- Profile banner START -->
+                <div class="col-12">
+                    <!-- Advanced filter responsive toggler START -->
+                    <!-- Divider -->
+                    <hr class="d-xl-none">
+                    <div class="col-12 col-xl-3 d-flex justify-content-between align-items-center">
+                        <a class="h6 mb-0 fw-bold d-xl-none" href="#">Menu</a>
+                        <button class="btn btn-primary d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                            <i class="fas fa-sliders-h"></i>
+                        </button>
+                    </div>
+                    <!-- Advanced filter responsive toggler END -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =======================
+    Page Banner END -->
+
+    <!-- =======================
+	Page content START -->
+	<section class="pt-2">
+		<div class="container">
+			<div class="row">
+				<!-- Right sidebar START -->
+				<div class="col-xl-3">
+					<!-- Responsive offcanvas body START -->
+					<nav class="navbar navbar-light navbar-expand-xl mx-0">
+						<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+							<!-- Offcanvas header -->
+							<div class="offcanvas-header bg-light">
+								<h5 class="offcanvas-title" id="offcanvasNavbarLabel">Mon profil</h5>
+								<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+							</div>
+							<!-- Offcanvas body -->
+							<div class="offcanvas-body p-3 p-xl-0">
+								<div class="bg-dark border rounded-3 pb-0 p-3 w-100">
+									<!-- Dashboard menu -->
+									<div class="list-group list-group-dark list-group-borderless">
+                                        <a class="list-group-item" href="{% url 'profile' %}"><i class="bi bi-ui-checks-grid fa-fw me-2"></i>
+                                            Tableau de bord
+                                        </a>
+										<a class="list-group-item" href="{% url 'preview' %}"><i class="bi bi-person-lines-fill fa-fw me-2"></i>
+											Aperçu du profil
+										</a>
+										<a class="list-group-item" href="{% url 'statistic' %}"><i class="bi bi-graph-up fa-fw me-2"></i>
+                                            Évolution de vos activités
+                                        </a>
+                                        <a class="list-group-item" href="{% url 'reviews' %}"><i class="bi bi-star fa-fw me-2"></i>
+                                            Avis des clients
+                                        </a>
+                                        <a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
+                                            Facturation
+                                        </a>
+										<a class="list-group-item active" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
+											Demandes de devis
+											{% if number_quote_request != 0 %}
+												<span class="btn btn-sm btn-success-soft btn-round me-1 mb-0">
+													{{number_quote_request}}
+												</span>
+											{% endif %}
+										</a>
+										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
+											Configuration du profil
+										</a>
+										<a class="list-group-item" href="{% url 'settings' %}"><i class="bi bi-gear fa-fw me-2"></i>
+											Paramètres
+										</a>
+										<a class="list-group-item" href="{% url 'user_password_change' %}"><i class="bi bi-lock fa-fw me-2"></i>
+											Mot de passe
+										</a>
+										<form action="{% url 'logout_user' %}" method="POST">
+                            				{% csrf_token %}
+											<button type="submit" class="list-group-item text-danger bg-danger-soft-hover">
+												<i class="fas fa-sign-out-alt fa-fw me-2"></i>Déconnexion
+											</button>
+                        				</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</nav>
+					<!-- Responsive offcanvas body END -->
+				</div>
+				<!-- Right sidebar END -->
+
+				<!-- Main content START -->
+				<div class="col-xl-9">
+
+					<!-- Card START -->
+					<div class="card border rounded-3">
+
+						{% if error %}
+							<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+								{{ error }}
+							</div>
+						{% else %}
+							{% if messages %}
+								{% for message in messages %}
+									<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+										{{message}}
+									</div>
+								{% endfor %}
+							{% endif %}
+						{% endif %}
+
+
+						<!-- Card header START -->
+						<div class="card-header border-bottom">
+							<h3 class="mb-0">Demande de devis - {{mover_quote_request.quote_request.ref}}</h3>
+						</div>
+						<!-- Card header END -->
+
+						<!-- Card body START -->
+						<div class="card-body row">
+							<div class="col-sm-12 h5">
+								<center>Informations générales</center>
+								<hr>
+								<ul>
+									<li>
+										Type de déménagement:
+										<b class="text-info">{{mover_quote_request.quote_request.moving_type1.name}}</b>
+									</li>
+									<li>
+										Type de client:
+										<b class="text-info">{{mover_quote_request.quote_request.moving_type2.name}}</b>
+									</li>
+									<li>
+										Date(s):
+										<b class="text-info">
+											{% if mover_quote_request.quote_request.moving_date|date == 'Oct. 10, 1000' %}
+												{% load i18n %}
+												{% language 'fr' %}
+													Entre le
+													{{mover_quote_request.quote_request.moving_date1|date:'d F Y'}} -
+											        et le
+													{{mover_quote_request.quote_request.moving_date2|date:'d F Y'}}
+												{% endlanguage %}
+											{% else %}
+												{% load i18n %}
+												{% language 'fr' %}
+													{{mover_quote_request.quote_request.moving_date|date:'d F Y'}}
+												{% endlanguage %}
+											{% endif %}
+										</b>
+									</li>
+								</ul>
+							</div>
+							<div class="col-sm-6 h5">
+								<center>Départ</center>
+								<hr>
+								<ul>
+									<li>
+										Pays:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.country.name|capfirst}}
+										</b>
+									</li>
+									<li>
+										Ville:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.City_Departure|capfirst}}
+										</b>
+									</li>
+									<li>
+										Adresse:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.Adresse_Departure|capfirst}}
+										</b>
+									</li>
+									<li>
+										Code Postal:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.Postal_Code_Departure}}
+										</b>
+									</li>
+									<li>
+										Résidence:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.Residence_Number_or_Name_Departure|capfirst}}
+										</b>
+									</li>
+									<li>
+										Type de résidence:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.Residence_Departure}}
+										</b>
+									</li>
+									<li>
+										Nombre de pièces:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.Number_Room_Departure}}
+										</b>
+									</li>
+								</ul>
+							</div>
+							<div class="col-sm-6 h5">
+								<center>Arrivée</center>
+								<hr>
+								<ul>
+									<li>
+										Pays:
+										<b class="text-info">
+											{% if mover_quote_request.quote_request.moving_type1.name == 'International' %}
+												{{mover_quote_request.quote_request.Country_Arrival|capfirst}}
+											{% else %}
+												{{mover_quote_request.quote_request.country.name|capfirst}}
+											{% endif %}
+										</b>
+									</li>
+									<li>
+										Ville:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.City_Arrival|capfirst}}
+										</b>
+									</li>
+									<li>
+										Adresse:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.Adresse_Arrival|capfirst}}
+										</b>
+									</li>
+									<li>
+										Code Postal:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.Postal_Code_Arrival}}
+										</b>
+									</li>
+									<li>
+										Résidence:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.Residence_Number_or_Name_Arrival|capfirst}}
+										</b>
+									</li>
+									<li>
+										Type de résidence:
+										<b class="text-info">
+											{{mover_quote_request.quote_request.Residence_Arrival}}
+										</b>
+									</li>
+								</ul>
+							</div>
+							<div class="col-sm-12 h5">
+								<center>Informations sur le Client</center>
+								<hr>
+								<div class="row">
+									<div class="col-sm-6">
+										<ul>
+											<li>
+												Prénom:
+												<b class="text-info">{{mover_quote_request.quote_request.firstname}}</b>
+											</li>
+											<li>
+												Nom:
+												<b class="text-info">{{mover_quote_request.quote_request.lastname}}</b>
+											</li>
+										</ul>
+									</div>
+									<div class="col-sm-6">
+										<ul>
+											<li>
+												Téléphone:
+												<b class="text-info">{{mover_quote_request.quote_request.phone_number}}</b>
+											</li>
+											<li>
+												Email:
+												<b class="text-info">{{mover_quote_request.quote_request.email}}</b>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-12 h5">
+								<center>Informations supplémentaires</center>
+								<hr>
+								<div class="row">
+									<div class="col-sm-6">
+										<ul>
+											<li>
+												Emballage:
+												<b class="text-info">
+													{% if mover_quote_request.quote_request.packing_service == True %}
+														Oui
+													{% else %}
+														Non
+													{% endif %}
+												</b>
+											</li>
+											<li>
+												Matériaux d'emballage:
+												<b class="text-info">
+													{% if mover_quote_request.quote_request.packaging_materials == True %}
+														Oui
+													{% else %}
+														Non
+													{% endif %}
+												</b>
+											</li>
+										</ul>
+									</div>
+									<div class="col-sm-6">
+										<ul>
+											<li>
+												Montage/Démontage de meubles:
+												<b class="text-info">
+													{% if mover_quote_request.quote_request.furniture_assembly_disassembly == True %}
+														Oui
+													{% else %}
+														Non
+													{% endif %}
+												</b>
+											</li>
+											<li>
+												Garde-meuble:
+												<b class="text-info">
+													{% if mover_quote_request.quote_request.furniture_storage == True %}
+														Oui
+													{% else %}
+														Non
+													{% endif %}
+												</b>
+											</li>
+										</ul>
+									</div>
+									<div class="col-sm-12">
+										{{mover_quote_request.quote_request.Additional_informations|capfirst}}
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<p></p>
+							<div class="col d-md-flex justify-content-between align-items-center mt-4">
+								{% if mover_quote_request.treated == False %}
+									<a type="button" href="{% url 'mover_request_rejected' mover_quote_request.id %}" class="btn btn-sm btn-danger">
+										<h6 class="text-white">Rejeter cette demande</h6>
+									</a>
+
+									<div class="d-flex align-items-center mt-2 mt-md-0">
+										<a type="button" href="{% url 'mover_request_treated' mover_quote_request.id %}" class="btn btn-sm btn-success">
+											<h6 class="text-white">Valider cette demande</h6>
+										</a>
+									</div>
+								{% endif %}
+
+							</div>
+
+						</div>
+						<!-- Card body START -->
+					</div>
+						<!--Card END  -->
+				</div>
+				<!-- Main content END -->
+			</div><!-- Row END -->
+		</div>
+	</section>
+	<!-- =======================
+	Page content END -->
+
+    <!-- **************** MAIN CONTENT END **************** -->
+
+
+{% endblock %}

@@ -18,7 +18,6 @@ urlpatterns = [
 
     # SETTINGS
     path('area_intervention/', views.area_intervention, name='area_intervention'),
-    path('moving_type/', views.moving_type, name='moving_type'),
     path('customer_type/', views.customer_type, name='customer_type'),
     path('delete_mover_country/<int:mover_country_pk>/<int:mover_pk>', views.delete_mover_country, name='delete_mover_country'),
     path('delete_mover_region/<int:mover_region_pk>/<int:mover_pk>', views.delete_mover_region, name='delete_mover_region'),
@@ -27,4 +26,10 @@ urlpatterns = [
     path('modify_country_departure/<int:mover_country_pk>/', views.modify_country_departure, name='modify_country_departure'),
     path('modify_country_arrival/<int:mover_country_pk>/', views.modify_country_arrival, name='modify_country_arrival'),
     path('quote_request_settings/', views.quote_request_settings, name='quote_request_settings'),
+
+    # QUOTE REQUEST
+    path('mover_quote_request_detail/<int:mover_request_pk>', views.mover_quote_request_detail, name='mover_quote_request_detail'),
+    path('mover_request_treated/<int:mover_request_pk>', views.mover_request_treated, name='mover_request_treated'),
+    path('mover_request_rejected/<int:mover_request_pk>', views.mover_request_rejected, name='mover_request_rejected'),
+    path('treated_quote_request/', views.treated_quote_request, name='treated_quote_request'),
 ]
