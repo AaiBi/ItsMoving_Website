@@ -767,12 +767,16 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                 moving_date1 = request.POST.get('moving_date1')
                 moving_date2 = request.POST.get('moving_date2')
 
-                country_arrival_info = Country.objects.filter(id=Country_Arrival).last()
+                if Country_Arrival == "0":
+                    country_arrival_name = ""
+                else:
+                    country_arrival_info = Country.objects.filter(id=Country_Arrival).last()
+                    country_arrival_name = country_arrival_info.name
 
                 savedata = Quote_Request(ref=ref, City_Departure=City_Departure,
                                          Postal_Code_Departure=Postal_Code_Departure,
                                          Adresse_Departure=Adresse_Departure, Residence_Number_or_Name_Departure=
-                                         Residence_Number_or_Name_Departure, Country_Arrival=country_arrival_info.name,
+                                         Residence_Number_or_Name_Departure, Country_Arrival=country_arrival_name,
                                          City_Arrival=City_Arrival, Adresse_Arrival=Adresse_Arrival,
                                          Residence_Number_or_Name_Arrival=Residence_Number_or_Name_Arrival,
                                          Postal_Code_Arrival=
