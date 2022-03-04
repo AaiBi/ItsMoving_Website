@@ -595,7 +595,7 @@ def mover_request_treated(request, mover_request_pk):
             message = f'Bonjour Mr/Mme {customer_lastname}!\n Nous avions besoin de votre avis à propos de votre dernier' \
                       f' déménagement.\n' \
                       f'Cliquer sur ce lien pour nous donner votre avis et nous aider à améliorer nos services: \n' \
-                      f'http://127.0.0.1:8000/user/reviews/{mover_quote_request_id}'
+                      f'https://itsmoving.pythonanywhere.com/user/reviews/{mover_quote_request_id}'
             send_mail(subject, message, email_from, recipient_list, fail_silently=False)
 
             form.save()
