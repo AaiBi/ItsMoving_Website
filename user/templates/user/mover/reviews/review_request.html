@@ -107,182 +107,49 @@
 
                                         <form method="POST" class="row">
                                             {% csrf_token %}
-                                            <div class="col-sm-6">
-                                                <div class="col-sm-12">
-                                                    <label class="form-label"><h5>Rapidité *</h5></label></br>
-                                                    <input id="checkbox1" name="speed[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox1">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox2" name="speed[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox2">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox3" name="speed[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox3">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox4" name="speed[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox4">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox5" name="speed[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox5">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                </div>
-                                                <div class="col-sm-12">
-                                                    <label class="form-label"><h5>Fiabilité *</h5></label></br>
-                                                    <input id="checkbox6" name="reliability[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox6">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox7" name="reliability[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox7">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox8" name="reliability[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox8">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox9" name="reliability[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox9">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox10" name="reliability[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox10">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                </div>
+                                            <div class="col-sm-3">
+                                                <label class="form-label"><h5>Rapidité *</h5></label></br>
+                                                <select class="form-select" name="speed" aria-label="Default select example">
+                                                    <option selected>Sélectionner</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                </select>
                                             </div>
-
-                                            <div class="col-sm-6">
-                                                <div class="col-sm-12">
-                                                    <label class="form-label"><h5>Organisation *</h5></label></br>
-                                                    <input id="checkbox11" name="organisation[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox11">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox12" name="organisation[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox12">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox13" name="organisation[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox13">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox14" name="organisation[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox14">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox15" name="organisation[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox15">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                </div>
-                                                <div class="col-sm-12">
-                                                    <label class="form-label"><h5>Qualité du service *</h5></label></br>
-                                                    <input id="checkbox16" name="quality[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox16">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox17" name="quality[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox17">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox18" name="quality[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox18">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox19" name="quality[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox19">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                    <input id="checkbox20" name="quality[]" value="1" class="icon-checkbox" type="checkbox"/>
-                                                    <label for="checkbox20">
-                                                        <h2>
-                                                            <span class='fas fa-star text-secondary unchecked'></span>
-                                                            <span class='fas fa-star text-warning checked'></span>
-                                                        </h2>
-                                                    </label>
-
-                                                </div>
+                                            <div class="col-sm-3">
+                                                <label class="form-label"><h5>Fiabilité *</h5></label></br>
+                                                <select class="form-select" name="reliability" aria-label="Default select example">
+                                                    <option selected>Sélectionner</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label class="form-label"><h5>Organisation *</h5></label></br>
+                                                <select class="form-select" name="organisation" aria-label="Default select example">
+                                                    <option selected>Sélectionner</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <label class="form-label"><h5>Qualité du service *</h5></label></br>
+                                                <select class="form-select" name="quality" aria-label="Default select example">
+                                                    <option selected>Sélectionner</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                </select>
                                             </div>
 
                                             <div class="col-sm-12">

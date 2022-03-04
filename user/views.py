@@ -655,15 +655,11 @@ def review_request(request, mover_request_pk):
     mover_quote_request = Mover_Quote_Request.objects.filter(id=mover_request_pk).last()
 
     if request.method == 'POST':
-        speed = request.POST.getlist('speed[]')
-        reliability = request.POST.getlist('reliability[]')
-        organisation = request.POST.getlist('organisation[]')
-        quality = request.POST.getlist('quality[]')
+        speed = request.POST.get('speed')
+        reliability = request.POST.get('reliability')
+        organisation = request.POST.get('organisation')
+        quality = request.POST.get('quality')
         message = request.POST.get('message')
-        speed = len(speed)
-        reliability = len(reliability)
-        organisation = len(organisation)
-        quality = len(quality)
 
         if speed and reliability and organisation and quality and message:
             if Review.objects.filter(mover_quote_request_id=mover_request_pk):
