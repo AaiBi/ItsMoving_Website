@@ -118,6 +118,13 @@
 				<!-- Main content START -->
 				<div class="col-xl-9">
 
+                    {% if mover.activated == False %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            Important ! Votre compte est inactivé, veuillez nous contacter par email
+                            <b>ItsMoving@gmail.com</b> ou par téléphone <b>8788788879</b>.
+                        </div>
+                    {% endif %}
+
 					<!-- Payout box START -->
                     <div class="row g-4 mb-4">
                         <!-- Box item -->

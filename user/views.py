@@ -3,14 +3,19 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+import random
+
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.db.models import Count, Sum
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
 from base_app.forms import Mover_Form
-from base_app.models import Mover, Country, Mover_Country, Mover_Region, RegionOrProvince, Moving_Type1, Moving_Type2, \
-    Mover_Moving_Type2, Quote_Request, Mover_Quote_Request, Quote_Request_Rejected
-from user.forms import EditUserForm, EditUserPasswordForm, EditMoverCountryForm, EditMoverRegionForm, \
-    EditMoverMovingType2Form, MoverQuoteRequestForm
+from base_app.models import Mover, Country, Mover_Country, Moving_Type1, Moving_Type2, \
+    Mover_Moving_Type2, Quote_Request, Mover_Quote_Request, Quote_Request_Rejected, Review
+from user.forms import EditUserForm, EditUserPasswordForm, EditMoverCountryForm, \
+    EditMoverMovingType2Form, MoverQuoteRequestForm, EditUserPasswordForm1
+from user.models import Movers_Password_Recovery_Codes
 
 
 def login_user(request):
@@ -32,12 +37,93 @@ def login_user(request):
                 return redirect('login_user')
 
 
+def password_change(request):
+    if request.method == 'POST':
+        if request.POST['email']:
+
+            email = request.POST['email']
+            if Mover.objects.filter(user__email=email):
+                subject = 'Modification de votre mot de passe'
+                recipient_email = email
+                email_from = request.POST.get('email')
+                recipient_list = [recipient_email, ]
+                # creation of the code
+                characters = list('AbCdEfGhIjKlMnOpQrStUvWxYz')
+                characters.extend(list('1234567890'))
+                size = 15
+                code = ''
+                for x in range(size):
+                    code += random.choice(characters)
+                code = code
+                message = f'Bonjour ! \nCode de modification de votre email: \n{code}'
+
+                # Saving the code
+                mover = Mover.objects.filter(user__email=email).last()
+                saving_data = Movers_Password_Recovery_Codes(code=code, mover_id=mover.id)
+                saving_data.save()
+
+                send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                return redirect('password_recovery', email=email)
+
+            else:
+                messages.error(request, 'Cette adresse email n\'existe pas dans notre base de données !')
+
+        else:
+            messages.error(request, 'Veuillez entrer votre adresse email !')
+    return render(request, 'user/password_change.html')
+
+
+def password_recovery(request, email):
+    if get_object_or_404(Mover, user__email=email):
+        mover = get_object_or_404(Mover, user__email=email)
+
+        if request.method == 'POST':
+            if request.POST.get('code'):
+                code = request.POST.get('code')
+                if Movers_Password_Recovery_Codes.objects.filter(code=code, mover_id=mover.id):
+                    return redirect('password_edit', email=email, code=code)
+                else:
+                    messages.error(request, 'Code incorrect !')
+            else:
+                messages.error(request, 'Veuillez entrer le code que vous avez reçu par mail !')
+    else:
+        messages.error(request, 'Cet email n\'existe pas !')
+        return redirect('password_change')
+    return render(request, 'user/password_recovery.html', {'mover': mover})
+
+
+def password_edit(request, email, code):
+    if get_object_or_404(Mover, user__email=email) and get_object_or_404(Movers_Password_Recovery_Codes, code=code):
+        mover = get_object_or_404(Mover, user__email=email)
+        user = User.objects.filter(email=email).last()
+        code = get_object_or_404(Movers_Password_Recovery_Codes, code=code)
+        form = EditUserPasswordForm1(user=user)
+
+        if user:
+            if request.method == 'POST':
+                form = EditUserPasswordForm1(user=user, data=request.POST)
+                if form.is_valid():
+                    user = form.save()
+                    update_session_auth_hash(request, user)
+                    messages.success(request, f'Votre mot de passe a été modifié avec succès !')
+                    return redirect('login_user')
+        else:
+            messages.error(request, 'Cet utilisateur n\'existe pas !')
+
+    else:
+        messages.error(request, 'Cet email n\'existe pas !')
+        return redirect('password_change')
+    return render(request, 'user/password_edit.html', {'mover': mover, 'code': code, 'form': form})
+
+
 @login_required
 def reviews(request):
     mover = Mover.objects.filter(user_id=request.user.id).last()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
+    reviews = Review.objects.filter(mover_quote_request__mover_id=mover.id).order_by('-id')
 
-    return render(request, 'user/profile/reviews.html', {'mover': mover, 'number_quote_request': number_quote_request})
+    return render(request, 'user/profile/reviews.html', {'mover': mover, 'number_quote_request': number_quote_request,
+                                                         'reviews': reviews})
 
 
 @login_required
@@ -45,16 +131,61 @@ def preview(request):
     mover = Mover.objects.filter(user_id=request.user.id).last()
     form1 = EditUserForm(instance=request.user)
     countries = Country.objects.all()
-    regions = RegionOrProvince.objects.all()
     mover_countries = Mover_Country.objects.filter(mover=mover)
-    mover_regions = Mover_Region.objects.filter(mover=mover)
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
     number_quote_request1 = Mover_Quote_Request.objects.filter(mover_id=mover.id).count()
+    reviews = Review.objects.filter(mover_quote_request__mover_id=mover.id)
+    total_reviews = Review.objects.filter(mover_quote_request__mover_id=mover.id).count()
+
+    #percentage speed
+    speed_reviews_sum = Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('speed'))['TOTAL']
+    total_possible = total_reviews * 5
+    if speed_reviews_sum != 0:
+        speed_percentage = speed_reviews_sum / total_possible
+        speed_percentage = speed_percentage * 100
+    else:
+        speed_percentage = 0
+
+    #percentage organisation
+    organisation_reviews_sum = \
+        Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('organisation'))['TOTAL']
+    if speed_reviews_sum != 0:
+        organisation_percentage = organisation_reviews_sum / total_possible
+        organisation_percentage = organisation_percentage * 100
+    else:
+        organisation_percentage = 0
+
+    #reliability organisation
+    reliability_reviews_sum = \
+    Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('reliability'))['TOTAL']
+    if speed_reviews_sum != 0:
+        reliability_percentage = reliability_reviews_sum / total_possible
+        reliability_percentage = reliability_percentage * 100
+    else:
+        reliability_percentage = 0
+
+    #quality organisation
+    quality_reviews_sum = \
+        Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('quality'))['TOTAL']
+    if speed_reviews_sum != 0:
+        quality_percentage = quality_reviews_sum / total_possible
+        quality_percentage = quality_percentage * 100
+    else:
+        quality_percentage = 0
+
+    #general review
+    total_sum = speed_percentage + organisation_percentage + reliability_percentage + quality_percentage
+    total_sum = (total_sum / 400) * 100
 
     return render(request, 'user/profile/preview.html', {'mover': mover, 'form1': form1, 'countries':
-        countries, 'mover_countries': mover_countries, 'mover_regions': mover_regions, 'regions': regions,
-                                                         'number_quote_request': number_quote_request,
-                                                         'number_quote_request1': number_quote_request1})
+        countries, 'mover_countries': mover_countries, 'number_quote_request': number_quote_request,
+                                                         'number_quote_request1': number_quote_request1, 'reviews':
+                                                         reviews, 'speed_reviews_sum': speed_reviews_sum,
+                                                         'organisation_percentage': organisation_percentage,
+                                                         'reliability_percentage': reliability_percentage,
+                                                         'quality_percentage': quality_percentage,
+                                                         'speed_percentage': speed_percentage, 'total_reviews':
+                                                         total_reviews, 'total_sum': total_sum})
 
 
 @login_required
@@ -63,11 +194,11 @@ def statistic(request):
     current_date = datetime.date.today()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
     number_quote_request_received_this_month = Mover_Quote_Request.objects.filter(mover_id=mover.id, created__month=
-                                                    current_date.month).count()
+    current_date.month).count()
     number_quote_request_treated_this_month = Mover_Quote_Request.objects.filter(mover_id=mover.id, created__month=
-                                                    current_date.month, treated=True).count()
+    current_date.month, treated=True).count()
     number_quote_request_rejected_this_month = Mover_Quote_Request.objects.filter(mover_id=mover.id, created__month=
-                                                    current_date.month, rejected=True).count()
+    current_date.month, rejected=True).count()
     number_quote_request_treated = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=True).count()
     number_quote_request_rejected = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=True).count()
     if number_quote_request_treated or number_quote_request_rejected:
@@ -86,7 +217,7 @@ def statistic(request):
                                                            'number_quote_request_treated_this_month':
                                                                number_quote_request_treated_this_month,
                                                            'number_quote_request_rejected_this_month':
-                                                           number_quote_request_rejected_this_month})
+                                                               number_quote_request_rejected_this_month})
 
 
 @login_required
@@ -121,21 +252,16 @@ def quote_request(request):
 def settings(request):
     mover = Mover.objects.filter(user_id=request.user.id).last()
     countries = Country.objects.all()
-    regions = RegionOrProvince.objects.all()
     mover_countries = Mover_Country.objects.filter(mover=mover)
     mover_countries_number = Mover_Country.objects.filter(mover=mover).count()
-    mover_regions = Mover_Region.objects.filter(mover=mover)
     mover_moving_types2 = Mover_Moving_Type2.objects.filter(mover=mover)
     mover_moving_types2_number = Mover_Moving_Type2.objects.filter(mover=mover).count()
-    # mover_moving_types1_number = Mover_Moving_Type1.objects.filter(mover=mover).count()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
     moving_type1 = Moving_Type1.objects.all()
     moving_type2 = Moving_Type2.objects.all()
-    # mover_moving_type1 = Mover_Moving_Type1.objects.filter(mover=mover)
 
     return render(request, 'user/profile/settings.html', {'mover': mover, 'countries': countries,
-                                                          'regions': regions, 'mover_countries': mover_countries,
-                                                          'mover_regions': mover_regions, 'mover_countries_number':
+                                                          'mover_countries': mover_countries, 'mover_countries_number':
                                                               mover_countries_number,
                                                           'mover_moving_types2': mover_moving_types2,
                                                           'moving_type1': moving_type1, 'mover_moving_types2_number':
@@ -433,21 +559,6 @@ def quote_request_settings(request):
 
 
 #################################################  SETTINGS END    #####################################################
-@login_required
-def delete_mover_region(request, mover_region_pk, mover_pk):
-    mover = get_object_or_404(Mover, pk=mover_pk)
-    mover_region = get_object_or_404(Mover_Region, pk=mover_region_pk)
-    number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
-
-    if request.method == 'GET':
-        form = EditMoverRegionForm(instance=mover_region)
-        return render(request, 'user/mover/settings/delete_mover_region.html',
-                      {'mover_region': mover_region, 'form': form, 'mover': mover, 'number_quote_request':
-                          number_quote_request})
-    if request.method == 'POST':
-        mover_region.delete()
-        messages.success(request, 'Suppression effectuée !')
-        return redirect('settings')
 
 
 ################################################# QUOTE REQUEST    ####################################################
@@ -472,6 +583,21 @@ def mover_request_treated(request, mover_request_pk):
     if request.method == 'POST':
         form = MoverQuoteRequestForm(request.POST, instance=mover_quote_request)
         if form.is_valid():
+            # Sending email
+            company_name = mover_quote_request.mover.company_name
+            customer_lastname = mover_quote_request.quote_request.lastname
+
+            subject = f'Comment s\'est passé votre déménagement avec {company_name} ?'
+            recipient_email = mover_quote_request.quote_request.email
+            email_from = mover_quote_request.quote_request.email
+            recipient_list = [recipient_email, ]
+            mover_quote_request_id = mover_quote_request.id
+            message = f'Bonjour Mr/Mme {customer_lastname}!\n Nous avions besoin de votre avis à propos de votre dernier' \
+                      f' déménagement.\n' \
+                      f'Cliquer sur ce lien pour nous donner votre avis et nous aider à améliorer nos services: \n' \
+                      f'http://127.0.0.1:8000/user/reviews/{mover_quote_request_id}'
+            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
             form.save()
             messages.success(request, 'Vous aviez valider que cette demande a été traitée avec succès !')
             return redirect('quote_request')
@@ -518,4 +644,40 @@ def treated_quote_request(request):
                                                                              'mover_quote_requests':
                                                                                  mover_quote_requests,
                                                                              'number_quote_request': number_quote_request})
+
+
 ################################################ END  QUOTE REQUEST  ##################################################
+
+
+################################################## REVIEWS  ####################################################
+
+def review_request(request, mover_request_pk):
+    mover_quote_request = get_object_or_404(Mover_Quote_Request, pk=mover_request_pk)
+
+    if request.method == 'POST':
+        speed = request.POST.getlist('speed[]')
+        reliability = request.POST.getlist('reliability[]')
+        organisation = request.POST.getlist('organisation[]')
+        quality = request.POST.getlist('quality[]')
+        message = request.POST.get('message')
+        speed = len(speed)
+        reliability = len(reliability)
+        organisation = len(organisation)
+        quality = len(quality)
+
+        if speed and reliability and organisation and quality and message:
+            if Review.objects.filter(mover_quote_request_id=mover_request_pk):
+                messages.error(request, 'Vous aviez déjà donner une note à ce déménagement !')
+            else:
+                savedata = Review(speed=speed, organisation=organisation, reliability=reliability, quality=quality,
+                                  message=message, mover_quote_request_id=mover_request_pk)
+                savedata.save()
+                messages.success(request, 'Nous vous remercions d\'avoir partager votre avis avec nous, Merci !')
+                return redirect('review_request')
+        else:
+            messages.error(request, 'Veuillez renseigner tous les champs !')
+            return redirect('review_request')
+
+    return render(request, 'user/mover/reviews/review_request.html', {'mover_quote_request': mover_quote_request})
+
+################################################ END REVIEWS  ##################################################

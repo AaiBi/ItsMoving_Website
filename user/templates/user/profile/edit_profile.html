@@ -125,6 +125,13 @@
 					<!-- =======================
 					Mover account START -->
 
+					{% if mover.activated == False %}
+						<div class="alert alert-danger alert-dismissible fade show" role="alert">
+							Important ! Votre compte est inactivé, veuillez nous contacter par email
+							<b>ItsMoving@gmail.com</b> ou par téléphone <b>8788788879</b>.
+						</div>
+					{% endif %}
+
 					<!-- Tabs START -->
 					<ul class="nav nav-pills nav-pills-bg-soft justify-content-sm-center mb-4 px-3" id="edit-profile-pills-tab" role="tablist">
 						<!-- Tab item -->

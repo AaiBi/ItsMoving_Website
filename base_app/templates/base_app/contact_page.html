@@ -13,6 +13,21 @@
 
         <!-- =======================
         Page Banner START --></br></br></br></br></br>
+
+        {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+                {{ error }}
+            </div>
+        {% else %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+                        {{message}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
         <section class="pt-5 pb-0" style="background-image:url({% static 'base_app/assets/images/element/map.svg' %}); background-position: center left; background-size: cover;">
             <div class="container">
                 <div class="row">
@@ -134,17 +149,17 @@
                             <!-- Name -->
                             <div class="mb-4 bg-light-input">
                                 <label for="yourName" class="form-label">Votre Nom *</label>
-                                <input type="text" class="form-control form-control-lg" id="yourName" name="full_name">
+                                <input type="text" class="form-control form-control-lg" id="yourName" name="full_name" required>
                             </div>
                             <!-- Email -->
                             <div class="mb-4 bg-light-input">
                                 <label for="emailInput" class="form-label">Adresse Email *</label>
-                                <input type="email" class="form-control form-control-lg" id="emailInput" name="email_from">
+                                <input type="email" class="form-control form-control-lg" id="emailInput" name="email_from" required>
                             </div>
                             <!-- Message -->
                             <div class="mb-4 bg-light-input">
                                 <label for="textareaBox" class="form-label">Message *</label>
-                                <textarea class="form-control" id="textareaBox" rows="4" name="message"></textarea>
+                                <textarea class="form-control" id="textareaBox" rows="4" name="message" required></textarea>
                             </div>
                             <!-- Button -->
                             <div class="d-grid">

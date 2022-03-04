@@ -2,14 +2,11 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.core.mail import send_mail, EmailMessage
-from django.db.models import Count
-from django.http import HttpResponse
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
-from base_app.forms import Mover_Form
 from base_app.models import Mover, Moving_Type1, Moving_Type2, Mover_Moving_Type2, Country, \
-    RegionOrProvince, Mover_Country, Mover_Region, Quote_Request, Mover_Quote_Request, \
-    Number_Mover_Quote_Request_PerDay, Quote_Request_Waiting_Liste, Number_Distribution_Quote_Request
+    Mover_Country, Quote_Request, Mover_Quote_Request, \
+    Number_Mover_Quote_Request_PerDay, Number_Distribution_Quote_Request
 import random
 
 
@@ -119,11 +116,31 @@ def mover_inscription_step2(request, new_user_id, mover_id):
                         return redirect('mover_inscription_step2', new_user_id=user.id, mover_id=mover_info.id)
                     else:
                         if mover_info.moving_type1.name == 'National':
+                            #Sending email
+                            subject = 'Bienvenue chez ItsMoving'
+                            recipient_email = mover_info.user.email
+                            email_from = mover_info.user.email
+                            recipient_list = [recipient_email, ]
+
+                            message = 'Félicitations !\nVotre compte a été crée avec succès, il sera activer d\'ici ' \
+                                      '24h !'
+                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
                             messages.success(request,
                                              'Félicitations, l\'inscription est terminée, il ne vous reste qu\'à '
                                              'renseigner les regions dans lesquelles vous allez intervenir !')
                             return redirect('login_user')
                         else:
+                            # Sending email
+                            subject = 'Bienvenue chez ItsMoving'
+                            recipient_email = mover_info.user.email
+                            email_from = mover_info.user.email
+                            recipient_list = [recipient_email, ]
+
+                            message = 'Félicitations !\nVotre compte a été crée avec succès, il sera activer d\'ici ' \
+                                      '24h !'
+                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
                             savedata = Mover_Moving_Type2(moving_type2_name=data, mover=mover_info)
                             savedata.save()
                         continue
@@ -173,38 +190,20 @@ def mover_inscription_step3(request, new_user_id, mover_id):
 
 def contact_page(request):
     if request.method == "POST":
+        full_name = request.POST.get('full_name')
 
-        email_subject = 'message from me'
-        email_message = 'Test body'
-        email_from = ''
-        email_to = ''
+        recipient_email = 'sheyp.sarl@gmail.com'
 
-        email = EmailMessage(email_subject, email_message, 'ayebi932@gmail.com', [email_to])
-        email.send(fail_silently=True)
+        email_from = request.POST.get('email')
+        message = request.POST.get('message')
+        recipient_list = [recipient_email, ]
 
-        # try:
-        #     full_name = request.POST.get('full_name')
-        #     phone_number = request.POST.get('phone_number')
-        #     recipient_email = 'iboumocellou@yahoo.fr'
-        #     email = request.POST.get('email')
-        #     subject = 'Bonjour'
-        #     message = request.POST.get('message')
-        #     email_from = request.POST.get('email')
-        #     recipient_list = [recipient_email, ]
-        #
-        #     #if phone_number.isnumeric():
-        #     #Saving the message in the database
-        #     # message_sent = contact_message(full_name=full_name, email=email, subject=subject, phone_number=phone_number,
-        #     #                          message=message)
-        #     # message_sent.save()
-        #     message1 = f'Nouveau message de la part de {full_name} \n Email: {email} \n' \
-        #                f'Contenu du message: {message}'
-        #     send_mail(subject, message1, email_from, recipient_list)
-        #     messages.success(request, f'Votre message à été envoyé avec succès, nous vous contacterons très bientôt !')
-        #     # else:
-        #     #     messages.error(request, f'Le numéro de téléphone ne doit contenir que des chiffres, veuillez reéssayer !')
-        # except ValueError:
-        #     return render(request, 'user/property_modification.html', {'error': 'Erreur, veuillez reéssayer !'})
+        message1 = f'Nouveau message de la part de {full_name} \n Email: {email_from} \n' \
+                   f'Contenu du message: {message}'
+        send_mail(full_name, message1, email_from, recipient_list, fail_silently=False)
+
+        messages.success(request, f'Votre message à été envoyé avec succès, nous vous contacterons très bientôt !')
+
     return render(request, 'base_app/contact_page.html')
 
 
@@ -434,7 +433,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                     #####################NATIONAL REQUEST DISTRIBUTION START#####################
                     if request.moving_type1.name == 'National':
 
-                        movers = Mover.objects.all()
+                        movers = Mover.objects.filter(activated=True)
                         for mover in movers:
 
                             max_request_day = Number_Mover_Quote_Request_PerDay.objects.filter(mover_id=mover.id,
@@ -546,7 +545,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                     #####################INTERNATIONAL REQUEST DISTRIBUTION START#####################
                     elif request.moving_type1.name == 'International':
 
-                        movers = Mover.objects.filter(moving_type1__name='International')
+                        movers = Mover.objects.filter(moving_type1__name='International', activated=True)
                         for mover in movers:
 
                             # we select the mover who work in the country of the request

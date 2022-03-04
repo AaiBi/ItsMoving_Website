@@ -2,23 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class Gender(models.Model):
-    name = models.CharField(max_length=300)
-
-    def __str__(self):
-        return self.name
-
-
 class Country(models.Model):
     name = models.CharField(max_length=300)
-
-    def __str__(self):
-        return self.name
-
-
-class RegionOrProvince(models.Model):
-    name = models.CharField(max_length=300)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -44,7 +29,7 @@ class Mover(models.Model):
     company_phone_number = models.CharField(max_length=50)
     Adresse = models.CharField(max_length=300, default="")
     employee_number = models.IntegerField(default=0)
-    number_max_quote_request = models.IntegerField(default=1)
+    number_max_quote_request = models.IntegerField(default=0)
     website = models.CharField(max_length=300, default="")
     TVA_number = models.CharField(max_length=30, default="")
     Postal_Code = models.IntegerField(default=0)
@@ -78,13 +63,6 @@ class Mover_Country(models.Model):
     country_name = models.CharField(max_length=300)
     departure = models.BooleanField(default=False)
     arrival = models.BooleanField(default=False)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
-    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
-
-
-class Mover_Region(models.Model):
-    region_name = models.CharField(max_length=300)
-    region = models.ForeignKey(RegionOrProvince, on_delete=models.CASCADE, default="")
     country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
     mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
 
@@ -152,6 +130,11 @@ class Number_Distribution_Quote_Request(models.Model):
     quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE)
 
 
-class Quote_Request_Waiting_Liste(models.Model):
+class Review(models.Model):
+    speed = models.IntegerField(default=0)
+    organisation = models.IntegerField(default=0)
+    reliability = models.IntegerField(default=0)
+    quality = models.IntegerField(default=0)
+    message = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
-    quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE)
+    mover_quote_request = models.ForeignKey(Mover_Quote_Request, on_delete=models.CASCADE)

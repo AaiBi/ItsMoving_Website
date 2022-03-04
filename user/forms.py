@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from base_app.models import Mover_Country, Mover_Region, Mover_Moving_Type2, Mover_Quote_Request, Quote_Request_Rejected
+from base_app.models import Mover_Country, Mover_Moving_Type2, Mover_Quote_Request
 
 
 class EditUserForm(UserChangeForm):
@@ -10,6 +10,22 @@ class EditUserForm(UserChangeForm):
         fields = [
             'first_name', 'last_name', 'email', 'username'
         ]
+
+
+class EditUserPasswordForm1(PasswordChangeForm):
+    class Meta:
+        model = User
+        fields = [
+            'new_password1', 'new_password2'
+        ]
+        widgets = {
+            'new_password1': forms.PasswordInput(
+                attrs={'class': 'form-control', 'name': 'new_password1', 'type': 'password',
+                       'placeholder': 'Entrez votre nouveau mot de passe :'}),
+            'new_password2': forms.PasswordInput(
+                attrs={'class': 'form-control', 'name': 'new_password2', 'type': 'password',
+                       'placeholder': 'Entrez a nouveau votre nouveau mot de passe :'}),
+        }
 
 
 class EditUserPasswordForm(PasswordChangeForm):
@@ -37,14 +53,6 @@ class EditMoverCountryForm(forms.ModelForm):
         model = Mover_Country
         fields = [
             'country_name', 'departure', 'arrival'
-        ]
-
-
-class EditMoverRegionForm(forms.ModelForm):
-    class Meta:
-        model = Mover_Region
-        fields = [
-            'region_name'
         ]
 
 

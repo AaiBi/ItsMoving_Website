@@ -61,9 +61,6 @@
 								<div class="bg-dark border rounded-3 pb-0 p-3 w-100">
 									<!-- Dashboard menu -->
 									<div class="list-group list-group-dark list-group-borderless">
-                                        <a class="list-group-item" href="{% url 'profile' %}"><i class="bi bi-ui-checks-grid fa-fw me-2"></i>
-                                            Tableau de bord
-                                        </a>
 										<a class="list-group-item" href="{% url 'preview' %}"><i class="bi bi-person-lines-fill fa-fw me-2"></i>
 											Aperçu du profil
 										</a>
@@ -132,7 +129,7 @@
 						<!-- Card header START -->
 						<div class="card-header border-bottom">
 							<h3 class="mb-0">Demande de devis - {{mover_quote_request.quote_request.ref}}</h3>
-						</div>
+						</div> <a href="{% url 'review_request' mover_quote_request.id %}">reveiws</a>
 						<!-- Card header END -->
 
 						<!-- Card body START -->
@@ -140,13 +137,17 @@
 							<form method="POST">
 								{% csrf_token %}
 								<h5>
-									Valider que la demande de devis #{{mover_quote_request.quote_request.ref}} a été
-									traitée avec succès
+									Vous valider que la demande de devis #{{mover_quote_request.quote_request.ref}} a été
+									traitée et que le déménagement a eu lieu avec succès
 								</h5></br>
+								<h6 class="text-info">
+									En validant cette demande de devis, le client recevra un
+									email dans lequel il pourra noter le déménagement.
+								</h6></br>
 								<input type="hidden" name="treated" value="True">
 								<input type="hidden" name="rejected" value="False">
 								<button type="submit" class="btn btn text-white d-block w-100 btn-success">
-									Valider
+									Je valider
 								</button>
 							</form>
 						</div>
