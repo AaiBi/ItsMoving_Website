@@ -21,6 +21,22 @@
             </svg>
         </figure>
 
+        {% if error %}
+            </br>
+            <div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+                {{ error }}
+            </div>
+        {% else %}
+            {% if messages %}
+                {% for message in messages %}
+                    </br>
+                    <div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+                        {{message}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
         <div class="container position-relative mt-0 mt-sm-5 pt-5">
             <div class="row align-items-center">
                 <div class="col-md-5">

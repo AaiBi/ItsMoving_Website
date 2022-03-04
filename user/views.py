@@ -652,7 +652,7 @@ def treated_quote_request(request):
 ################################################## REVIEWS  ####################################################
 
 def review_request(request, mover_request_pk):
-    mover_quote_request = get_object_or_404(Mover_Quote_Request, pk=mover_request_pk)
+    mover_quote_request = Mover_Quote_Request.objects.filter(id=mover_request_pk).last()
 
     if request.method == 'POST':
         speed = request.POST.getlist('speed[]')
@@ -673,7 +673,7 @@ def review_request(request, mover_request_pk):
                                   message=message, mover_quote_request_id=mover_request_pk)
                 savedata.save()
                 messages.success(request, 'Nous vous remercions d\'avoir partager votre avis avec nous, Merci !')
-                return redirect('review_request')
+                return redirect('index')
         else:
             messages.error(request, 'Veuillez renseigner tous les champs !')
             return redirect('review_request')
