@@ -140,7 +140,7 @@ def preview(request):
     #percentage speed
     speed_reviews_sum = Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('speed'))['TOTAL']
     total_possible = total_reviews * 5
-    if speed_reviews_sum != 0:
+    if speed_reviews_sum and speed_reviews_sum != 0:
         speed_percentage = speed_reviews_sum / total_possible
         speed_percentage = speed_percentage * 100
     else:
@@ -149,7 +149,7 @@ def preview(request):
     #percentage organisation
     organisation_reviews_sum = \
         Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('organisation'))['TOTAL']
-    if speed_reviews_sum != 0:
+    if organisation_reviews_sum and organisation_reviews_sum != 0:
         organisation_percentage = organisation_reviews_sum / total_possible
         organisation_percentage = organisation_percentage * 100
     else:
@@ -158,7 +158,7 @@ def preview(request):
     #reliability organisation
     reliability_reviews_sum = \
     Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('reliability'))['TOTAL']
-    if speed_reviews_sum != 0:
+    if reliability_reviews_sum and reliability_reviews_sum != 0:
         reliability_percentage = reliability_reviews_sum / total_possible
         reliability_percentage = reliability_percentage * 100
     else:
@@ -167,7 +167,7 @@ def preview(request):
     #quality organisation
     quality_reviews_sum = \
         Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('quality'))['TOTAL']
-    if speed_reviews_sum != 0:
+    if quality_reviews_sum and quality_reviews_sum != 0:
         quality_percentage = quality_reviews_sum / total_possible
         quality_percentage = quality_percentage * 100
     else:
