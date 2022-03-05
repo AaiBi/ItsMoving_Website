@@ -133,7 +133,7 @@
 							</div>
 						{% endif %}
 
-						{% if mover.moving_type1.name == 'International' %}
+						{% if mover.moving_type1.name == 'International' and not mover_countries %}
 							<div class="alert alert-danger alert-dismissible fade show" role="alert">
 								Important ! Votre profil est incomplet, veuillez <b>définir les pays dans lesquels
 								vous allez intervenir à l'international.</b>
