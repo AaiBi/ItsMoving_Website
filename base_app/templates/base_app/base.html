@@ -20750,16 +20750,18 @@ html[dir=rtl] .choices__input {
 
                         <!-- Nav Search END -->
                         <ul class="navbar-nav navbar-nav-scroll ms-auto">
-                            <!-- Nav item 1 -->
-                            <li class="nav-item dropdown"><a class="nav-link" href="{% url 'devis_page1' %}">Je veux déménager</a></li>
+                            {% if user.is_authenticated %}
+                            {% else %}
+                                <!-- Nav item 1 -->
+                                <li class="nav-item dropdown"><a class="nav-link" href="{% url 'devis_page1' %}">Je veux déménager</a></li>
 
-                            <!-- Nav item 2-->
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'mover_inscription' %}">
-                                    S'inscrire en tant que déménageur
-                                </a>
-                            </li>
-
+                                <!-- Nav item 2-->
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'mover_inscription' %}">
+                                        S'inscrire en tant que déménageur
+                                    </a>
+                                </li>
+                            {% endif %}
                             <!-- Nav item 1 -->
                             <li class="nav-item dropdown"><a class="nav-link" href="{% url 'contact_page' %}">Contact</a></li>
                         </ul>

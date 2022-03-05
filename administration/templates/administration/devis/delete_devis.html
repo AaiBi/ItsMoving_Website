@@ -1,0 +1,30 @@
+{% extends 'administration/admin_base.html' %}
+
+{% block title %} Admin - Devis {% endblock %}
+
+{% load static %}
+
+{% block demenageur_active %} active {% endblock %}
+
+
+{% block main %}
+
+    <div class="card">
+        <div class="card-header bg-dark" align="center">
+            <h2 class="text-white">Demande de devis - {{quote_request.ref}}</h2>
+        </div>
+
+        <div class="card-body bg-dark">
+            <hr>
+            <h5 class="text-white">Voulez-vous vraiment supprimer cette demande de devis ?</h5>
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger">
+                    Supprimer
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+{% endblock %}

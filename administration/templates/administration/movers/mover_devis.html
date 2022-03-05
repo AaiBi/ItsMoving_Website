@@ -1,0 +1,201 @@
+{% extends 'administration/admin_base.html' %}
+
+{% block title %} Admin - Devis {% endblock %}
+
+{% load static %}
+
+{% block demenageur_active %} active {% endblock %}
+
+
+{% block main %}
+
+    <div class="card">
+        <div class="card-header bg-dark" align="center">
+            <h2 class="text-white">{{mover.company_name|capfirst}} - {{mover.ref}}</h2>
+        </div>
+
+        <div class="card bg-dark">
+
+            <div class="card-header rounded-3" align="center"><h4>Liste de devis - {{number_mover_quote_requests}}</h4></div>
+
+            <p></p>
+            <form class="rounded position-relative" method="POST">
+                {% csrf_token %}
+                <input class="form-control pe-5 bg-transparent" type="search" name="ref" placeholder="Entrer une référence" aria-label="Search">
+                <button class="btn bg-transparent px-2 py-0 position-absolute top-50 end-0 translate-middle-y" type="submit" name="search" value="search">
+                    <i class="fas fa-search fs-6 "></i>
+                </button>
+            </form>
+            <p></p>
+            <p></p>
+            <p></p>
+
+            {% if mover_quote_request %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <h5>Résultat de la recherche</h5>
+                </div>
+                <div class="table-responsive-lg border-0">
+                    <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
+                        <!-- Table head -->
+                        <thead align="center">
+                            <tr>
+                                <th scope="col" class="border-0 rounded-start">Ref</th>
+                                <th scope="col" class="border-0 rounded-start">Type déménagement</th>
+                                <th scope="col" class="border-0 rounded-start">Type clientèle</th>
+                                <th scope="col" class="border-0 rounded-end">Départ</th>
+                                <th scope="col" class="border-0 rounded-end">Arrivée</th>
+                                <th scope="col" class="border-0 rounded-end">Date</th>
+                                <th scope="col" class="border-0 rounded-end">Statut</th>
+                            </tr>
+                        </thead>
+
+                        <!-- Table body START -->
+                        <tbody align="center">
+                            <!-- Table item -->
+                            <tr>
+                                    <!-- Course item -->
+                                    <td>
+                                        <a href="{% url 'devis_detail' mover_quote_request.quote_request.id %}">
+                                            <center>{{mover_quote_request.quote_request.ref}}</center>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <center>
+                                            {{mover_quote_request.quote_request.moving_type1.name}}
+                                        </center>
+                                    </td>
+                                    <td>
+                                        <center>
+                                            {{mover_quote_request.quote_request.moving_type2.name}}
+                                        </center>
+                                    </td>
+                                    <td>
+                                        <center>
+                                            {{mover_quote_request.quote_request.country.name}}
+                                        </center>
+                                    </td>
+                                    <td>
+                                        <center>
+                                            {% if mover_quote_request.quote_request.moving_type1.name == "International" %}
+                                                {{mover_quote_request.quote_request.Country_Arrival}}
+                                            {% else %}
+                                                {{mover_quote_request.quote_request.country.name}}
+                                            {% endif %}
+                                        </center>
+                                    </td>
+                                    <td>
+                                        <center>
+                                            {% load i18n %}
+                                            {% language 'fr' %}
+                                                {{mover_quote_request.quote_request.created|date:'d F Y'}}
+                                            {% endlanguage %}
+                                        </center>
+                                    </td>
+                                    <td>
+                                        <center>
+                                            {% if mover_quote_request.treated == True %}
+                                                <button type="submit" class="btn btn-sm btn-success-soft" disabled>
+                                                    Traitée
+                                                </button>
+                                            {% elif mover_quote_request.rejected == True %}
+                                                <button type="submit" class="btn btn-sm btn-danger-soft" disabled>
+                                                    Rejetée
+                                                </button>
+                                            {% else %}
+                                                <button type="submit" class="btn btn-sm btn-info-soft" disabled>
+                                                    En cours...
+                                                </button>
+                                            {% endif %}
+                                        </center>
+                                    </td>
+                                </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="table-responsive-lg border-0">
+                <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
+                    <!-- Table head -->
+                    <thead align="center">
+                        <tr>
+                            <th scope="col" class="border-0 rounded-start">Ref</th>
+                            <th scope="col" class="border-0 rounded-start">Type déménagement</th>
+                            <th scope="col" class="border-0 rounded-start">Type clientèle</th>
+                            <th scope="col" class="border-0 rounded-end">Départ</th>
+                            <th scope="col" class="border-0 rounded-end">Arrivée</th>
+                            <th scope="col" class="border-0 rounded-end">Date</th>
+                            <th scope="col" class="border-0 rounded-end">Statut</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Table body START -->
+                    <tbody align="center">
+                        <!-- Table item -->
+                        {% for mover_quote_request in mover_quote_requests %}
+                            <tr>
+                                <!-- Course item -->
+                                <td>
+                                    <a href="{% url 'devis_detail' mover_quote_request.quote_request.id %}">
+                                        <center>{{mover_quote_request.quote_request.ref}}</center>
+                                    </a>
+                                </td>
+                                <td>
+                                    <center>
+                                        {{mover_quote_request.quote_request.moving_type1.name}}
+                                    </center>
+                                </td>
+                                <td>
+                                    <center>
+                                        {{mover_quote_request.quote_request.moving_type2.name}}
+                                    </center>
+                                </td>
+                                <td>
+                                    <center>
+                                        {{mover_quote_request.quote_request.country.name}}
+                                    </center>
+                                </td>
+                                <td>
+                                    <center>
+                                        {% if mover_quote_request.quote_request.moving_type1.name == "International" %}
+                                            {{mover_quote_request.quote_request.Country_Arrival}}
+                                        {% else %}
+                                            {{mover_quote_request.quote_request.country.name}}
+                                        {% endif %}
+                                    </center>
+                                </td>
+                                <td>
+                                    <center>
+                                        {% load i18n %}
+                                        {% language 'fr' %}
+                                            {{mover_quote_request.quote_request.created|date:'d F Y'}}
+                                        {% endlanguage %}
+                                    </center>
+                                </td>
+                                <td>
+                                    <center>
+                                        {% if mover_quote_request.treated == True %}
+                                            <button type="submit" class="btn btn-sm btn-success-soft" disabled>
+                                                Traitée
+                                            </button>
+                                        {% elif mover_quote_request.rejected == True %}
+                                            <button type="submit" class="btn btn-sm btn-danger-soft" disabled>
+                                                Rejetée
+                                            </button>
+                                        {% else %}
+                                            <button type="submit" class="btn btn-sm btn-info-soft" disabled>
+                                                En cours...
+                                            </button>
+                                        {% endif %}
+                                    </center>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+{% endblock %}

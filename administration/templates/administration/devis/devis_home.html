@@ -9,225 +9,404 @@
 
 {% block main %}
 
-    <div class="card">
+    <div class="card bg-dark">
         <div class="card-header bg-dark" align="center">
             <h2 class="text-white">DEVIS</h2>
         </div>
 
+        <form class="rounded position-relative" method="POST">
+            {% csrf_token %}
+            <input class="form-control pe-5 bg-transparent" type="search" name="ref" placeholder="Entre une référence" aria-label="Search">
+            <button class="btn bg-transparent px-2 py-0 position-absolute top-50 end-0 translate-middle-y" type="submit" name="search" value="search">
+                <i class="fas fa-search fs-6 "></i>
+            </button>
+        </form>
+
+        <p></p>
+        <p></p>
+
         <div class="card-body bg-dark">
 
-            <!-- Outer tabs START -->
-            <ul class="nav nav-pills nav-pill-soft mb-3" id="devis-pills-tab" role="tablist">
-                <!-- Tab item -->
-                <li class="nav-item me-2 me-sm-5" role="presentation">
-                    <button class="nav-link active" id="devis-pills-tab-1" data-bs-toggle="pill" data-bs-target="#devis-pills-tab1" type="button" role="tab" aria-controls="devis-pills-tab1" aria-selected="true">
-                        Devis distribués
-                    </button>
-                </li>
-                <!-- Tab item -->
-                <li class="nav-item me-2 me-sm-5" role="presentation">
-                    <button class="nav-link" id="devis-pills-tab-2" data-bs-toggle="pill" data-bs-target="#devis-pills-tab2" type="button" role="tab" aria-controls="devis-pills-tab2" aria-selected="false">
-                        Devis non distribués
-                        <span class="badge text-white bg-success rounded-1">{{movers_unactivated_count}}</span>
-                    </button>
-                </li>
-            </ul>
-            <!-- Outer tabs END -->
+            {% if quote_request %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <h5>Résultat de la recherche</h5>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row justify-content-between">
 
-            <!-- Outer tabs contents START -->
-            <div class="tab-content mb-0" id="devis-pills-tabContent">
+                            <div class="table-responsive-lg border-0">
+                                <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
+                                    <!-- Table head -->
+                                    <thead align="center">
+                                        <tr>
+                                            <th scope="col" class="border-0 rounded-start">Ref</th>
+                                            <th scope="col" class="border-0 rounded-start">Type déménagement</th>
+                                            <th scope="col" class="border-0 rounded-start">Type clientèle</th>
+                                            <th scope="col" class="border-0 rounded-end">Départ</th>
+                                            <th scope="col" class="border-0 rounded-end">Arrivée</th>
+                                            <th scope="col" class="border-0 rounded-end">Date</th>
+                                        </tr>
+                                    </thead>
 
-                <!-- Outer content START -->
-                <div class="tab-pane fade show active" id="devis-pills-tab1" role="tabpanel" aria-labelledby="devis-pills-tab-1">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="row justify-content-between">
-
-                                <div class="table-responsive-lg border-0">
-                                    <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
-                                        <!-- Table head -->
-                                        <thead align="center">
-                                            <tr>
-                                                <th scope="col" class="border-0 rounded-start">Ref</th>
-                                                <th scope="col" class="border-0 rounded-start">Distribution</th>
-                                                <th scope="col" class="border-0 rounded-start">Type déménagement</th>
-                                                <th scope="col" class="border-0 rounded-start">Type clientèle</th>
-                                                <th scope="col" class="border-0 rounded-end">Départ</th>
-                                                <th scope="col" class="border-0 rounded-end">Arrivée</th>
-                                                <th scope="col" class="border-0 rounded-end">Date</th>
-                                            </tr>
-                                        </thead>
-
-                                        <!-- Table body START -->
-                                        <tbody align="center">
-                                            <!-- Table item -->
-                                            {% for quote_request in quote_requests %}
-                                                {% for distributed_request in distributed_requests %}
-                                                    {% if distributed_request.quote_request_id == quote_request.id %}
-                                                        <tr>
-                                                            <!-- Course item -->
-                                                            <td>
-                                                                <a href="{% url 'devis_detail' quote_request.id %}">
-                                                                    <center>{{quote_request.ref}}</center>
-                                                                </a>
-                                                            </td>
-                                                            <td>
-                                                                <center>{{distributed_request.id__count}} fois</center>
-                                                            </td>
-                                                            <td>
-                                                                <center>
-                                                                    {{quote_request.moving_type1.name}}
-                                                                </center>
-                                                            </td>
-                                                            <td>
-                                                                <center>
-                                                                    {{quote_request.moving_type2.name}}
-                                                                </center>
-                                                            </td>
-                                                            <td>
-                                                                <center>
-                                                                    {{quote_request.country.name}}
-                                                                </center>
-                                                            </td>
-                                                            <td>
-                                                                <center>
-                                                                    {% if quote_request.moving_type1.name == "International" %}
-                                                                        {{quote_request.Country_Arrival}}
-                                                                    {% else %}
-                                                                        {{quote_request.country.name}}
-                                                                    {% endif %}
-                                                                </center>
-                                                            </td>
-                                                            <td>
-                                                                <center>
-                                                                    {% load i18n %}
-                                                                    {% language 'fr' %}
-                                                                        {{quote_request.created|date:'d F Y'}}
-                                                                    {% endlanguage %}
-                                                                </center>
-                                                            </td>
-                                                        </tr>
+                                    <!-- Table body START -->
+                                    <tbody align="center">
+                                        <!-- Table item -->
+                                        <tr>
+                                            <!-- Course item -->
+                                            <td>
+                                                <a href="{% url 'devis_detail' quote_request.id %}">
+                                                    <center>{{quote_request.ref}}</center>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    {{quote_request.moving_type1.name}}
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    {{quote_request.moving_type2.name}}
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    {{quote_request.country.name}}
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    {% if quote_request.moving_type1.name == "International" %}
+                                                        {{quote_request.Country_Arrival}}
+                                                    {% else %}
+                                                        {{quote_request.country.name}}
                                                     {% endif %}
-                                                {% endfor %}
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-
+                                                </center>
+                                            </td>
+                                            <td>
+                                                <center>
+                                                    {% load i18n %}
+                                                    {% language 'fr' %}
+                                                        {{quote_request.created|date:'d F Y'}}
+                                                    {% endlanguage %}
+                                                </center>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
+
                         </div>
-                    </div> <!-- Row END -->
-                </div>
-                <!-- Outer content END -->
+                    </div>
+                </div> <!-- Row END -->
+            {% else %}
+                <!-- Outer tabs START -->
+                <ul class="nav nav-pills nav-pill-soft mb-3" id="devis-pills-tab" role="tablist">
+                    <!-- Tab item -->
+                    <li class="nav-item me-2 me-sm-5" role="presentation">
+                        <button class="nav-link active" id="devis-pills-tab-1" data-bs-toggle="pill" data-bs-target="#devis-pills-tab1" type="button" role="tab" aria-controls="devis-pills-tab1" aria-selected="true">
+                            Devis distribués
+                        </button>
+                    </li>
+                    <!-- Tab item -->
+                    <li class="nav-item me-2 me-sm-5" role="presentation">
+                        <button class="nav-link" id="devis-pills-tab-2" data-bs-toggle="pill" data-bs-target="#devis-pills-tab2" type="button" role="tab" aria-controls="devis-pills-tab2" aria-selected="false">
+                            Devis non distribués
+                            <span class="badge text-white bg-success rounded-1">{{movers_unactivated_count}}</span>
+                        </button>
+                    </li>
+                    <!-- Tab item -->
+                    <li class="nav-item me-2 me-sm-5" role="presentation">
+                        <button class="nav-link" id="devis-pills-tab-3" data-bs-toggle="pill" data-bs-target="#devis-pills-tab3" type="button" role="tab" aria-controls="devis-pills-tab3" aria-selected="false">
+                            Devis rejetés
+                            <span class="badge text-white bg-success rounded-1">{{number_quote_requests_rejected}}</span>
+                        </button>
+                    </li>
+                </ul>
+                <!-- Outer tabs END -->
 
-                <!-- Outer content START -->
-                <div class="tab-pane fade" id="devis-pills-tab2" role="tabpanel" aria-labelledby="devis-pills-tab-2">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="row justify-content-between">
+                <!-- Outer tabs contents START -->
+                <div class="tab-content mb-0" id="devis-pills-tabContent">
 
-                                <div class="table-responsive-lg border-0">
-                                    <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
-                                        <!-- Table head -->
-                                        <thead align="center">
-                                            <tr>
-                                                <th scope="col" class="border-0 rounded-start">Ref</th>
-                                                <th scope="col" class="border-0 rounded-start">Nom</th>
-                                                <th scope="col" class="border-0 rounded-start">Pays</th>
-                                                <th scope="col" class="border-0 rounded-end">Téléphone</th>
-                                                <th scope="col" class="border-0 rounded-end">Numéro de TVA</th>
-                                                <th scope="col" class="border-0 rounded-end">Date d'inscription</th>
-                                                <th scope="col" class="border-0 rounded-end">Action</th>
-                                            </tr>
-                                        </thead>
+                    <!-- Outer content START -->
+                    <div class="tab-pane fade show active" id="devis-pills-tab1" role="tabpanel" aria-labelledby="devis-pills-tab-1">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row justify-content-between">
 
-                                        <!-- Table body START -->
-                                        <tbody align="center">
-                                            <!-- Table item -->
-                                            {% for mover in movers_unactivated %}
+                                    <div class="table-responsive-lg border-0">
+                                        <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
+                                            <!-- Table head -->
+                                            <thead align="center">
                                                 <tr>
-                                                    <!-- Course item -->
-                                                    <td>
-                                                        <a href="{% url 'mover_detail' mover.id %}">
-                                                            <center>{{mover.ref}}</center>
-                                                        </a>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {{mover.company_name}}
-                                                        </center>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {% for country in countries %}
-                                                                {% if country.id == mover.country_id %}
-                                                                    {{country.name}}
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </center>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {{mover.company_phone_number}}
-                                                        </center>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {{mover.TVA_number}}
-                                                        </center>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {% load i18n %}
-                                                            {% language 'fr' %}
-                                                                {{mover.created|date:'d F Y'}}
-                                                            {% endlanguage %}
-                                                        </center>
-                                                    </td>
-                                                    <!-- Action item -->
-                                                    <td>
-                                                        <form method="POST">
-                                                            {% csrf_token %}
-                                                            <input type="hidden" name="mover_id" value="{{mover.id}}">
-                                                            <input type="hidden" name="ref" value="{{mover.ref}}">
-                                                            <input type="hidden" name="company_name" value="{{mover.company_name}}">
-                                                            <input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
-                                                            <input type="hidden" name="Adresse" value="{{mover.Adresse}}">
-                                                            <input type="hidden" name="employee_number" value="{{mover.employee_number}}">
-                                                            <input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
-                                                            <input type="hidden" name="website" value="{{mover.website}}">
-                                                            <input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
-                                                            <input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
-                                                            <input type="hidden" name="City" value="{{mover.City}}">
-                                                            <input type="hidden" name="company_statut" value="{{mover.company_statut}}">
-                                                            <input type="hidden" name="company_description" value="{{mover.company_description}}">
-                                                            <input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
-                                                            <input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
-                                                            <input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
-                                                            <input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
-                                                            <input type="hidden" name="logo" value="{{mover.logo}}">
-                                                            <input type="hidden" name="validated" value="{{mover.validated}}">
-                                                            <input type="hidden" name="activated" value="True">
-                                                            <button type="submit" class="btn btn-sm btn-success-soft">
-                                                                Activer
-                                                            </button>
-                                                        </form>
-                                                    </td>
+                                                    <th scope="col" class="border-0 rounded-start">Ref</th>
+                                                    <th scope="col" class="border-0 rounded-start">Distribution</th>
+                                                    <th scope="col" class="border-0 rounded-start">Type déménagement</th>
+                                                    <th scope="col" class="border-0 rounded-start">Type clientèle</th>
+                                                    <th scope="col" class="border-0 rounded-end">Départ</th>
+                                                    <th scope="col" class="border-0 rounded-end">Arrivée</th>
+                                                    <th scope="col" class="border-0 rounded-end">Date</th>
                                                 </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+
+                                            <!-- Table body START -->
+                                            <tbody align="center">
+                                                <!-- Table item -->
+                                                {% for quote_request in quote_requests %}
+                                                    {% for distributed_request in distributed_requests %}
+                                                        {% if distributed_request.quote_request_id == quote_request.id %}
+                                                            <tr>
+                                                                <!-- Course item -->
+                                                                <td>
+                                                                    <a href="{% url 'devis_detail' quote_request.id %}">
+                                                                        <center>{{quote_request.ref}}</center>
+                                                                    </a>
+                                                                </td>
+                                                                <td>
+                                                                    <center>{{distributed_request.id__count}} fois</center>
+                                                                </td>
+                                                                <td>
+                                                                    <center>
+                                                                        {{quote_request.moving_type1.name}}
+                                                                    </center>
+                                                                </td>
+                                                                <td>
+                                                                    <center>
+                                                                        {{quote_request.moving_type2.name}}
+                                                                    </center>
+                                                                </td>
+                                                                <td>
+                                                                    <center>
+                                                                        {{quote_request.country.name}}
+                                                                    </center>
+                                                                </td>
+                                                                <td>
+                                                                    <center>
+                                                                        {% if quote_request.moving_type1.name == "International" %}
+                                                                            {{quote_request.Country_Arrival}}
+                                                                        {% else %}
+                                                                            {{quote_request.country.name}}
+                                                                        {% endif %}
+                                                                    </center>
+                                                                </td>
+                                                                <td>
+                                                                    <center>
+                                                                        {% load i18n %}
+                                                                        {% language 'fr' %}
+                                                                            {{quote_request.created|date:'d F Y'}}
+                                                                        {% endlanguage %}
+                                                                    </center>
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
                                 </div>
-
                             </div>
-                        </div>
-                    </div> <!-- Row END -->
+                        </div> <!-- Row END -->
+                    </div>
+                    <!-- Outer content END -->
+
+                    <!-- Outer content START -->
+                    <div class="tab-pane fade" id="devis-pills-tab2" role="tabpanel" aria-labelledby="devis-pills-tab-2">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row justify-content-between">
+
+                                    <div class="table-responsive-lg border-0">
+                                        <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
+                                            <!-- Table head -->
+                                            <thead align="center">
+                                                <tr>
+                                                    <th scope="col" class="border-0 rounded-start">Ref</th>
+                                                    <th scope="col" class="border-0 rounded-start">Nom</th>
+                                                    <th scope="col" class="border-0 rounded-start">Pays</th>
+                                                    <th scope="col" class="border-0 rounded-end">Téléphone</th>
+                                                    <th scope="col" class="border-0 rounded-end">Numéro de TVA</th>
+                                                    <th scope="col" class="border-0 rounded-end">Date d'inscription</th>
+                                                    <th scope="col" class="border-0 rounded-end">Action</th>
+                                                </tr>
+                                            </thead>
+
+                                            <!-- Table body START -->
+                                            <tbody align="center">
+                                                <!-- Table item -->
+                                                {% for mover in movers_unactivated %}
+                                                    <tr>
+                                                        <!-- Course item -->
+                                                        <td>
+                                                            <a href="{% url 'mover_detail' mover.id %}">
+                                                                <center>{{mover.ref}}</center>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{mover.company_name}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {% for country in countries %}
+                                                                    {% if country.id == mover.country_id %}
+                                                                        {{country.name}}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{mover.company_phone_number}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{mover.TVA_number}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {% load i18n %}
+                                                                {% language 'fr' %}
+                                                                    {{mover.created|date:'d F Y'}}
+                                                                {% endlanguage %}
+                                                            </center>
+                                                        </td>
+                                                        <!-- Action item -->
+                                                        <td>
+                                                            <form method="POST">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="mover_id" value="{{mover.id}}">
+                                                                <input type="hidden" name="ref" value="{{mover.ref}}">
+                                                                <input type="hidden" name="company_name" value="{{mover.company_name}}">
+                                                                <input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
+                                                                <input type="hidden" name="Adresse" value="{{mover.Adresse}}">
+                                                                <input type="hidden" name="employee_number" value="{{mover.employee_number}}">
+                                                                <input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
+                                                                <input type="hidden" name="website" value="{{mover.website}}">
+                                                                <input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
+                                                                <input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
+                                                                <input type="hidden" name="City" value="{{mover.City}}">
+                                                                <input type="hidden" name="company_statut" value="{{mover.company_statut}}">
+                                                                <input type="hidden" name="company_description" value="{{mover.company_description}}">
+                                                                <input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
+                                                                <input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
+                                                                <input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
+                                                                <input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
+                                                                <input type="hidden" name="logo" value="{{mover.logo}}">
+                                                                <input type="hidden" name="validated" value="{{mover.validated}}">
+                                                                <input type="hidden" name="activated" value="True">
+                                                                <button type="submit" class="btn btn-sm btn-success-soft">
+                                                                    Activer
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div> <!-- Row END -->
+                    </div>
+                    <!-- Outer content END -->
+
+                    <!-- Outer content START -->
+                    <div class="tab-pane fade" id="devis-pills-tab3" role="tabpanel" aria-labelledby="devis-pills-tab-3">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row justify-content-between">
+
+                                    <div class="table-responsive-lg border-0">
+                                        <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
+                                            <!-- Table head -->
+                                            <thead align="center">
+                                                <tr>
+                                                    <th scope="col" class="border-0 rounded-start">Ref</th>
+                                                    <th scope="col" class="border-0 rounded-start">Entreprise</th>
+                                                    <th scope="col" class="border-0 rounded-start">Raison</th>
+                                                    <th scope="col" class="border-0 rounded-start">Type déménagement</th>
+                                                    <th scope="col" class="border-0 rounded-end">Départ</th>
+                                                    <th scope="col" class="border-0 rounded-end">Arrivée</th>
+                                                    <th scope="col" class="border-0 rounded-end">Date</th>
+                                                    <th scope="col" class="border-0 rounded-start">Action</th>
+                                                </tr>
+                                            </thead>
+
+                                            <!-- Table body START -->
+                                            <tbody align="center">
+                                                <!-- Table item -->
+                                                {% for quote_request_rejected in quote_requests_rejected %}
+                                                    <tr>
+                                                        <!-- Course item -->
+                                                        <td>
+                                                            <a href="{% url 'devis_detail' quote_request_rejected.mover_quote_request.quote_request.id %}">
+                                                                <center>{{quote_request_rejected.mover_quote_request.quote_request.ref}}</center>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <a href="{% url 'mover_detail' quote_request_rejected.mover_quote_request.mover.id %}">
+                                                                <center>{{quote_request_rejected.mover_quote_request.mover.company_name}}</center>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{quote_request_rejected.reason}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{quote_request_rejected.mover_quote_request.quote_request.moving_type1.name}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{quote_request_rejected.mover_quote_request.quote_request.country.name}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {% if quote_request_rejected.mover_quote_request.quote_request.moving_type1.name == "International" %}
+                                                                    {{quote_request_rejected.mover_quote_request.quote_request.Country_Arrival}}
+                                                                {% else %}
+                                                                    {{quote_request_rejected.mover_quote_request.quote_request.country.name}}
+                                                                {% endif %}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {% load i18n %}
+                                                                {% language 'fr' %}
+                                                                    {{quote_request_rejected.created|date:'d F Y'}}
+                                                                {% endlanguage %}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                <a type="button" href="{% url 'delete_devis' quote_request_rejected.mover_quote_request.quote_request.id %}" class="btn btn-sm btn-danger">
+                                                                    Supprimer
+                                                                </a>
+                                                            </center>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div> <!-- Row END -->
+                    </div>
+                    <!-- Outer content END -->
                 </div>
-                <!-- Outer content END -->
-
-            </div>
-		    <!-- Outer tabs contents END -->
-
+                <!-- Outer tabs contents END -->
+            {% endif %}
         </div>
     </div>
 

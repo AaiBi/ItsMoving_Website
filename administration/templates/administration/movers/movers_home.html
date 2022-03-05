@@ -9,11 +9,21 @@
 
 {% block main %}
 
-    <div class="card">
+    <div class="card bg-dark">
         <div class="card-header bg-dark" align="center">
             <h2 class="text-white">Déménageurs</h2>
         </div>
 
+        <form class="rounded position-relative" method="POST">
+            {% csrf_token %}
+            <input class="form-control pe-5 bg-transparent" type="search" name="ref" placeholder="Rechercher un déménageur" aria-label="Search">
+            <button class="btn bg-transparent px-2 py-0 position-absolute top-50 end-0 translate-middle-y" type="submit" name="search" value="search">
+                <i class="fas fa-search fs-6 "></i>
+            </button>
+        </form>
+
+        <p></p>
+        <p></p>
         <div class="card-body bg-dark">
 
             <!-- Outer tabs START -->
@@ -43,68 +53,134 @@
                         <div class="col-12">
                             <div class="row justify-content-between">
 
-                                <div class="table-responsive-lg border-0">
-                                    <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
-                                        <!-- Table head -->
-                                        <thead align="center">
-                                            <tr>
-                                                <th scope="col" class="border-0 rounded-start">Ref</th>
-                                                <th scope="col" class="border-0 rounded-start">Nom</th>
-                                                <th scope="col" class="border-0 rounded-start">Pays</th>
-                                                <th scope="col" class="border-0 rounded-end">Téléphone</th>
-                                                <th scope="col" class="border-0 rounded-end">Numéro de TVA</th>
-                                                <th scope="col" class="border-0 rounded-end">Date d'inscription</th>
-                                            </tr>
-                                        </thead>
-
-                                        <!-- Table body START -->
-                                        <tbody align="center">
-                                            <!-- Table item -->
-                                            {% for mover in movers %}
+                                {% if mover %}
+                                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                        <h5>Résultat de la recherche</h5>
+                                    </div>
+                                    <div class="table-responsive-lg border-0">
+                                        <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
+                                            <!-- Table head -->
+                                            <thead align="center">
                                                 <tr>
-                                                    <!-- Course item -->
-                                                    <td>
-                                                        <a href="{% url 'mover_detail' mover.id %}">
-                                                            <center>{{mover.ref}}</center>
-                                                        </a>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {{mover.company_name}}
-                                                        </center>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {% for country in countries %}
-                                                                {% if country.id == mover.country_id %}
-                                                                    {{country.name}}
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </center>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {{mover.company_phone_number}}
-                                                        </center>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {{mover.TVA_number}}
-                                                        </center>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {% load i18n %}
-                                                            {% language 'fr' %}
-                                                                {{mover.created|date:'d F Y'}}
-                                                            {% endlanguage %}
-                                                        </center>
-                                                    </td>
+                                                    <th scope="col" class="border-0 rounded-start">Ref</th>
+                                                    <th scope="col" class="border-0 rounded-start">Nom</th>
+                                                    <th scope="col" class="border-0 rounded-start">Pays</th>
+                                                    <th scope="col" class="border-0 rounded-end">Téléphone</th>
+                                                    <th scope="col" class="border-0 rounded-end">Numéro de TVA</th>
+                                                    <th scope="col" class="border-0 rounded-end">Date d'inscription</th>
                                                 </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                            </thead>
+
+                                            <!-- Table body START -->
+                                            <tbody align="center">
+                                                <!-- Table item -->
+                                                <tr>
+                                                        <!-- Course item -->
+                                                        <td>
+                                                            <a href="{% url 'mover_detail' mover.id %}">
+                                                                <center>{{mover.ref}}</center>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{mover.company_name}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {% for country in countries %}
+                                                                    {% if country.id == mover.country_id %}
+                                                                        {{country.name}}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{mover.company_phone_number}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{mover.TVA_number}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {% load i18n %}
+                                                                {% language 'fr' %}
+                                                                    {{mover.created|date:'d F Y'}}
+                                                                {% endlanguage %}
+                                                            </center>
+                                                        </td>
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="table-responsive-lg border-0">
+                                        <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
+                                            <!-- Table head -->
+                                            <thead align="center">
+                                                <tr>
+                                                    <th scope="col" class="border-0 rounded-start">Ref</th>
+                                                    <th scope="col" class="border-0 rounded-start">Nom</th>
+                                                    <th scope="col" class="border-0 rounded-start">Pays</th>
+                                                    <th scope="col" class="border-0 rounded-end">Téléphone</th>
+                                                    <th scope="col" class="border-0 rounded-end">Numéro de TVA</th>
+                                                    <th scope="col" class="border-0 rounded-end">Date d'inscription</th>
+                                                </tr>
+                                            </thead>
+
+                                            <!-- Table body START -->
+                                            <tbody align="center">
+                                                <!-- Table item -->
+                                                {% for mover in movers_activated %}
+                                                    <tr>
+                                                        <!-- Course item -->
+                                                        <td>
+                                                            <a href="{% url 'mover_detail' mover.id %}">
+                                                                <center>{{mover.ref}}</center>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{mover.company_name}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {% for country in countries %}
+                                                                    {% if country.id == mover.country_id %}
+                                                                        {{country.name}}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{mover.company_phone_number}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {{mover.TVA_number}}
+                                                            </center>
+                                                        </td>
+                                                        <td>
+                                                            <center>
+                                                                {% load i18n %}
+                                                                {% language 'fr' %}
+                                                                    {{mover.created|date:'d F Y'}}
+                                                                {% endlanguage %}
+                                                            </center>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endif %}
 
                             </div>
                         </div>

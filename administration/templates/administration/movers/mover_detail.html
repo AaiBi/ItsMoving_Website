@@ -11,7 +11,30 @@
 
     <div class="card">
         <div class="card-header bg-dark" align="center">
-            <h2 class="text-white">{{mover.company_name}} - {{mover.ref}}</h2>
+            <h2 class="text-white">{{mover.company_name|capfirst}} - {{mover.ref}}</h2>
+        </div>
+
+        <div class="row bg-dark">
+            <div class="col-sm-6 col-lg-4">
+                <a href="{% url 'mover_detail' mover.id %}" class="d-flex justify-content-center align-items-center p-4 bg-light bg-opacity-15 rounded-3">
+                    <div class="ms-4">
+                        <span class="mb-0 h5 fw-light text-white">Informations</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <a href="{% url 'mover_devis' mover.id %}" class="d-flex justify-content-center align-items-center p-4 bg-danger bg-opacity-15 rounded-3">
+                    <div class="ms-4">
+                        <span class="mb-0 h5 fw-light text-white">
+                            {% if number_mover_quote_requests %}
+                                Devis {{number_mover_quote_requests}}
+                            {% else %}
+                                Devis 0
+                            {% endif %}
+                        </span>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <div class="card-body bg-dark">
@@ -163,61 +186,15 @@
             </br>
             {% if mover.activated == False %}
                 <center>
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="mover_id" value="{{mover.id}}">
-                    <input type="hidden" name="ref" value="{{mover.ref}}">
-                    <input type="hidden" name="company_name" value="{{mover.company_name}}">
-                    <input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
-                    <input type="hidden" name="Adresse" value="{{mover.Adresse}}">
-                    <input type="hidden" name="employee_number" value="{{mover.employee_number}}">
-                    <input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
-                    <input type="hidden" name="website" value="{{mover.website}}">
-                    <input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
-                    <input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
-                    <input type="hidden" name="City" value="{{mover.City}}">
-                    <input type="hidden" name="company_statut" value="{{mover.company_statut}}">
-                    <input type="hidden" name="company_description" value="{{mover.company_description}}">
-                    <input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
-                    <input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
-                    <input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
-                    <input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
-                    <input type="hidden" name="logo" value="{{mover.logo}}">
-                    <input type="hidden" name="validated" value="{{mover.validated}}">
-                    <input type="hidden" name="activated" value="True">
-                    <button type="submit" class="btn btn-sm btn-success-soft">
+                    <a type="button" href="{% url 'mover_active_unactive' mover.id %}" class="btn btn-sm btn-success">
                         Activer ce compte
-                    </button>
-                </form>
-            </center>
+                    </a>
+                </center>
             {% else %}
                 <center>
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="mover_id" value="{{mover.id}}">
-                        <input type="hidden" name="ref" value="{{mover.ref}}">
-                        <input type="hidden" name="company_name" value="{{mover.company_name}}">
-                        <input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
-                        <input type="hidden" name="Adresse" value="{{mover.Adresse}}">
-                        <input type="hidden" name="employee_number" value="{{mover.employee_number}}">
-                        <input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
-                        <input type="hidden" name="website" value="{{mover.website}}">
-                        <input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
-                        <input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
-                        <input type="hidden" name="City" value="{{mover.City}}">
-                        <input type="hidden" name="company_statut" value="{{mover.company_statut}}">
-                        <input type="hidden" name="company_description" value="{{mover.company_description}}">
-                        <input type="hidden" name="facebook_link" value="{{mover.facebook_link}}">
-                        <input type="hidden" name="instagram_link" value="{{mover.instagram_link}}">
-                        <input type="hidden" name="twitter_link" value="{{mover.twitter_link}}">
-                        <input type="hidden" name="linkedin_link" value="{{mover.linkedin_link}}">
-                        <input type="hidden" name="logo" value="{{mover.logo}}">
-                        <input type="hidden" name="validated" value="{{mover.validated}}">
-                        <input type="hidden" name="activated" value="False">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            Désactiver ce compte
-                        </button>
-                    </form>
+                    <a type="button" href="{% url 'mover_active_unactive' mover.id %}" class="btn btn-sm btn-danger">
+                        Désactiver ce compte
+                    </a>
                 </center>
             {% endif %}
         </div>

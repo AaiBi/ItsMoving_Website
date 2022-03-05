@@ -1,0 +1,78 @@
+{% extends 'administration/admin_base.html' %}
+
+{% block title %} Admin - Devis {% endblock %}
+
+{% load static %}
+
+{% block demenageur_active %} active {% endblock %}
+
+
+{% block main %}
+
+    <div class="card">
+        <div class="card-header bg-dark" align="center">
+            <h2 class="text-white">{{mover.company_name}} - {{mover.ref}}</h2>
+        </div>
+
+        <div class="card-body bg-dark">
+            <hr>
+            {% if mover.activated == False %}
+                <center>
+                    <h5 class="text-white">Voulez-vous vraiment activer ce compte ?</h5>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="ref" value="{{mover.ref}}">
+                        <input type="hidden" name="company_name" value="{{mover.company_name}}">
+                        <input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
+                        <input type="hidden" name="Adresse" value="{{mover.Adresse}}">
+                        <input type="hidden" name="employee_number" value="{{mover.employee_number}}">
+                        <input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
+                        <input type="hidden" name="website" value="{{mover.website}}">
+                        <input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
+                        <input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
+                        <input type="hidden" name="City" value="{{mover.City}}">
+                        <input type="hidden" name="company_statut" value="{{mover.company_statut}}">
+                        <input type="hidden" name="company_description" value="{{mover.company_description}}">
+                        <input type="hidden" name="country" value="{{mover.country.id}}">
+                        <input type="hidden" name="logo" value="{{mover.logo.url}}">
+                        <input type="hidden" name="validated" value="{{mover.validated}}">
+                        <input type="hidden" name="activated" value="True">
+                        <input type="hidden" name="moving_type1" value="{{mover.moving_type1.id}}">
+                        <button type="submit" class="btn btn-sm btn-success">
+                            Activer ce compte
+                        </button>
+                    </form>
+            </center>
+            {% else %}
+                <center>
+                    <h5 class="text-white">Voulez-vous vraiment désactiver ce compte ?</h5>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="ref" value="{{mover.ref}}">
+                        <input type="hidden" name="company_name" value="{{mover.company_name}}">
+                        <input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
+                        <input type="hidden" name="Adresse" value="{{mover.Adresse}}">
+                        <input type="hidden" name="employee_number" value="{{mover.employee_number}}">
+                        <input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
+                        <input type="hidden" name="website" value="{{mover.website}}">
+                        <input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
+                        <input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
+                        <input type="hidden" name="City" value="{{mover.City}}">
+                        <input type="hidden" name="company_statut" value="{{mover.company_statut}}">
+                        <input type="hidden" name="company_description" value="{{mover.company_description}}">
+                        <input type="hidden" name="country" value="{{mover.country.id}}">
+                        <input type="hidden" name="logo" value="{{mover.logo.url}}">
+                        <input type="hidden" name="validated" value="{{mover.validated}}">
+                        <input type="hidden" name="activated" value="False">
+                        <input type="hidden" name="moving_type1" value="{{mover.moving_type1.id}}">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Désactiver ce compte
+                        </button>
+                    </form>
+                </center>
+            {% endif %}
+        </div>
+
+    </div>
+
+{% endblock %}
