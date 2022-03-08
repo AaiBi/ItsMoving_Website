@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from base_app.models import Mover, Moving_Type1, Moving_Type2, Mover_Moving_Type2, Country, \
     Mover_Country, Quote_Request, Mover_Quote_Request, \
-    Number_Mover_Quote_Request_PerDay, Number_Distribution_Quote_Request
+    Number_Mover_Quote_Request_PerDay, Number_Distribution_Quote_Request, Movers_Email, Clients_Email
 import random
 
 
@@ -461,7 +461,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                         savedata1 = Number_Mover_Quote_Request_PerDay(
                                             number_quote_received_the_same_day=number, mover=mover_info)
 
-                                        savedata = Mover_Quote_Request(quote_request=quote_request_info, mover=
+                                        savedata2 = Mover_Quote_Request(quote_request=quote_request_info, mover=
                                         mover_info)
 
                                         # we verify if the request hasn't been distributed more than 5 times
@@ -471,44 +471,57 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                     number_max_distribution:
 
                                                 number_distribution = number_distribution_request.number_distribution + 1
-                                                savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                               number_distribution,
                                                                                               quote_request=
                                                                                               quote_request_info)
-                                                savedata2.save()
+                                                savedata3.save()
 
                                             else:
                                                 print(request.ref, ' a atteint le maximum de 5 distributions')
 
                                         else:
                                             number_distribution = 1
-                                            savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                            savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                           number_distribution,
                                                                                           quote_request=
                                                                                           quote_request_info)
-                                            savedata2.save()
+                                            savedata3.save()
 
-                                        savedata.save()
                                         savedata1.save()
+                                        savedata2.save()
 
                                         # Sending email to the Mover
-                                        subject = 'ItsMoving - Nouvelle demande de devis'
-                                        recipient_email = mover_info.user.email
-                                        email_from = mover_info.user.email
-                                        recipient_list = [recipient_email, ]
-                                        message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                  f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                  f'plus de détails. Merci !'
-                                        send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                        if Movers_Email(mover_quote_request_id=savedata2.id):
+                                            continue
+                                        else:
+                                            subject = 'ItsMoving - Nouvelle demande de devis'
+                                            recipient_email = mover_info.user.email
+                                            email_from = mover_info.user.email
+                                            recipient_list = [recipient_email, ]
+                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                      f'plus de détails. Merci !'
+                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+                                            save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
+                                            save_mover_email.save()
 
                                         # Sending email to the client
-                                        subject = 'ItsMoving - Demande de devis reçu'
-                                        recipient_email = email
-                                        email_from = email
-                                        recipient_list = [recipient_email, ]
-                                        message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis a bien été reçu,' \
-                                                  f' vous aurez un retour très bientôt, Merci !'
-                                        send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                        if Clients_Email(mover_quote_request_id=savedata2.id):
+                                            continue
+                                        else:
+                                            subject = 'ItsMoving - Accusé de reception'
+                                            recipient_email = email
+                                            email_from = email
+                                            recipient_list = [recipient_email, ]
+                                            message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}'\
+                                                      f' a bien été reçu,' \
+                                                      f' vous aurez un retour très bientôt, Merci !'
+                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+                                            save_mover_email = Clients_Email(mover_quote_request_id=savedata2.id)
+                                            save_mover_email.save()
 
                                 else:
                                     print(mover.company_name, " max atteint pour ajourdhui !")
@@ -532,7 +545,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                         savedata1 = Number_Mover_Quote_Request_PerDay(number_quote_received_the_same_day=1,
                                                                                       mover=mover_info)
 
-                                        savedata = Mover_Quote_Request(quote_request=
+                                        savedata2 = Mover_Quote_Request(quote_request=
                                                                        quote_request_info,
                                                                        mover=mover_info)
 
@@ -543,45 +556,57 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                     number_max_distribution:
 
                                                 number_distribution = number_distribution_request.number_distribution + 1
-                                                savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                               number_distribution,
                                                                                               quote_request=
                                                                                               quote_request_info)
-                                                savedata2.save()
+                                                savedata3.save()
 
                                             else:
                                                 print(request.ref, ' a atteint le maximum de 5 distributions')
 
                                         else:
                                             number_distribution = 1
-                                            savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                            savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                           number_distribution,
                                                                                           quote_request=
                                                                                           quote_request_info)
-                                            savedata2.save()
+                                            savedata3.save()
 
-                                        savedata.save()
                                         savedata1.save()
+                                        savedata2.save()
 
                                         # Sending email to the Mover
-                                        subject = 'ItsMoving - Nouvelle demande de devis'
-                                        recipient_email = mover_info.user.email
-                                        email_from = mover_info.user.email
-                                        recipient_list = [recipient_email, ]
-                                        message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                  f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                  f'plus de détails. Merci !'
-                                        send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                        if Movers_Email(mover_quote_request_id=savedata2.id):
+                                            continue
+                                        else:
+                                            subject = 'ItsMoving - Nouvelle demande de devis'
+                                            recipient_email = mover_info.user.email
+                                            email_from = mover_info.user.email
+                                            recipient_list = [recipient_email, ]
+                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                      f'plus de détails. Merci !'
+                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
 
-                                        # Sending email
-                                        subject = 'ItsMoving - Demande de devis reçu'
-                                        recipient_email = email
-                                        email_from = email
-                                        recipient_list = [recipient_email, ]
-                                        message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis a bien été reçu,' \
-                                                  f' vous aurez un retour très bientôt, Merci !'
-                                        send_mail(subject, message, email_from, recipient_list, fail_silently=False)
-                                        print("email sent")
+                                            save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
+                                            save_mover_email.save()
+
+                                        # Sending email to the client
+                                        if Clients_Email(mover_quote_request_id=savedata2.id):
+                                            continue
+                                        else:
+                                            subject = 'ItsMoving - Accusé de reception'
+                                            recipient_email = email
+                                            email_from = email
+                                            recipient_list = [recipient_email, ]
+                                            message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                      f' a bien été reçu,' \
+                                                      f' vous aurez un retour très bientôt, Merci !'
+                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+                                            save_mover_email = Clients_Email(mover_quote_request_id=savedata2.id)
+                                            save_mover_email.save()
 
                     ####################END NATIONAL REQUEST DISTRIBUTION START###################
 
@@ -626,7 +651,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                 savedata1 = Number_Mover_Quote_Request_PerDay(
                                                     number_quote_received_the_same_day=number, mover=mover_info)
 
-                                                savedata = Mover_Quote_Request(quote_request=quote_request_info,
+                                                savedata2 = Mover_Quote_Request(quote_request=quote_request_info,
                                                                                mover=mover_info)
 
                                                 # we verify if the request hasn't been distributed more than 5 times
@@ -636,46 +661,60 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                             number_max_distribution:
 
                                                         number_distribution = number_distribution_request.number_distribution + 1
-                                                        savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                        savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                                       number_distribution,
                                                                                                       quote_request=
                                                                                                       quote_request_info)
-                                                        savedata2.save()
+                                                        savedata3.save()
 
                                                     else:
                                                         print(request.ref, ' a atteint le maximum de 5 distributions')
 
                                                 else:
                                                     number_distribution = 1
-                                                    savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                    savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                                   number_distribution,
                                                                                                   quote_request=
                                                                                                   quote_request_info)
-                                                    savedata2.save()
+                                                    savedata3.save()
 
-                                                savedata.save()
                                                 savedata1.save()
+                                                savedata2.save()
 
                                                 # Sending email to the Mover
-                                                subject = 'ItsMoving - Nouvelle demande de devis'
-                                                recipient_email = mover_info.user.email
-                                                email_from = mover_info.user.email
-                                                recipient_list = [recipient_email, ]
-                                                message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                          f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                          f'plus de détails. Merci !'
-                                                send_mail(subject, message, email_from, recipient_list,
-                                                          fail_silently=False)
+                                                if Movers_Email(mover_quote_request_id=savedata2.id):
+                                                    continue
+                                                else:
+                                                    subject = 'ItsMoving - Nouvelle demande de devis'
+                                                    recipient_email = mover_info.user.email
+                                                    email_from = mover_info.user.email
+                                                    recipient_list = [recipient_email, ]
+                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                              f'plus de détails. Merci !'
+                                                    send_mail(subject, message, email_from, recipient_list,
+                                                              fail_silently=False)
+
+                                                    save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
+                                                    save_mover_email.save()
 
                                                 # Sending email to the client
-                                                subject = 'ItsMoving - Demande de devis reçu'
-                                                recipient_email = email
-                                                email_from = email
-                                                recipient_list = [recipient_email, ]
-                                                message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis a bien été reçu,' \
-                                                          f' vous aurez un retour très bientôt, Merci !'
-                                                send_mail(subject, message, email_from, recipient_list,
-                                                          fail_silently=False)
+                                                if Clients_Email(mover_quote_request_id=savedata2.id):
+                                                    continue
+                                                else:
+                                                    subject = 'ItsMoving - Accusé de reception'
+                                                    recipient_email = email
+                                                    email_from = email
+                                                    recipient_list = [recipient_email, ]
+                                                    message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                              f' a bien été reçu,' \
+                                                              f' vous aurez un retour très bientôt, Merci !'
+                                                    send_mail(subject, message, email_from, recipient_list,
+                                                              fail_silently=False)
+
+                                                    save_mover_email = Clients_Email(
+                                                        mover_quote_request_id=savedata2.id)
+                                                    save_mover_email.save()
 
                                         else:
                                             print(mover.company_name, " max atteint pour ajourdhui !")
@@ -700,7 +739,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                     number_quote_received_the_same_day=1,
                                                     mover=mover_info)
 
-                                                savedata = Mover_Quote_Request(quote_request=
+                                                savedata2 = Mover_Quote_Request(quote_request=
                                                                                quote_request_info,
                                                                                mover=mover_info)
 
@@ -711,47 +750,60 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                             number_max_distribution:
 
                                                         number_distribution = number_distribution_request.number_distribution + 1
-                                                        savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                        savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                                       number_distribution,
                                                                                                       quote_request=
                                                                                                       quote_request_info)
-                                                        savedata2.save()
+                                                        savedata3.save()
 
                                                     else:
                                                         print(request.ref, ' a atteint le maximum de 5 distributions')
 
                                                 else:
                                                     number_distribution = 1
-                                                    savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                    savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                                   number_distribution,
                                                                                                   quote_request=
                                                                                                   quote_request_info)
-                                                    savedata2.save()
+                                                    savedata3.save()
 
-                                                savedata.save()
                                                 savedata1.save()
+                                                savedata2.save()
 
                                                 # Sending email to the Mover
-                                                subject = 'ItsMoving - Nouvelle demande de devis'
-                                                recipient_email = mover_info.user.email
-                                                email_from = mover_info.user.email
-                                                recipient_list = [recipient_email, ]
-                                                message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                          f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                          f'plus de détails. Merci !'
-                                                send_mail(subject, message, email_from, recipient_list,
-                                                          fail_silently=False)
+                                                if Movers_Email(mover_quote_request_id=savedata2.id):
+                                                    continue
+                                                else:
+                                                    subject = 'ItsMoving - Nouvelle demande de devis'
+                                                    recipient_email = mover_info.user.email
+                                                    email_from = mover_info.user.email
+                                                    recipient_list = [recipient_email, ]
+                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                              f'plus de détails. Merci !'
+                                                    send_mail(subject, message, email_from, recipient_list,
+                                                              fail_silently=False)
+
+                                                    save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
+                                                    save_mover_email.save()
 
                                                 # Sending email to the client
-                                                subject = 'ItsMoving - Demande de devis reçu'
-                                                recipient_email = email
-                                                email_from = email
-                                                recipient_list = [recipient_email, ]
-                                                message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis a bien été reçu,' \
-                                                          f' vous aurez un retour très bientôt, Merci !'
-                                                send_mail(subject, message, email_from, recipient_list,
-                                                          fail_silently=False)
-                                                print("email sent")
+                                                if Clients_Email(mover_quote_request_id=savedata2.id):
+                                                    continue
+                                                else:
+                                                    subject = 'ItsMoving - Accusé de reception'
+                                                    recipient_email = email
+                                                    email_from = email
+                                                    recipient_list = [recipient_email, ]
+                                                    message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                              f' a bien été reçu,' \
+                                                              f' vous aurez un retour très bientôt, Merci !'
+                                                    send_mail(subject, message, email_from, recipient_list,
+                                                              fail_silently=False)
+
+                                                    save_mover_email = Clients_Email(
+                                                        mover_quote_request_id=savedata2.id)
+                                                    save_mover_email.save()
 
 
 
@@ -830,7 +882,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                         savedata1 = Number_Mover_Quote_Request_PerDay(
                                             number_quote_received_the_same_day=number, mover=mover_info)
 
-                                        savedata = Mover_Quote_Request(quote_request=quote_request_info, mover=
+                                        savedata2 = Mover_Quote_Request(quote_request=quote_request_info, mover=
                                         mover_info)
 
                                         # we verify if the request hasn't been distributed more than 5 times
@@ -840,45 +892,57 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                     number_max_distribution:
 
                                                 number_distribution = number_distribution_request.number_distribution + 1
-                                                savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                               number_distribution,
                                                                                               quote_request=
                                                                                               quote_request_info)
-                                                savedata2.save()
+                                                savedata3.save()
 
                                             else:
                                                 print(request.ref, ' a atteint le maximum de 5 distributions')
 
                                         else:
                                             number_distribution = 1
-                                            savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                            savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                           number_distribution,
                                                                                           quote_request=
                                                                                           quote_request_info)
-                                            savedata2.save()
+                                            savedata3.save()
 
-                                        savedata.save()
                                         savedata1.save()
+                                        savedata2.save()
 
                                         # Sending email to the Mover
-                                        subject = 'ItsMoving - Nouvelle demande de devis'
-                                        recipient_email = mover_info.user.email
-                                        email_from = mover_info.user.email
-                                        recipient_list = [recipient_email, ]
-                                        message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                  f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                  f'plus de détails. Merci !'
-                                        send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                        if Movers_Email(mover_quote_request_id=savedata2.id):
+                                            continue
+                                        else:
+                                            subject = 'ItsMoving - Nouvelle demande de devis'
+                                            recipient_email = mover_info.user.email
+                                            email_from = mover_info.user.email
+                                            recipient_list = [recipient_email, ]
+                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                      f'plus de détails. Merci !'
+                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+                                            save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
+                                            save_mover_email.save()
 
                                         # Sending email to the client
-                                        subject = 'ItsMoving - Demande de devis reçu'
-                                        recipient_email = email
-                                        email_from = email
-                                        recipient_list = [recipient_email, ]
-                                        message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis a bien été reçu,' \
-                                                  f' vous aurez un retour très bientôt, Merci !'
-                                        send_mail(subject, message, email_from, recipient_list,
-                                                  fail_silently=False)
+                                        if Clients_Email(mover_quote_request_id=savedata2.id):
+                                            continue
+                                        else:
+                                            subject = 'ItsMoving - Accusé de reception'
+                                            recipient_email = email
+                                            email_from = email
+                                            recipient_list = [recipient_email, ]
+                                            message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                      f' a bien été reçu,' \
+                                                      f' vous aurez un retour très bientôt, Merci !'
+                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+                                            save_mover_email = Clients_Email(mover_quote_request_id=savedata2.id)
+                                            save_mover_email.save()
 
                                 else:
                                     print(mover.company_name, " max atteint pour ajourdhui !")
@@ -902,7 +966,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                         savedata1 = Number_Mover_Quote_Request_PerDay(number_quote_received_the_same_day=1,
                                                                                       mover=mover_info)
 
-                                        savedata = Mover_Quote_Request(quote_request=
+                                        savedata2 = Mover_Quote_Request(quote_request=
                                                                        quote_request_info,
                                                                        mover=mover_info)
 
@@ -913,46 +977,57 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                     number_max_distribution:
 
                                                 number_distribution = number_distribution_request.number_distribution + 1
-                                                savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                               number_distribution,
                                                                                               quote_request=
                                                                                               quote_request_info)
-                                                savedata2.save()
+                                                savedata3.save()
 
                                             else:
                                                 print(request.ref, ' a atteint le maximum de 5 distributions')
 
                                         else:
                                             number_distribution = 1
-                                            savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                            savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                           number_distribution,
                                                                                           quote_request=
                                                                                           quote_request_info)
-                                            savedata2.save()
+                                            savedata3.save()
 
-                                        savedata.save()
                                         savedata1.save()
+                                        savedata2.save()
 
                                         # Sending email to the Mover
-                                        subject = 'ItsMoving - Nouvelle demande de devis'
-                                        recipient_email = mover_info.user.email
-                                        email_from = mover_info.user.email
-                                        recipient_list = [recipient_email, ]
-                                        message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                  f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                  f'plus de détails. Merci !'
-                                        send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                        if Movers_Email(mover_quote_request_id=savedata2.id):
+                                            continue
+                                        else:
+                                            subject = 'ItsMoving - Nouvelle demande de devis'
+                                            recipient_email = mover_info.user.email
+                                            email_from = mover_info.user.email
+                                            recipient_list = [recipient_email, ]
+                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                      f'plus de détails. Merci !'
+                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+                                            save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
+                                            save_mover_email.save()
 
                                         # Sending email to the client
-                                        subject = 'ItsMoving - Demande de devis reçu'
-                                        recipient_email = email
-                                        email_from = email
-                                        recipient_list = [recipient_email, ]
-                                        message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis a bien été reçu,' \
-                                                  f' vous aurez un retour très bientôt, Merci !'
-                                        send_mail(subject, message, email_from, recipient_list,
-                                                  fail_silently=False)
-                                        print("email sent")
+                                        if Clients_Email(mover_quote_request_id=savedata2.id):
+                                            continue
+                                        else:
+                                            subject = 'ItsMoving - Accusé de reception'
+                                            recipient_email = email
+                                            email_from = email
+                                            recipient_list = [recipient_email, ]
+                                            message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                      f' a bien été reçu,' \
+                                                      f' vous aurez un retour très bientôt, Merci !'
+                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+                                            save_mover_email = Clients_Email(mover_quote_request_id=savedata2.id)
+                                            save_mover_email.save()
 
                     ####################END NATIONAL REQUEST DISTRIBUTION START###################
 
@@ -997,7 +1072,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                 savedata1 = Number_Mover_Quote_Request_PerDay(
                                                     number_quote_received_the_same_day=number, mover=mover_info)
 
-                                                savedata = Mover_Quote_Request(quote_request=quote_request_info,
+                                                savedata2 = Mover_Quote_Request(quote_request=quote_request_info,
                                                                                mover=mover_info)
 
                                                 # we verify if the request hasn't been distributed more than 5 times
@@ -1007,47 +1082,60 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                             number_max_distribution:
 
                                                         number_distribution = number_distribution_request.number_distribution + 1
-                                                        savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                        savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                                       number_distribution,
                                                                                                       quote_request=
                                                                                                       quote_request_info)
-                                                        savedata2.save()
+                                                        savedata3.save()
 
                                                     else:
                                                         print(request.ref, ' a atteint le maximum de 5 distributions')
 
                                                 else:
                                                     number_distribution = 1
-                                                    savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                    savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                                   number_distribution,
                                                                                                   quote_request=
                                                                                                   quote_request_info)
-                                                    savedata2.save()
+                                                    savedata3.save()
 
-                                                savedata.save()
                                                 savedata1.save()
+                                                savedata2.save()
 
                                                 # Sending email to the Mover
-                                                subject = 'ItsMoving - Nouvelle demande de devis'
-                                                recipient_email = mover_info.user.email
-                                                email_from = mover_info.user.email
-                                                recipient_list = [recipient_email, ]
-                                                message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                          f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                          f'plus de détails. Merci !'
-                                                send_mail(subject, message, email_from, recipient_list,
-                                                          fail_silently=False)
+                                                if Movers_Email(mover_quote_request_id=savedata2.id):
+                                                    continue
+                                                else:
+                                                    subject = 'ItsMoving - Nouvelle demande de devis'
+                                                    recipient_email = mover_info.user.email
+                                                    email_from = mover_info.user.email
+                                                    recipient_list = [recipient_email, ]
+                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                              f'plus de détails. Merci !'
+                                                    send_mail(subject, message, email_from, recipient_list,
+                                                              fail_silently=False)
+
+                                                    save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
+                                                    save_mover_email.save()
 
                                                 # Sending email to the client
-                                                subject = 'ItsMoving - Demande de devis reçu'
-                                                recipient_email = email
-                                                email_from = email
-                                                recipient_list = [recipient_email, ]
-                                                message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis a bien été reçu,' \
-                                                          f' vous aurez un retour très bientôt, Merci !'
-                                                send_mail(subject, message, email_from, recipient_list,
-                                                          fail_silently=False)
-                                                print("email sent")
+                                                if Clients_Email(mover_quote_request_id=savedata2.id):
+                                                    continue
+                                                else:
+                                                    subject = 'ItsMoving - Accusé de reception'
+                                                    recipient_email = email
+                                                    email_from = email
+                                                    recipient_list = [recipient_email, ]
+                                                    message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                              f' a bien été reçu,' \
+                                                              f' vous aurez un retour très bientôt, Merci !'
+                                                    send_mail(subject, message, email_from, recipient_list,
+                                                              fail_silently=False)
+
+                                                    save_mover_email = Clients_Email(
+                                                        mover_quote_request_id=savedata2.id)
+                                                    save_mover_email.save()
 
                                         else:
                                             print(mover.company_name, " max atteint pour ajourdhui !")
@@ -1072,7 +1160,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                     number_quote_received_the_same_day=1,
                                                     mover=mover_info)
 
-                                                savedata = Mover_Quote_Request(quote_request=
+                                                savedata2 = Mover_Quote_Request(quote_request=
                                                                                quote_request_info,
                                                                                mover=mover_info)
 
@@ -1083,47 +1171,60 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                             number_max_distribution:
 
                                                         number_distribution = number_distribution_request.number_distribution + 1
-                                                        savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                        savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                                       number_distribution,
                                                                                                       quote_request=
                                                                                                       quote_request_info)
-                                                        savedata2.save()
+                                                        savedata3.save()
 
                                                     else:
                                                         print(request.ref, ' a atteint le maximum de 5 distributions')
 
                                                 else:
                                                     number_distribution = 1
-                                                    savedata2 = Number_Distribution_Quote_Request(number_distribution=
+                                                    savedata3 = Number_Distribution_Quote_Request(number_distribution=
                                                                                                   number_distribution,
                                                                                                   quote_request=
                                                                                                   quote_request_info)
-                                                    savedata2.save()
+                                                    savedata3.save()
 
-                                                savedata.save()
                                                 savedata1.save()
+                                                savedata2.save()
 
                                                 # Sending email to the Mover
-                                                subject = 'ItsMoving - Nouvelle demande de devis'
-                                                recipient_email = mover_info.user.email
-                                                email_from = mover_info.user.email
-                                                recipient_list = [recipient_email, ]
-                                                message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                          f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                          f'plus de détails. Merci !'
-                                                send_mail(subject, message, email_from, recipient_list,
-                                                          fail_silently=False)
+                                                if Movers_Email(mover_quote_request_id=savedata2.id):
+                                                    continue
+                                                else:
+                                                    subject = 'ItsMoving - Nouvelle demande de devis'
+                                                    recipient_email = mover_info.user.email
+                                                    email_from = mover_info.user.email
+                                                    recipient_list = [recipient_email, ]
+                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                              f'plus de détails. Merci !'
+                                                    send_mail(subject, message, email_from, recipient_list,
+                                                              fail_silently=False)
+
+                                                    save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
+                                                    save_mover_email.save()
 
                                                 # Sending email to the client
-                                                subject = 'ItsMoving - Demande de devis reçu'
-                                                recipient_email = email
-                                                email_from = email
-                                                recipient_list = [recipient_email, ]
-                                                message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis a bien été reçu,' \
-                                                          f' vous aurez un retour très bientôt, Merci !'
-                                                send_mail(subject, message, email_from, recipient_list,
-                                                          fail_silently=False)
-                                                print("email sent")
+                                                if Clients_Email(mover_quote_request_id=savedata2.id):
+                                                    continue
+                                                else:
+                                                    subject = 'ItsMoving - Accusé de reception'
+                                                    recipient_email = email
+                                                    email_from = email
+                                                    recipient_list = [recipient_email, ]
+                                                    message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                              f' a bien été reçu,' \
+                                                              f' vous aurez un retour très bientôt, Merci !'
+                                                    send_mail(subject, message, email_from, recipient_list,
+                                                              fail_silently=False)
+
+                                                    save_mover_email = Clients_Email(
+                                                        mover_quote_request_id=savedata2.id)
+                                                    save_mover_email.save()
 
                                 else:
                                     print(request.Country_Arrival, ' fait pas partie de la liste de destination de ',

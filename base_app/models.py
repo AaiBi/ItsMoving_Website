@@ -138,3 +138,13 @@ class Review(models.Model):
     message = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     mover_quote_request = models.ForeignKey(Mover_Quote_Request, on_delete=models.CASCADE)
+
+
+class Clients_Email(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    mover_quote_request = models.ForeignKey(Mover_Quote_Request, on_delete=models.CASCADE)
+
+
+class Movers_Email(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    mover_quote_request = models.ForeignKey(Mover_Quote_Request, on_delete=models.CASCADE)
