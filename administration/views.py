@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from base_app.forms import Mover_Form
 from base_app.models import Mover, Country, Quote_Request, Moving_Type1, Moving_Type2, Mover_Quote_Request, \
-    Quote_Request_Rejected
+    Quote_Request_Rejected, Mover_Country
 
 
 def admin_login(request):
@@ -183,13 +183,15 @@ def mover_detail(request, mover_pk):
     moving_type2 = Moving_Type2.objects.all()
     movers = Mover.objects.all()
     users = User.objects.all()
+    movers_country = Mover_Country.objects.filter(mover_id=mover_pk)
     number_mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover_pk).count()
 
     return render(request, 'administration/movers/mover_detail.html', {'mover': mover, 'countries': countries,
                                                                        'moving_type1': moving_type1, 'moving_type2'
                                                                        : moving_type2, 'movers': movers, 'users':
                                                                            users, 'number_mover_quote_requests':
-                                                                       number_mover_quote_requests})
+                                                                       number_mover_quote_requests, 'movers_country':
+                                                                       movers_country})
 
 
 @login_required

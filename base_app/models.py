@@ -142,9 +142,10 @@ class Review(models.Model):
 
 class Clients_Email(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    mover_quote_request = models.ForeignKey(Mover_Quote_Request, on_delete=models.CASCADE)
+    quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE, default="")
 
 
 class Movers_Email(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    mover_quote_request = models.ForeignKey(Mover_Quote_Request, on_delete=models.CASCADE)
+    quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE, default="")
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE, default="")

@@ -99,6 +99,31 @@
 
             </div>
 
+            {% if mover.moving_type1.name == 'International' %}
+                <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 mt-5">
+                    <center><h4>Pays d'intervention</h4></center>
+                    </br>
+
+                    <div class="card card-body text-dark">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <ul>
+                                    {% for mover_country in movers_country %}
+                                        <li>
+                                            <h5>
+                                                Pays :
+                                                <span class="text-info">{{mover_country.country.name|capfirst}}</span>
+                                            </h5>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            {% endif %}
+
             <div class="card card-body bg-secondary rounded-top border overflow-hidden p-0 mt-5">
                 <center><h4>Informations sur l'utilisateur</h4></center>
                 </br>

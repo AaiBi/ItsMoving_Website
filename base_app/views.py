@@ -488,40 +488,50 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                                           quote_request_info)
                                             savedata3.save()
 
-                                        savedata1.save()
-                                        savedata2.save()
+                                        if savedata1 and savedata2:
+                                            savedata1.save()
+                                            savedata2.save()
 
-                                        # Sending email to the Mover
-                                        if Movers_Email(mover_quote_request_id=savedata2.id):
-                                            continue
-                                        else:
-                                            subject = 'ItsMoving - Nouvelle demande de devis'
-                                            recipient_email = mover_info.user.email
-                                            email_from = mover_info.user.email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                      f'plus de détails. Merci !'
-                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                            # Sending email to the Mover
+                                            if Movers_Email.objects.filter(quote_request__id=
+                                                                           savedata2.quote_request.id,
+                                                                           mover__id=savedata2.mover.id):
+                                                continue
+                                            else:
+                                                subject = 'ItsMoving - Nouvelle demande de devis'
+                                                recipient_email = mover_info.user.email
+                                                email_from = mover_info.user.email
+                                                recipient_list = [recipient_email, ]
+                                                message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                          f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                          f'plus de détails. Merci !'
+                                                send_mail(subject, message, email_from, recipient_list,
+                                                          fail_silently=False)
 
-                                            save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
-                                            save_mover_email.save()
+                                                save_mover_email = Movers_Email(quote_request_id=
+                                                                                savedata2.quote_request.id,
+                                                                                mover_id=
+                                                                                savedata2.mover.id)
+                                                save_mover_email.save()
 
-                                        # Sending email to the client
-                                        if Clients_Email(mover_quote_request_id=savedata2.id):
-                                            continue
-                                        else:
-                                            subject = 'ItsMoving - Accusé de reception'
-                                            recipient_email = email
-                                            email_from = email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}'\
-                                                      f' a bien été reçu,' \
-                                                      f' vous aurez un retour très bientôt, Merci !'
-                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                            # Sending email to the client
+                                            if Clients_Email.objects.filter(quote_request__id=
+                                                                            savedata2.quote_request.id):
+                                                continue
+                                            else:
+                                                subject = 'ItsMoving - Accusé de reception'
+                                                recipient_email = email
+                                                email_from = email
+                                                recipient_list = [recipient_email, ]
+                                                message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                          f' a bien été reçu,' \
+                                                          f' vous aurez un retour très bientôt, Merci !'
+                                                send_mail(subject, message, email_from, recipient_list,
+                                                          fail_silently=False)
 
-                                            save_mover_email = Clients_Email(mover_quote_request_id=savedata2.id)
-                                            save_mover_email.save()
+                                                save_client_email = Clients_Email(quote_request_id=
+                                                                                  savedata2.quote_request.id)
+                                                save_client_email.save()
 
                                 else:
                                     print(mover.company_name, " max atteint pour ajourdhui !")
@@ -573,40 +583,50 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                                           quote_request_info)
                                             savedata3.save()
 
-                                        savedata1.save()
-                                        savedata2.save()
+                                        if savedata1 and savedata2:
+                                            savedata1.save()
+                                            savedata2.save()
 
-                                        # Sending email to the Mover
-                                        if Movers_Email(mover_quote_request_id=savedata2.id):
-                                            continue
-                                        else:
-                                            subject = 'ItsMoving - Nouvelle demande de devis'
-                                            recipient_email = mover_info.user.email
-                                            email_from = mover_info.user.email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                      f'plus de détails. Merci !'
-                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                            # Sending email to the Mover
+                                            if Movers_Email.objects.filter(quote_request__id=
+                                                                           savedata2.quote_request.id,
+                                                                           mover__id=savedata2.mover.id):
+                                                continue
+                                            else:
+                                                subject = 'ItsMoving - Nouvelle demande de devis'
+                                                recipient_email = mover_info.user.email
+                                                email_from = mover_info.user.email
+                                                recipient_list = [recipient_email, ]
+                                                message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                          f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                          f'plus de détails. Merci !'
+                                                send_mail(subject, message, email_from, recipient_list,
+                                                          fail_silently=False)
 
-                                            save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
-                                            save_mover_email.save()
+                                                save_mover_email = Movers_Email(quote_request_id=
+                                                                                savedata2.quote_request.id,
+                                                                                mover_id=
+                                                                                savedata2.mover.id)
+                                                save_mover_email.save()
 
-                                        # Sending email to the client
-                                        if Clients_Email(mover_quote_request_id=savedata2.id):
-                                            continue
-                                        else:
-                                            subject = 'ItsMoving - Accusé de reception'
-                                            recipient_email = email
-                                            email_from = email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
-                                                      f' a bien été reçu,' \
-                                                      f' vous aurez un retour très bientôt, Merci !'
-                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                            # Sending email to the client
+                                            if Clients_Email.objects.filter(quote_request__id=
+                                                                            savedata2.quote_request.id):
+                                                continue
+                                            else:
+                                                subject = 'ItsMoving - Accusé de reception'
+                                                recipient_email = email
+                                                email_from = email
+                                                recipient_list = [recipient_email, ]
+                                                message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                          f' a bien été reçu,' \
+                                                          f' vous aurez un retour très bientôt, Merci !'
+                                                send_mail(subject, message, email_from, recipient_list,
+                                                          fail_silently=False)
 
-                                            save_mover_email = Clients_Email(mover_quote_request_id=savedata2.id)
-                                            save_mover_email.save()
+                                                save_client_email = Clients_Email(quote_request_id=
+                                                                                  savedata2.quote_request.id)
+                                                save_client_email.save()
 
                     ####################END NATIONAL REQUEST DISTRIBUTION START###################
 
@@ -678,43 +698,50 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                                                   quote_request_info)
                                                     savedata3.save()
 
-                                                savedata1.save()
-                                                savedata2.save()
+                                                if savedata1 and savedata2:
+                                                    savedata1.save()
+                                                    savedata2.save()
 
-                                                # Sending email to the Mover
-                                                if Movers_Email(mover_quote_request_id=savedata2.id):
-                                                    continue
-                                                else:
-                                                    subject = 'ItsMoving - Nouvelle demande de devis'
-                                                    recipient_email = mover_info.user.email
-                                                    email_from = mover_info.user.email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                              f'plus de détails. Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    # Sending email to the Mover
+                                                    if Movers_Email.objects.filter(quote_request__id=
+                                                                                   savedata2.quote_request.id,
+                                                                                   mover__id=savedata2.mover.id):
+                                                        continue
+                                                    else:
+                                                        subject = 'ItsMoving - Nouvelle demande de devis'
+                                                        recipient_email = mover_info.user.email
+                                                        email_from = mover_info.user.email
+                                                        recipient_list = [recipient_email, ]
+                                                        message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                                  f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                                  f'plus de détails. Merci !'
+                                                        send_mail(subject, message, email_from, recipient_list,
+                                                                  fail_silently=False)
 
-                                                    save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
-                                                    save_mover_email.save()
+                                                        save_mover_email = Movers_Email(quote_request_id=
+                                                                                        savedata2.quote_request.id,
+                                                                                        mover_id=
+                                                                                        savedata2.mover.id)
+                                                        save_mover_email.save()
 
-                                                # Sending email to the client
-                                                if Clients_Email(mover_quote_request_id=savedata2.id):
-                                                    continue
-                                                else:
-                                                    subject = 'ItsMoving - Accusé de reception'
-                                                    recipient_email = email
-                                                    email_from = email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
-                                                              f' a bien été reçu,' \
-                                                              f' vous aurez un retour très bientôt, Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    # Sending email to the client
+                                                    if Clients_Email.objects.filter(quote_request__id=
+                                                                                    savedata2.quote_request.id):
+                                                        continue
+                                                    else:
+                                                        subject = 'ItsMoving - Accusé de reception'
+                                                        recipient_email = email
+                                                        email_from = email
+                                                        recipient_list = [recipient_email, ]
+                                                        message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                                  f' a bien été reçu,' \
+                                                                  f' vous aurez un retour très bientôt, Merci !'
+                                                        send_mail(subject, message, email_from, recipient_list,
+                                                                  fail_silently=False)
 
-                                                    save_mover_email = Clients_Email(
-                                                        mover_quote_request_id=savedata2.id)
-                                                    save_mover_email.save()
+                                                        save_client_email = Clients_Email(quote_request_id=
+                                                                                          savedata2.quote_request.id)
+                                                        save_client_email.save()
 
                                         else:
                                             print(mover.company_name, " max atteint pour ajourdhui !")
@@ -767,45 +794,50 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                                                   quote_request_info)
                                                     savedata3.save()
 
-                                                savedata1.save()
-                                                savedata2.save()
+                                                if savedata1 and savedata2:
+                                                    savedata1.save()
+                                                    savedata2.save()
 
-                                                # Sending email to the Mover
-                                                if Movers_Email(mover_quote_request_id=savedata2.id):
-                                                    continue
-                                                else:
-                                                    subject = 'ItsMoving - Nouvelle demande de devis'
-                                                    recipient_email = mover_info.user.email
-                                                    email_from = mover_info.user.email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                              f'plus de détails. Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    # Sending email to the Mover
+                                                    if Movers_Email.objects.filter(quote_request__id=
+                                                                                   savedata2.quote_request.id,
+                                                                                   mover__id=savedata2.mover.id):
+                                                        continue
+                                                    else:
+                                                        subject = 'ItsMoving - Nouvelle demande de devis'
+                                                        recipient_email = mover_info.user.email
+                                                        email_from = mover_info.user.email
+                                                        recipient_list = [recipient_email, ]
+                                                        message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                                  f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                                  f'plus de détails. Merci !'
+                                                        send_mail(subject, message, email_from, recipient_list,
+                                                                  fail_silently=False)
 
-                                                    save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
-                                                    save_mover_email.save()
+                                                        save_mover_email = Movers_Email(quote_request_id=
+                                                                                        savedata2.quote_request.id,
+                                                                                        mover_id=
+                                                                                        savedata2.mover.id)
+                                                        save_mover_email.save()
 
-                                                # Sending email to the client
-                                                if Clients_Email(mover_quote_request_id=savedata2.id):
-                                                    continue
-                                                else:
-                                                    subject = 'ItsMoving - Accusé de reception'
-                                                    recipient_email = email
-                                                    email_from = email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
-                                                              f' a bien été reçu,' \
-                                                              f' vous aurez un retour très bientôt, Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    # Sending email to the client
+                                                    if Clients_Email.objects.filter(quote_request__id=
+                                                                                    savedata2.quote_request.id):
+                                                        continue
+                                                    else:
+                                                        subject = 'ItsMoving - Accusé de reception'
+                                                        recipient_email = email
+                                                        email_from = email
+                                                        recipient_list = [recipient_email, ]
+                                                        message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                                  f' a bien été reçu,' \
+                                                                  f' vous aurez un retour très bientôt, Merci !'
+                                                        send_mail(subject, message, email_from, recipient_list,
+                                                                  fail_silently=False)
 
-                                                    save_mover_email = Clients_Email(
-                                                        mover_quote_request_id=savedata2.id)
-                                                    save_mover_email.save()
-
-
+                                                        save_client_email = Clients_Email(quote_request_id=
+                                                                                          savedata2.quote_request.id)
+                                                        save_client_email.save()
 
                                 else:
                                     print(request.Country_Arrival, ' fait pas partie de la liste de destination de ',
@@ -909,40 +941,50 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                                           quote_request_info)
                                             savedata3.save()
 
-                                        savedata1.save()
-                                        savedata2.save()
+                                        if savedata1 and savedata2:
+                                            savedata1.save()
+                                            savedata2.save()
 
-                                        # Sending email to the Mover
-                                        if Movers_Email(mover_quote_request_id=savedata2.id):
-                                            continue
-                                        else:
-                                            subject = 'ItsMoving - Nouvelle demande de devis'
-                                            recipient_email = mover_info.user.email
-                                            email_from = mover_info.user.email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                      f'plus de détails. Merci !'
-                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                            # Sending email to the Mover
+                                            if Movers_Email.objects.filter(quote_request__id=
+                                                                           savedata2.quote_request.id,
+                                                                           mover__id=savedata2.mover.id):
+                                                continue
+                                            else:
+                                                subject = 'ItsMoving - Nouvelle demande de devis'
+                                                recipient_email = mover_info.user.email
+                                                email_from = mover_info.user.email
+                                                recipient_list = [recipient_email, ]
+                                                message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                          f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                          f'plus de détails. Merci !'
+                                                send_mail(subject, message, email_from, recipient_list,
+                                                          fail_silently=False)
 
-                                            save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
-                                            save_mover_email.save()
+                                                save_mover_email = Movers_Email(quote_request_id=
+                                                                                savedata2.quote_request.id,
+                                                                                mover_id=savedata2.
+                                                                                quote_request.id)
+                                                save_mover_email.save()
 
-                                        # Sending email to the client
-                                        if Clients_Email(mover_quote_request_id=savedata2.id):
-                                            continue
-                                        else:
-                                            subject = 'ItsMoving - Accusé de reception'
-                                            recipient_email = email
-                                            email_from = email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
-                                                      f' a bien été reçu,' \
-                                                      f' vous aurez un retour très bientôt, Merci !'
-                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                            # Sending email to the client
+                                            if Clients_Email.objects.filter(quote_request__id=
+                                                                            savedata2.quote_request.id):
+                                                continue
+                                            else:
+                                                subject = 'ItsMoving - Accusé de reception'
+                                                recipient_email = email
+                                                email_from = email
+                                                recipient_list = [recipient_email, ]
+                                                message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                          f' a bien été reçu,' \
+                                                          f' vous aurez un retour très bientôt, Merci !'
+                                                send_mail(subject, message, email_from, recipient_list,
+                                                          fail_silently=False)
 
-                                            save_mover_email = Clients_Email(mover_quote_request_id=savedata2.id)
-                                            save_mover_email.save()
+                                                save_client_email = Clients_Email(quote_request_id=
+                                                                                  savedata2.quote_request.id)
+                                                save_client_email.save()
 
                                 else:
                                     print(mover.company_name, " max atteint pour ajourdhui !")
@@ -994,40 +1036,50 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                                           quote_request_info)
                                             savedata3.save()
 
-                                        savedata1.save()
-                                        savedata2.save()
+                                        if savedata1 and savedata2:
+                                            savedata1.save()
+                                            savedata2.save()
 
-                                        # Sending email to the Mover
-                                        if Movers_Email(mover_quote_request_id=savedata2.id):
-                                            continue
-                                        else:
-                                            subject = 'ItsMoving - Nouvelle demande de devis'
-                                            recipient_email = mover_info.user.email
-                                            email_from = mover_info.user.email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                      f'plus de détails. Merci !'
-                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                            # Sending email to the Mover
+                                            if Movers_Email.objects.filter(quote_request__id=
+                                                                           savedata2.quote_request.id,
+                                                                           mover__id=savedata2.mover.id):
+                                                continue
+                                            else:
+                                                subject = 'ItsMoving - Nouvelle demande de devis'
+                                                recipient_email = mover_info.user.email
+                                                email_from = mover_info.user.email
+                                                recipient_list = [recipient_email, ]
+                                                message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                          f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                          f'plus de détails. Merci !'
+                                                send_mail(subject, message, email_from, recipient_list,
+                                                          fail_silently=False)
 
-                                            save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
-                                            save_mover_email.save()
+                                                save_mover_email = Movers_Email(quote_request_id=
+                                                                                savedata2.quote_request.id,
+                                                                                mover_id=savedata2.
+                                                                                quote_request.id)
+                                                save_mover_email.save()
 
-                                        # Sending email to the client
-                                        if Clients_Email(mover_quote_request_id=savedata2.id):
-                                            continue
-                                        else:
-                                            subject = 'ItsMoving - Accusé de reception'
-                                            recipient_email = email
-                                            email_from = email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
-                                                      f' a bien été reçu,' \
-                                                      f' vous aurez un retour très bientôt, Merci !'
-                                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                                            # Sending email to the client
+                                            if Clients_Email.objects.filter(quote_request__id=
+                                                                            savedata2.quote_request.id):
+                                                continue
+                                            else:
+                                                subject = 'ItsMoving - Accusé de reception'
+                                                recipient_email = email
+                                                email_from = email
+                                                recipient_list = [recipient_email, ]
+                                                message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                          f' a bien été reçu,' \
+                                                          f' vous aurez un retour très bientôt, Merci !'
+                                                send_mail(subject, message, email_from, recipient_list,
+                                                          fail_silently=False)
 
-                                            save_mover_email = Clients_Email(mover_quote_request_id=savedata2.id)
-                                            save_mover_email.save()
+                                                save_client_email = Clients_Email(quote_request_id=
+                                                                                  savedata2.quote_request.id)
+                                                save_client_email.save()
 
                     ####################END NATIONAL REQUEST DISTRIBUTION START###################
 
@@ -1099,43 +1151,50 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                                                   quote_request_info)
                                                     savedata3.save()
 
-                                                savedata1.save()
-                                                savedata2.save()
+                                                if savedata1 and savedata2:
+                                                    savedata1.save()
+                                                    savedata2.save()
 
-                                                # Sending email to the Mover
-                                                if Movers_Email(mover_quote_request_id=savedata2.id):
-                                                    continue
-                                                else:
-                                                    subject = 'ItsMoving - Nouvelle demande de devis'
-                                                    recipient_email = mover_info.user.email
-                                                    email_from = mover_info.user.email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                              f'plus de détails. Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    # Sending email to the Mover
+                                                    if Movers_Email.objects.filter(quote_request__id=
+                                                                                   savedata2.quote_request.id,
+                                                                                   mover__id=savedata2.mover.id):
+                                                        continue
+                                                    else:
+                                                        subject = 'ItsMoving - Nouvelle demande de devis'
+                                                        recipient_email = mover_info.user.email
+                                                        email_from = mover_info.user.email
+                                                        recipient_list = [recipient_email, ]
+                                                        message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                                  f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                                  f'plus de détails. Merci !'
+                                                        send_mail(subject, message, email_from, recipient_list,
+                                                                  fail_silently=False)
 
-                                                    save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
-                                                    save_mover_email.save()
+                                                        save_mover_email = Movers_Email(quote_request_id=
+                                                                                        savedata2.quote_request.id,
+                                                                                        mover_id=savedata2.
+                                                                                        quote_request.id)
+                                                        save_mover_email.save()
 
-                                                # Sending email to the client
-                                                if Clients_Email(mover_quote_request_id=savedata2.id):
-                                                    continue
-                                                else:
-                                                    subject = 'ItsMoving - Accusé de reception'
-                                                    recipient_email = email
-                                                    email_from = email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
-                                                              f' a bien été reçu,' \
-                                                              f' vous aurez un retour très bientôt, Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    # Sending email to the client
+                                                    if Clients_Email.objects.filter(quote_request__id=
+                                                                                    savedata2.quote_request.id):
+                                                        continue
+                                                    else:
+                                                        subject = 'ItsMoving - Accusé de reception'
+                                                        recipient_email = email
+                                                        email_from = email
+                                                        recipient_list = [recipient_email, ]
+                                                        message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                                  f' a bien été reçu,' \
+                                                                  f' vous aurez un retour très bientôt, Merci !'
+                                                        send_mail(subject, message, email_from, recipient_list,
+                                                                  fail_silently=False)
 
-                                                    save_mover_email = Clients_Email(
-                                                        mover_quote_request_id=savedata2.id)
-                                                    save_mover_email.save()
+                                                        save_client_email = Clients_Email(quote_request_id=
+                                                                                          savedata2.quote_request.id)
+                                                        save_client_email.save()
 
                                         else:
                                             print(mover.company_name, " max atteint pour ajourdhui !")
@@ -1188,43 +1247,50 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                                                   quote_request_info)
                                                     savedata3.save()
 
-                                                savedata1.save()
-                                                savedata2.save()
+                                                if savedata1 and savedata2:
+                                                    savedata1.save()
+                                                    savedata2.save()
 
-                                                # Sending email to the Mover
-                                                if Movers_Email(mover_quote_request_id=savedata2.id):
-                                                    continue
-                                                else:
-                                                    subject = 'ItsMoving - Nouvelle demande de devis'
-                                                    recipient_email = mover_info.user.email
-                                                    email_from = mover_info.user.email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                              f'plus de détails. Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    # Sending email to the Mover
+                                                    if Movers_Email.objects.filter(quote_request__id=
+                                                                                   savedata2.quote_request.id,
+                                                                                   mover__id=savedata2.mover.id):
+                                                        continue
+                                                    else:
+                                                        subject = 'ItsMoving - Nouvelle demande de devis'
+                                                        recipient_email = mover_info.user.email
+                                                        email_from = mover_info.user.email
+                                                        recipient_list = [recipient_email, ]
+                                                        message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
+                                                                  f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
+                                                                  f'plus de détails. Merci !'
+                                                        send_mail(subject, message, email_from, recipient_list,
+                                                                  fail_silently=False)
 
-                                                    save_mover_email = Movers_Email(mover_quote_request_id=savedata2.id)
-                                                    save_mover_email.save()
+                                                        save_mover_email = Movers_Email(quote_request_id=
+                                                                                        savedata2.quote_request.id,
+                                                                                        mover_id=savedata2.
+                                                                                        quote_request.id)
+                                                        save_mover_email.save()
 
-                                                # Sending email to the client
-                                                if Clients_Email(mover_quote_request_id=savedata2.id):
-                                                    continue
-                                                else:
-                                                    subject = 'ItsMoving - Accusé de reception'
-                                                    recipient_email = email
-                                                    email_from = email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
-                                                              f' a bien été reçu,' \
-                                                              f' vous aurez un retour très bientôt, Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    # Sending email to the client
+                                                    if Clients_Email.objects.filter(quote_request__id=
+                                                                                    savedata2.quote_request.id):
+                                                        continue
+                                                    else:
+                                                        subject = 'ItsMoving - Accusé de reception'
+                                                        recipient_email = email
+                                                        email_from = email
+                                                        recipient_list = [recipient_email, ]
+                                                        message = f'Bonjour Mr/Mme {lastname}!\nVotre demande de devis #{savedata.ref}' \
+                                                                  f' a bien été reçu,' \
+                                                                  f' vous aurez un retour très bientôt, Merci !'
+                                                        send_mail(subject, message, email_from, recipient_list,
+                                                                  fail_silently=False)
 
-                                                    save_mover_email = Clients_Email(
-                                                        mover_quote_request_id=savedata2.id)
-                                                    save_mover_email.save()
+                                                        save_client_email = Clients_Email(quote_request_id=
+                                                                                          savedata2.quote_request.id)
+                                                        save_client_email.save()
 
                                 else:
                                     print(request.Country_Arrival, ' fait pas partie de la liste de destination de ',
