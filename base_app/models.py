@@ -90,6 +90,7 @@ class Quote_Request(models.Model):
     firstname = models.CharField(max_length=300, default="")
     lastname = models.CharField(max_length=300, default="")
     email = models.EmailField(default="")
+    email_sent_to_customer = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=30, default="")
     created = models.DateTimeField(auto_now_add=True)
     distributed = models.BooleanField(default=False)
@@ -138,11 +139,6 @@ class Review(models.Model):
     message = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     mover_quote_request = models.ForeignKey(Mover_Quote_Request, on_delete=models.CASCADE)
-
-
-class Clients_Email(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE, default="")
 
 
 class Movers_Email(models.Model):
