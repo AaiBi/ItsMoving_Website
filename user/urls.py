@@ -34,4 +34,7 @@ urlpatterns = [
 
     # REVIEWS
     path('reviews/<int:mover_request_pk>', views.review_request, name='review_request'),
+
+    # BILLING
+    path('payment/<int:mover_pk>', views.payment, name='payment'),
 ]

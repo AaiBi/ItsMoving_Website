@@ -15,7 +15,7 @@ from base_app.models import Mover, Country, Mover_Country, Moving_Type1, Moving_
     Mover_Moving_Type2, Quote_Request, Mover_Quote_Request, Quote_Request_Rejected, Review
 from user.forms import EditUserForm, EditUserPasswordForm, EditMoverCountryForm, \
     EditMoverMovingType2Form, MoverQuoteRequestForm, EditUserPasswordForm1
-from user.models import Movers_Password_Recovery_Codes
+from user.models import Movers_Password_Recovery_Codes, Payment, Quote_Request_Payment
 
 
 def login_user(request):
@@ -137,8 +137,9 @@ def preview(request):
     reviews = Review.objects.filter(mover_quote_request__mover_id=mover.id)
     total_reviews = Review.objects.filter(mover_quote_request__mover_id=mover.id).count()
 
-    #percentage speed
-    speed_reviews_sum = Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('speed'))['TOTAL']
+    # percentage speed
+    speed_reviews_sum = Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('speed'))[
+        'TOTAL']
     total_possible = total_reviews * 5
     if speed_reviews_sum and speed_reviews_sum != 0:
         speed_percentage = speed_reviews_sum / total_possible
@@ -146,7 +147,7 @@ def preview(request):
     else:
         speed_percentage = 0
 
-    #percentage organisation
+    # percentage organisation
     organisation_reviews_sum = \
         Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('organisation'))['TOTAL']
     if organisation_reviews_sum and organisation_reviews_sum != 0:
@@ -155,16 +156,16 @@ def preview(request):
     else:
         organisation_percentage = 0
 
-    #reliability organisation
+    # reliability organisation
     reliability_reviews_sum = \
-    Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('reliability'))['TOTAL']
+        Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('reliability'))['TOTAL']
     if reliability_reviews_sum and reliability_reviews_sum != 0:
         reliability_percentage = reliability_reviews_sum / total_possible
         reliability_percentage = int(reliability_percentage * 100)
     else:
         reliability_percentage = 0
 
-    #quality organisation
+    # quality organisation
     quality_reviews_sum = \
         Review.objects.filter(mover_quote_request__mover_id=mover.id).aggregate(TOTAL=Sum('quality'))['TOTAL']
     if quality_reviews_sum and quality_reviews_sum != 0:
@@ -173,19 +174,19 @@ def preview(request):
     else:
         quality_percentage = 0
 
-    #general review
+    # general review
     total_sum = speed_percentage + organisation_percentage + reliability_percentage + quality_percentage
     total_sum = (total_sum / 400) * 100
 
     return render(request, 'user/profile/preview.html', {'mover': mover, 'form1': form1, 'countries':
         countries, 'mover_countries': mover_countries, 'number_quote_request': number_quote_request,
                                                          'number_quote_request1': number_quote_request1, 'reviews':
-                                                         reviews, 'speed_reviews_sum': speed_reviews_sum,
+                                                             reviews, 'speed_reviews_sum': speed_reviews_sum,
                                                          'organisation_percentage': organisation_percentage,
                                                          'reliability_percentage': reliability_percentage,
                                                          'quality_percentage': quality_percentage,
                                                          'speed_percentage': speed_percentage, 'total_reviews':
-                                                         total_reviews, 'total_sum': total_sum})
+                                                             total_reviews, 'total_sum': total_sum})
 
 
 @login_required
@@ -395,8 +396,38 @@ def edit_profile(request):
 def billing(request):
     mover = Mover.objects.filter(user_id=request.user.id).last()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Non payé"). \
+        order_by('-id')
+    payment_info = Payment.objects.all().last()
+    quote_request_payments = Quote_Request_Payment.objects.filter(mover_quote_request__mover_id=mover.id)
+    today = datetime.date.today()
 
-    return render(request, 'user/profile/billing.html', {'mover': mover, 'number_quote_request': number_quote_request})
+    # total payment for the actual month
+    number_quote_request_paid_actual_month = \
+        Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Payé", created__month=today.month). \
+            count()
+    sum_quote_request_paid_actual_month_htva = number_quote_request_paid_actual_month * payment_info.amount
+
+    # total payment for the last month
+    last_month = today.month - 1
+    number_quote_request_paid_last_month = \
+        Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Payé", created__month=last_month). \
+            count()
+    sum_quote_request_paid_last_month_htva = number_quote_request_paid_last_month * payment_info.amount
+
+    # total payment unpaid
+    number_quote_request_unpaid = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Non payé") \
+        .count()
+    sum_quote_request_unpaid_htva = number_quote_request_unpaid * payment_info.amount
+
+    return render(request, 'user/profile/billing.html', {'mover': mover, 'number_quote_request': number_quote_request,
+                                                         'mover_quote_requests': mover_quote_requests, 'payment_info':
+                                                             payment_info, 'sum_quote_request_paid_actual_month_htva':
+                                                             sum_quote_request_paid_actual_month_htva,
+                                                         'sum_quote_request_paid_last_month_htva':
+                                                             sum_quote_request_paid_last_month_htva,
+                                                         'sum_quote_request_unpaid_htva': sum_quote_request_unpaid_htva
+                                                         })
 
 
 @login_required
@@ -650,6 +681,7 @@ def treated_quote_request(request):
 
 
 ################################################## REVIEWS  ####################################################
+################################################## REVIEWS  ####################################################
 
 def review_request(request, mover_request_pk):
     mover_quote_request = Mover_Quote_Request.objects.filter(id=mover_request_pk).last()
@@ -676,4 +708,37 @@ def review_request(request, mover_request_pk):
 
     return render(request, 'user/mover/reviews/review_request.html', {'mover_quote_request': mover_quote_request})
 
+
 ################################################ END REVIEWS  ##################################################
+################################################ END REVIEWS  ##################################################
+
+
+#################################################### BILLING  #####################################################
+#################################################### BILLING  #####################################################
+
+def payment(request, mover_pk):
+    mover = Mover.objects.filter(id=mover_pk).last()
+    number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover_pk, treated=False, rejected=False).count()
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover_pk, rejected=False).order_by('-id')
+    payment_info = Payment.objects.all().last()
+    quote_request_payments = Quote_Request_Payment.objects.filter(mover_quote_request__mover_id=mover_pk)
+
+    # total payment unpaid
+    number_quote_request_unpaid = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Non payé") \
+        .count()
+    sum_quote_request_unpaid_htva = number_quote_request_unpaid * payment_info.amount
+    sum_quote_request_unpaid_tva = number_quote_request_unpaid * payment_info.tva
+
+    return render(request, 'user/mover/billing/payment.html', {'mover': mover, 'number_quote_request':
+                                    number_quote_request, 'number_quote_request_unpaid': number_quote_request_unpaid,
+                                                               'mover_quote_requests': mover_quote_requests,
+                                                               'quote_request_payments': quote_request_payments,
+                                                               'payment_info': payment_info,
+                                                               'sum_quote_request_unpaid_htva':
+                                                                   sum_quote_request_unpaid_htva,
+                                                               'sum_quote_request_unpaid_tva':
+                                                                   sum_quote_request_unpaid_tva
+                                                               })
+
+#################################################### END BILLING  #####################################################
+#################################################### END BILLING  #####################################################

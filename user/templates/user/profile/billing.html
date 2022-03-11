@@ -90,6 +90,11 @@
                                         </a>
 										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
+                                            {% if number_quote_request != 0 %}
+												<span class="btn btn-sm btn-success-soft btn-round me-1 mb-0">
+													{{number_quote_request}}
+												</span>
+											{% endif %}
 										</a>
 										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
 											Configuration du profil
@@ -134,7 +139,9 @@
                                     <h6 class="mb-0">Le mois passé </h6>
                                     <span class="badge bg-success bg-opacity-10 text-success ms-2 mb-0">Payé</span>
                                 </div>
-                                <h2 class="mb-2 mt-2">$12,825</h2>
+                                <h2 class="mb-2 mt-2 text-success">
+                                    {{sum_quote_request_paid_last_month_htva}}€ htva
+                                </h2>
                                 <a href="#">Voir les payements</a>
                             </div>
                         </div>
@@ -142,8 +149,13 @@
                         <!-- Box item -->
                         <div class="col-sm-4">
                             <div class="bg-primary bg-opacity-10 h-100 p-3 rounded-3">
-                                <h6 class="mb-0">Ce mois</h6>
-                                <h2 class="mb-2 mt-2">$15,356</h2>
+                                <div class="d-flex mb-1 justify-content-between align-items-center">
+                                    <h6 class="mb-0">Ce mois </h6>
+                                    <span class="badge bg-success bg-opacity-10 text-success ms-2 mb-0">Payé</span>
+                                </div>
+                                <h2 class="mb-2 mt-2 text-success">
+                                    {{sum_quote_request_paid_actual_month_htva}}€ HTVA
+                                </h2>
                                 <a href="#">Voir les payements</a>
                             </div>
                         </div>
@@ -152,8 +164,20 @@
                         <div class="col-sm-4">
                             <div class="bg-danger bg-opacity-10 h-100 p-3 rounded-3">
                                 <h6 class="mb-0">Payement(s) non effectué(s)</h6>
-                                <h2 class="mb-2 mt-2">$15,356</h2>
+                                <h2 class="mb-2 mt-2 bg-opacity-10 text-danger">
+                                    {{sum_quote_request_unpaid_htva}}€ htva
+                                </h2>
                                 <a href="#">Voir les demandes de devis</a>
+                            </div>
+                        </div>
+
+                        <!-- Box item -->
+                        <div class="col-sm-12">
+                            <div class="bg-warning bg-opacity-10 h-100 p-3 rounded-3">
+                                <div class="d-flex mb-1 justify-content-between align-items-center">
+                                    <h3 class="mb-0">Comment faire le paiement ? </h3>
+                                </div>
+                                <h4 class="mb-2 mt-2 text-warning">htva</h4>
                             </div>
                         </div>
 
@@ -174,23 +198,17 @@
                             <div class="row g-3 align-items-center justify-content-between mb-4">
                                 <!-- Content -->
                                 <div class="col-md-8">
-                                    <form class="rounded position-relative">
-                                        <input class="form-control pe-5 bg-transparent" type="search" placeholder="Search" aria-label="Search">
-                                        <button class="btn bg-transparent px-2 py-0 position-absolute top-50 end-0 translate-middle-y" type="submit"><i class="fas fa-search fs-6 "></i></button>
-                                    </form>
+
                                 </div>
 
                                 <!-- Select option -->
                                 <div class="col-md-3">
                                     <!-- Short by filter -->
-                                    <form>
-                                        <select class="form-select js-choice border-0 z-index-9 bg-transparent" aria-label=".form-select-sm">
-                                            <option value="">Filtre</option>
-                                            <option>Free</option>
-                                            <option>Newest</option>
-                                            <option>Oldest</option>
-                                        </select>
-                                    </form>
+                                    {% if mover_quote_requests %}
+                                        <a type="button" class="btn btn-primary" href="{% url 'payment' mover.id %}">
+                                            Voire/Imprimer la facture
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </div>
                             <!-- Title and select END -->
@@ -209,192 +227,70 @@
                                     </thead>
                                     <!-- Table body START -->
                                     <tbody>
-                                        <!-- Table item -->
-                                        <tr>
-                                            <!-- Table data -->
-                                            <td>
-                                                <h6 class="mt-2 mt-lg-0 mb-0"><a href="#">Paiement réussi #102356</a></h6>
-                                            </td>
+                                        {% for mover_quote_request in mover_quote_requests %}
+                                            <!-- Table item -->
+                                            <tr>
+                                                <!-- Table data -->
+                                                <td>
+                                                    <h6 class="mt-2 mt-lg-0 mb-0">
+                                                        <a href="#">Devis #{{mover_quote_request.quote_request.ref}}</a>
+                                                    </h6>
+                                                </td>
 
-                                            <!-- Table data -->
-                                            <td>$3,999
-                                                <!-- Drop down with id -->
-                                                <a href="#" class="h6 mb-0" role="button" id="dropdownShare" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-info-circle-fill"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare">
-                                                    <li>
-                                                        <div class="d-flex justify-content-between">
-                                                            <span class="me-4 small">Taxes</span>
-                                                            <span class="text-danger small">-$0.00</span>
-                                                        </div>
-                                                        <hr class="my-1">
-                                                    </li>
-                                                </ul>
-                                            </td>
+                                                <!-- Table data -->
+                                                <td>{{payment_info.amount}}€ HTVA
+                                                    <!-- Drop down with id -->
+                                                    <a href="#" class="h6 mb-0" role="button" id="dropdownShare" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="bi bi-info-circle-fill"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare">
+                                                        <li>
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="me-4 small">TVA</span>
+                                                                <span class="text-danger small">
+                                                                    +{{payment_info.tva}}€ (21%)
+                                                                </span>
+                                                            </div>
+                                                            <hr class="my-1">
+                                                        </li>
+                                                    </ul>
+                                                </td>
 
-                                            <!-- Table data -->
-                                            <td class="text-center text-sm-start">
-                                                <span class="badge bg-success bg-opacity-10 text-success">Payé</span>
-                                            </td>
+                                                <!-- Table data -->
+                                                <td class="text-center text-sm-start">
+                                                    {% if mover_quote_request.paid == 'Non payé' %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger">
+                                                            Non payé
+                                                        </span>
+                                                    {% elif mover_quote_request.paid == 'Payé' %}
+                                                        <span class="badge bg-success bg-opacity-10 text-success">
+                                                            Payé
+                                                        </span>
+                                                    {% elif quote_request_payment.paid == 'En attente...' %}
+                                                        <span class="badge bg-warning bg-opacity-10 text-warning">
+                                                            En attente...
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
 
-                                            <!-- Table data -->
-                                            <td>18/8/2021</td>
-                                        </tr>
-
-                                        <!-- Table item -->
-                                        <tr>
-                                            <!-- Table data -->
-                                            <td>
-                                                <h6 class="mt-2 mt-lg-0 mb-0"><a href="#">Paiement réussi #102366</a></h6>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td>$6,999
-                                                <!-- Drop down with id -->
-                                                <a href="#" class="h6 mb-0" role="button" id="dropdownShare1" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-info-circle-fill"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare1">
-                                                    <li>
-                                                        <div class="d-flex justify-content-between">
-                                                            <span class="me-4 small">Taxes</span>
-                                                            <span class="text-danger small">-$0.00</span>
-                                                        </div>
-                                                        <hr class="my-1">
-                                                    </li>
-                                                </ul>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td class="text-center text-sm-start">
-                                                <span class="badge bg-success bg-opacity-10 text-success">Payé</span>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td>19/8/2021</td>
-                                        </tr>
-
-                                        <!-- Table item -->
-                                        <tr>
-                                            <!-- Table data -->
-                                            <td>
-                                                <h6 class="mt-2 mt-lg-0 mb-0"><a href="#">Paiement réussi #102306</a></h6>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td>$9,999
-                                                <!-- Drop down with id -->
-                                                <a href="#" class="h6 mb-0" role="button" id="dropdownShare2" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-info-circle-fill"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare2">
-                                                    <li>
-                                                        <div class="d-flex justify-content-between">
-                                                            <span class="me-4 small">Taxes</span>
-                                                            <span class="text-danger small">-$0.00</span>
-                                                        </div>
-                                                        <hr class="my-1">
-                                                    </li>
-                                                </ul>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td class="text-center text-sm-start">
-                                                <span class="badge bg-danger bg-opacity-10 text-success">Annulé</span>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td>20/8/2021</td>
-                                        </tr>
-
-                                        <!-- Table item -->
-                                        <tr>
-                                            <!-- Table data -->
-                                            <td>
-                                                <h6 class="mt-2 mt-lg-0 mb-0"><a href="#">Paiement réussi #103306</a></h6>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td>$10,999
-                                                <!-- Drop down with id -->
-                                                <a href="#" class="h6 mb-0" role="button" id="dropdownShare3" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-info-circle-fill"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare3">
-                                                    <li>
-                                                        <div class="d-flex justify-content-between">
-                                                            <span class="me-4 small">Taxes</span>
-                                                            <span class="text-danger small">-$0.00</span>
-                                                        </div>
-                                                        <hr class="my-1">
-                                                    </li>
-                                                </ul>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td class="text-center text-sm-start">
-                                                <span class="badge bg-danger bg-opacity-10 text-success">Payé</span>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td>22/8/2021</td>
-                                        </tr>
-
-                                        <!-- Table item -->
-                                        <tr>
-                                            <!-- Table data -->
-                                            <td>
-                                                <h6 class="mt-2 mt-lg-0 mb-0"><a href="#">Paiement réussi #103309</a></h6>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td>$10,999
-                                                <!-- Drop down with id -->
-                                                <a href="#" class="h6 mb-0" role="button" id="dropdownShare4" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-info-circle-fill"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare4">
-                                                    <li>
-                                                        <div class="d-flex justify-content-between">
-                                                            <span class="me-4 small">Taxes</span>
-                                                            <span class="text-danger small">-$0.00</span>
-                                                        </div>
-                                                        <hr class="my-1">
-                                                    </li>
-                                                </ul>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td class="text-center text-sm-start">
-                                                <span class="badge bg-warning bg-opacity-10 text-success">En attente</span>
-                                            </td>
-
-                                            <!-- Table data -->
-                                            <td>23/8/2021</td>
-                                        </tr>
+                                                <!-- Table data -->
+                                                <td>
+                                                    {% if quote_request_payments %}
+                                                        {% for quote_request_payment in quote_request_payments %}
+                                                            {% if quote_request_payment.mover_quote_request_id == mover_quote_request.id and quote_request_payment.paid == 'Payé' %}
+                                                                {{quote_request_payment.created}}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
                                     <!-- Table body END -->
                                 </table>
                             </div>
                             <!-- Payout list table END -->
 
-                            <!-- Pagination START -->
-                            <div class="d-sm-flex justify-content-sm-between align-items-sm-center mt-4 mt-sm-3">
-                                <!-- Content -->
-                                <p class="mb-0 text-center text-sm-start">Showing 1 to 8 of 20 entries</p>
-                                <!-- Pagination -->
-                                <nav class="d-flex justify-content-center mb-0" aria-label="navigation">
-                                    <ul class="pagination pagination-sm pagination-primary-soft mb-0 pb-0">
-                                        <li class="page-item mb-0"><a class="page-link" href="#" tabindex="-1"><i class="fas fa-angle-left"></i></a></li>
-                                        <li class="page-item mb-0"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item mb-0 active"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item mb-0"><a class="page-link" href="#">3</a></li>
-                                        <li class="page-item mb-0"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
-                                    </ul>
-                                </nav>
-                            </div>
-                            <!-- Pagination END -->
                         </div>
                         <!-- Card body START -->
                     </div>
