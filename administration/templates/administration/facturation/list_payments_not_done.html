@@ -1,0 +1,67 @@
+{% extends 'administration/admin_base.html' %}
+
+{% block title %} Admin - Devis {% endblock %}
+
+{% load static %}
+
+{% block facturation_active %} active {% endblock %}
+
+
+{% block main %}
+
+    <div class="card bg-dark">
+        <div class="card-header bg-dark" align="center">
+            <h2 class="text-white">Liste de devis non payés pour #{{mover.company_name}}</h2>
+        </div>
+
+        <p></p>
+        <p></p>
+        <div class="card-body bg-dark">
+            <div class="table-responsive-lg border-0">
+                <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
+                    <!-- Table head -->
+                    <thead align="center">
+                        <tr>
+                            <th scope="col" class="border-0 rounded-start">Devis</th>
+                            <th scope="col" class="border-0 rounded-start">Traité</th>
+                            <th scope="col" class="border-0 rounded-start">Date de réception</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Table body START -->
+                    <tbody align="center">
+                        <!-- Table item -->
+                        {% for mover_quote_request_unpaid in mover_quote_request_unpaids %}
+                            <tr>
+                                <!-- Course item -->
+                                <td>
+                                    <a href="{% url 'devis_detail' mover_quote_request_unpaid.quote_request.id %}">
+                                        <center>{{mover_quote_request_unpaid.quote_request.ref}}</center>
+                                    </a>
+                                </td>
+                                <td>
+                                    <center>
+                                        {% if mover_quote_request_unpaid.treated == True %}
+                                            Oui
+                                        {% else %}
+                                            Non
+                                        {% endif %}
+                                    </center>
+                                </td>
+                                <td>
+                                    <center>
+                                        {% load i18n %}
+                                        {% language 'fr' %}
+                                            {{mover_quote_request_unpaid.created|date:'d F Y'}}
+                                        {% endlanguage %}
+                                    </center>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

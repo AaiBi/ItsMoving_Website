@@ -20767,6 +20767,13 @@ html[dir=rtl] .choices__input {
                                                 <i class="bi bi-folder-check fa-fw me-2"></i>
                                                 Devis
                                             </a>
+                                            <a class="list-group-item {% block facturation_active %} {% endblock %}" href="{% url 'facturation_home' %}">
+                                                <i class="bi bi-wallet2 fa-fw me-2"></i>
+                                                Facturation
+                                                <span class="badge text-white bg-success rounded-1">
+                                                    {{number_quote_request_waiting_for_validation}}
+                                                </span>
+                                            </a>
                                             <form action="{% url 'admin_logout' %}" method="POST">
                                                 {% csrf_token %}
                                                 <button type="submit" class="list-group-item text-danger bg-danger-soft-hover">

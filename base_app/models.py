@@ -109,7 +109,7 @@ class Mover_Quote_Request(models.Model):
     quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE)
     treated = models.BooleanField(default=False)
     rejected = models.BooleanField(default=False)
-    paid = models.CharField(max_length=20, default='Non payé') #can be 'Non payé' or 'Payé' or 'En attente...'
+    paid = models.CharField(max_length=20, default='Non payé') #can be 'Non payé' or 'Payé' or 'Vérification en cours...'
     mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
 
 

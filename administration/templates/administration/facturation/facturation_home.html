@@ -1,17 +1,17 @@
 {% extends 'administration/admin_base.html' %}
 
-{% block title %} Admin - Devis {% endblock %}
+{% block title %} Admin - Facturation {% endblock %}
 
 {% load static %}
 
-{% block demenageur_active %} active {% endblock %}
+{% block facturation_active %} active {% endblock %}
 
 
 {% block main %}
 
     <div class="card bg-dark">
         <div class="card-header bg-dark" align="center">
-            <h2 class="text-white">Déménageurs</h2>
+            <h2 class="text-white">Facturation</h2>
         </div>
 
         <form class="rounded position-relative" method="POST">
@@ -31,14 +31,26 @@
                 <!-- Tab item -->
                 <li class="nav-item me-2 me-sm-5" role="presentation">
                     <button class="nav-link active" id="movers-pills-tab-1" data-bs-toggle="pill" data-bs-target="#movers-pills-tab1" type="button" role="tab" aria-controls="movers-pills-tab1" aria-selected="true">
-                        Déménageurs
+                        Paiements non effectués
+                        <span class="badge text-white bg-success rounded-1">{{number_quote_request_unpaid}}</span>
                     </button>
                 </li>
                 <!-- Tab item -->
                 <li class="nav-item me-2 me-sm-5" role="presentation">
                     <button class="nav-link" id="movers-pills-tab-2" data-bs-toggle="pill" data-bs-target="#movers-pills-tab2" type="button" role="tab" aria-controls="movers-pills-tab2" aria-selected="false">
-                        Comptes non activés
-                        <span class="badge text-white bg-success rounded-1">{{movers_unactivated_count}}</span>
+                        Paiements effectués en attente de validation
+                        <span class="badge text-white bg-success rounded-1">
+                            {{number_quote_request_waiting_for_validation}}
+                        </span>
+                    </button>
+                </li>
+                <!-- Tab item -->
+                <li class="nav-item me-2 me-sm-5" role="presentation">
+                    <button class="nav-link" id="movers-pills-tab-3" data-bs-toggle="pill" data-bs-target="#movers-pills-tab3" type="button" role="tab" aria-controls="movers-pills-tab3" aria-selected="false">
+                        Paiements effectués et validés
+                        <span class="badge text-white bg-success rounded-1">
+                            {{number_quote_request_paid}}
+                        </span>
                     </button>
                 </li>
             </ul>
@@ -78,7 +90,7 @@
                                                 <tr>
                                                         <!-- Course item -->
                                                         <td>
-                                                            <a href="{% url 'mover_detail' mover.id %}">
+                                                            <a>
                                                                 <center>{{mover.ref}}</center>
                                                             </a>
                                                         </td>
@@ -132,59 +144,80 @@
                                                     <th scope="col" class="border-0 rounded-start">Ref</th>
                                                     <th scope="col" class="border-0 rounded-start">Nom</th>
                                                     <th scope="col" class="border-0 rounded-start">Pays</th>
-                                                    <th scope="col" class="border-0 rounded-start">Type de déménagement</th>
-                                                    <th scope="col" class="border-0 rounded-end">Téléphone</th>
-                                                    <th scope="col" class="border-0 rounded-end">Numéro de TVA</th>
-                                                    <th scope="col" class="border-0 rounded-end">Date d'inscription</th>
+                                                    <th scope="col" class="border-0 rounded-start">
+                                                        Type de déménagement
+                                                    </th>
+                                                    <th scope="col" class="border-0 rounded-end">Email</th>
+                                                    <th scope="col" class="border-0 rounded-end">
+                                                        Paiements non effectués
+                                                    </th>
                                                 </tr>
                                             </thead>
 
                                             <!-- Table body START -->
                                             <tbody align="center">
                                                 <!-- Table item -->
-                                                {% for mover in movers_activated %}
+                                                {% for mover_quote_request in mover_quote_requests %}
                                                     <tr>
                                                         <!-- Course item -->
                                                         <td>
-                                                            <a href="{% url 'mover_detail' mover.id %}">
-                                                                <center>{{mover.ref}}</center>
+                                                            <a href="">
+                                                                <center>
+                                                                    {% for mover in movers %}
+                                                                        {% if mover.id == mover_quote_request.mover %}
+                                                                            {{mover.ref}}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </center>
                                                             </a>
                                                         </td>
                                                         <td>
                                                             <center>
-                                                                {{mover.company_name}}
-                                                            </center>
-                                                        </td>
-                                                        <td>
-                                                            <center>
-                                                                {% for country in countries %}
-                                                                    {% if country.id == mover.country_id %}
-                                                                        {{country.name}}
+                                                                {% for mover in movers %}
+                                                                    {% if mover.id == mover_quote_request.mover %}
+                                                                        {{mover.company_name}}
                                                                     {% endif %}
                                                                 {% endfor %}
                                                             </center>
                                                         </td>
                                                         <td>
                                                             <center>
-                                                                {{mover.moving_type1.name}}
+                                                                {% for mover in movers %}
+                                                                    {% if mover.id == mover_quote_request.mover %}
+                                                                        {{mover.country.name}}
+                                                                    {% endif %}
+                                                                {% endfor %}
                                                             </center>
                                                         </td>
                                                         <td>
                                                             <center>
-                                                                {{mover.company_phone_number}}
+                                                                {% for mover in movers %}
+                                                                    {% if mover.id == mover_quote_request.mover %}
+                                                                        {{mover.moving_type1.name}}
+                                                                    {% endif %}
+                                                                {% endfor %}
                                                             </center>
                                                         </td>
                                                         <td>
                                                             <center>
-                                                                {{mover.TVA_number}}
+                                                                {% for mover in movers %}
+                                                                    {% if mover.id == mover_quote_request.mover %}
+
+                                                                        {% for user in users %}
+                                                                            {% if user.id == mover.user_id %}
+                                                                                {{user.email}}
+                                                                            {% endif %}
+                                                                        {% endfor %}
+
+                                                                    {% endif %}
+                                                                {% endfor %}
                                                             </center>
                                                         </td>
                                                         <td>
                                                             <center>
-                                                                {% load i18n %}
-                                                                {% language 'fr' %}
-                                                                    {{mover.created|date:'d F Y'}}
-                                                                {% endlanguage %}
+                                                                <a href="{% url 'list_payments_not_done' mover_quote_request.mover %}">
+                                                                    {{mover_quote_request.count}}
+                                                                </a>
                                                             </center>
                                                         </td>
                                                     </tr>
@@ -211,64 +244,42 @@
                                         <!-- Table head -->
                                         <thead align="center">
                                             <tr>
-                                                <th scope="col" class="border-0 rounded-start">Ref</th>
-                                                <th scope="col" class="border-0 rounded-start">Nom</th>
+                                                <th scope="col" class="border-0 rounded-start">Déménageur</th>
                                                 <th scope="col" class="border-0 rounded-start">Pays</th>
-                                                <th scope="col" class="border-0 rounded-end">Téléphone</th>
-                                                <th scope="col" class="border-0 rounded-end">Numéro de TVA</th>
-                                                <th scope="col" class="border-0 rounded-end">Date d'inscription</th>
-                                                <th scope="col" class="border-0 rounded-end">Action</th>
+                                                <th scope="col" class="border-0 rounded-end">Email</th>
+                                                <th scope="col" class="border-0 rounded-end">
+                                                    Paiements non effectués
+                                                </th>
                                             </tr>
                                         </thead>
 
                                         <!-- Table body START -->
                                         <tbody align="center">
                                             <!-- Table item -->
-                                            {% for mover in movers_unactivated %}
+                                            {% for mover_quote_request_payment in mover_quote_request_payments %}
                                                 <tr>
                                                     <!-- Course item -->
                                                     <td>
-                                                        <a href="{% url 'mover_detail' mover.id %}">
-                                                            <center>{{mover.ref}}</center>
-                                                        </a>
-                                                    </td>
-                                                    <td>
                                                         <center>
-                                                            {{mover.company_name}}
+                                                            {{mover_quote_request_payment.mover.company_name}}
                                                         </center>
                                                     </td>
                                                     <td>
                                                         <center>
-                                                            {% for country in countries %}
-                                                                {% if country.id == mover.country_id %}
-                                                                    {{country.name}}
-                                                                {% endif %}
-                                                            {% endfor %}
+                                                            {{mover_quote_request_payment.mover.country.name}}
                                                         </center>
                                                     </td>
                                                     <td>
                                                         <center>
-                                                            {{mover.company_phone_number}}
+                                                            {{mover_quote_request_payment.mover.user.email}}
                                                         </center>
                                                     </td>
                                                     <td>
                                                         <center>
-                                                            {{mover.TVA_number}}
+                                                            <a href="{% url 'payment_validation' mover_quote_request_payment.id %}" type="button" class="btn btn-success">
+                                                                Vérifier et valider ce payment
+                                                            </a>
                                                         </center>
-                                                    </td>
-                                                    <td>
-                                                        <center>
-                                                            {% load i18n %}
-                                                            {% language 'fr' %}
-                                                                {{mover.created|date:'d F Y'}}
-                                                            {% endlanguage %}
-                                                        </center>
-                                                    </td>
-                                                    <!-- Action item -->
-                                                    <td>
-                                                        <a type="button" href="{% url 'mover_active_unactive' mover.id %}" class="btn btn-sm btn-success">
-                                                            Activer
-                                                        </a>
                                                     </td>
                                                 </tr>
                                             {% endfor %}

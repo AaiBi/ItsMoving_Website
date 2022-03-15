@@ -20747,7 +20747,8 @@ html[dir=rtl] .choices__input {
 
                             <h3 align="center">FACTURE</h3></br>
 
-                            <div class="table-responsive border-0">
+                            {% if mover_quote_requests %}
+                                <div class="table-responsive border-0">
                                 <table class="table table-dark-gray table-bordered align-middle p-4 mb-0 table-hover">
                                     <!-- Table head -->
                                     <thead align="center">
@@ -20811,11 +20812,11 @@ html[dir=rtl] .choices__input {
                                     <!-- Table body END -->
                                 </table>
                             </div>
-
-                            </br>
-                            <span>
-                                <b>Important: La TVA ne concerne que les entreprises Belges !</b>
-                            </span>
+                            {%else%}
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    Non disponible !
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -396,11 +396,10 @@ def edit_profile(request):
 def billing(request):
     mover = Mover.objects.filter(user_id=request.user.id).last()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
-    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Non payé"). \
-        order_by('-id')
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False).order_by('-id')
     payment_info = Payment.objects.all().last()
-    quote_request_payments = Quote_Request_Payment.objects.filter(mover_quote_request__mover_id=mover.id)
     today = datetime.date.today()
+    quote_request_payments = Quote_Request_Payment.objects.filter(mover_id=mover.id)
 
     # total payment for the actual month
     number_quote_request_paid_actual_month = \
@@ -420,13 +419,31 @@ def billing(request):
         .count()
     sum_quote_request_unpaid_htva = number_quote_request_unpaid * payment_info.amount
 
+    # Sending email to let know the mover that he have to pay for the quote requests
+    if today.day == 5:
+        payment_day_limit = today.day + 15
+        if number_quote_request_unpaid != 0:
+            subject = 'Rappel pour demandes de devis reçu non payé!'
+            recipient_email = request.user.email
+            email_from = request.user.email
+            recipient_list = [recipient_email, ]
+            message = f'Bonjour Mr/Mme {request.user.last_name}!\n ' \
+                      f'Vous avez actuellement {number_quote_request_unpaid} demande(s) de devis non payé, ' \
+                      f'veuillez accédez à votre compte utilisateur dans l\'onglet \'Facture\' pour plus de détails et ' \
+                      f'éventuellement faire le paiement.\n' \
+                      f'Apres la date limite (le {payment_day_limit} de ce mois), votre compte risque d\'être suspendu!' \
+                      f'\nMerci !\n' \
+                      f'Lien de connexion : http://127.0.0.1:8000/user/login/'
+            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
     return render(request, 'user/profile/billing.html', {'mover': mover, 'number_quote_request': number_quote_request,
                                                          'mover_quote_requests': mover_quote_requests, 'payment_info':
                                                              payment_info, 'sum_quote_request_paid_actual_month_htva':
                                                              sum_quote_request_paid_actual_month_htva,
                                                          'sum_quote_request_paid_last_month_htva':
                                                              sum_quote_request_paid_last_month_htva,
-                                                         'sum_quote_request_unpaid_htva': sum_quote_request_unpaid_htva
+                                                         'sum_quote_request_unpaid_htva': sum_quote_request_unpaid_htva,
+                                                         'quote_request_payments': quote_request_payments
                                                          })
 
 
@@ -719,9 +736,9 @@ def review_request(request, mover_request_pk):
 def payment(request, mover_pk):
     mover = Mover.objects.filter(id=mover_pk).last()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover_pk, treated=False, rejected=False).count()
-    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover_pk, rejected=False).order_by('-id')
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover_pk, rejected=False, paid="Non payé").order_by('-id')
     payment_info = Payment.objects.all().last()
-    quote_request_payments = Quote_Request_Payment.objects.filter(mover_quote_request__mover_id=mover_pk)
+    quote_request_payments = Quote_Request_Payment.objects.filter(mover_id=mover_pk)
 
     # total payment unpaid
     number_quote_request_unpaid = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Non payé") \
@@ -730,7 +747,7 @@ def payment(request, mover_pk):
     sum_quote_request_unpaid_tva = number_quote_request_unpaid * payment_info.tva
 
     return render(request, 'user/mover/billing/payment.html', {'mover': mover, 'number_quote_request':
-                                    number_quote_request, 'number_quote_request_unpaid': number_quote_request_unpaid,
+        number_quote_request, 'number_quote_request_unpaid': number_quote_request_unpaid,
                                                                'mover_quote_requests': mover_quote_requests,
                                                                'quote_request_payments': quote_request_payments,
                                                                'payment_info': payment_info,
@@ -739,6 +756,45 @@ def payment(request, mover_pk):
                                                                'sum_quote_request_unpaid_tva':
                                                                    sum_quote_request_unpaid_tva
                                                                })
+
+
+def add_proof_payment(request, mover_pk):
+    mover = Mover.objects.filter(id=mover_pk).last()
+    number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover_pk, treated=False, rejected=False).count()
+    payment_info = Payment.objects.all().last()
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover_pk, rejected=False, paid="Non payé")
+
+    if request.method == 'POST':
+        # creation of the ref
+        characters = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        characters.extend(list('1234567890'))
+        size = 10
+        ref = ''
+        for x in range(size):
+            ref += random.choice(characters)
+        ref = ref
+        image = request.FILES['image']
+
+        # saving the payment proof
+        payment_proof = Quote_Request_Payment(ref=ref, image=image, payment=payment_info, validated=False, mover=mover)
+        payment_proof.save()
+
+        # editing the Mover_Quote_Request table
+        for mover_quote_request in mover_quote_requests:
+            if mover_quote_request.created <= payment_proof.created:
+                edit_mover_quote_request = Mover_Quote_Request(id=mover_quote_request.id, created=
+                mover_quote_request.created, quote_request_id=mover_quote_request.quote_request.id,
+                                                               treated=mover_quote_request.treated,
+                                                               rejected=mover_quote_request.rejected,
+                                                               paid='Vérification en cours...'
+                                                               , mover_id=mover_quote_request.mover.id)
+                edit_mover_quote_request.save()
+
+        messages.success(request, 'Reçu de paiement ajouté avec succès !')
+        return redirect('add_proof_payment', mover_pk=mover_pk)
+
+    return render(request, 'user/mover/billing/add_proof_payment.html', {'mover': mover, 'number_quote_request':
+        number_quote_request})
 
 #################################################### END BILLING  #####################################################
 #################################################### END BILLING  #####################################################

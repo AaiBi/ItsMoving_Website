@@ -122,7 +122,6 @@
 
 				<!-- Main content START -->
 				<div class="col-xl-9">
-
                     {% if mover.activated == False %}
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             Important ! Votre compte est inactivé, veuillez nous contacter par email
@@ -177,7 +176,24 @@
                                 <div class="d-flex mb-1 justify-content-between align-items-center">
                                     <h3 class="mb-0">Comment faire le paiement ? </h3>
                                 </div>
-                                <h4 class="mb-2 mt-2 text-warning">htva</h4>
+                                <h6 class="mb-2 mt-2">
+                                    Deux types de paiements sont possibles:
+                                    <ul>
+                                        <li>
+                                            Paiement direct sur la plateforme ... à travers ce lien
+                                        </li>
+                                        <li>
+                                            Virement bancaire sur le compte suivant :
+                                        </li>
+                                    </ul>
+                                </h6>
+                                <h6>
+                                    Important: N'oubliez pas d'enregistrer le reçu après chaque paiement en cliquant
+                                    sur '+ Enregistrer les reçus de paiements'!
+                                </h6>
+                                <h6 class="text-danger">
+                                    Important: La TVA ne concerne que les entreprises Belges !
+                                </h6>
                             </div>
                         </div>
 
@@ -198,14 +214,16 @@
                             <div class="row g-3 align-items-center justify-content-between mb-4">
                                 <!-- Content -->
                                 <div class="col-md-8">
-
+                                    <a type="button" class="btn btn-primary" href="{% url 'add_proof_payment' mover.id %}" style="text-align: right">
+                                        + Enregistrer les reçus de paiements
+                                    </a>
                                 </div>
 
                                 <!-- Select option -->
                                 <div class="col-md-3">
                                     <!-- Short by filter -->
                                     {% if mover_quote_requests %}
-                                        <a type="button" class="btn btn-primary" href="{% url 'payment' mover.id %}">
+                                        <a type="button" class="btn btn-primary" href="{% url 'payment' mover.id %}" style="text-align: right">
                                             Voire/Imprimer la facture
                                         </a>
                                     {% endif %}
@@ -222,7 +240,6 @@
                                             <th scope="col" class="border-0 rounded-start">Paiements</th>
                                             <th scope="col" class="border-0">Montants</th>
                                             <th scope="col" class="border-0">Status</th>
-                                            <th scope="col" class="border-0 rounded-end">Date</th>
                                         </tr>
                                     </thead>
                                     <!-- Table body START -->
@@ -260,27 +277,16 @@
                                                 <td class="text-center text-sm-start">
                                                     {% if mover_quote_request.paid == 'Non payé' %}
                                                         <span class="badge bg-danger bg-opacity-10 text-danger">
-                                                            Non payé
+                                                            {{mover_quote_request.paid}}
                                                         </span>
                                                     {% elif mover_quote_request.paid == 'Payé' %}
                                                         <span class="badge bg-success bg-opacity-10 text-success">
-                                                            Payé
+                                                            {{mover_quote_request.paid}}
                                                         </span>
-                                                    {% elif quote_request_payment.paid == 'En attente...' %}
+                                                    {% elif mover_quote_request.paid == 'Vérification en cours...' %}
                                                         <span class="badge bg-warning bg-opacity-10 text-warning">
-                                                            En attente...
+                                                            {{mover_quote_request.paid}}
                                                         </span>
-                                                    {% endif %}
-                                                </td>
-
-                                                <!-- Table data -->
-                                                <td>
-                                                    {% if quote_request_payments %}
-                                                        {% for quote_request_payment in quote_request_payments %}
-                                                            {% if quote_request_payment.mover_quote_request_id == mover_quote_request.id and quote_request_payment.paid == 'Payé' %}
-                                                                {{quote_request_payment.created}}
-                                                            {% endif %}
-                                                        {% endfor %}
                                                     {% endif %}
                                                 </td>
                                             </tr>

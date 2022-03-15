@@ -37,4 +37,5 @@ urlpatterns = [
 
     # BILLING
     path('payment/<int:mover_pk>', views.payment, name='payment'),
+    path('payment_proof/<int:mover_pk>', views.add_proof_payment, name='add_proof_payment'),
 ]

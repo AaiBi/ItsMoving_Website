@@ -19,4 +19,8 @@ urlpatterns = [
     path('mover_devis/<int:mover_pk>', views.mover_devis, name='mover_devis'),
     path('mover_active_unactive/<int:mover_pk>', views.mover_active_unactive, name='mover_active_unactive'),
 
+    #Facturation
+    path('Facturation/', views.facturation_home, name='facturation_home'),
+    path('list_payments_not_done/<int:mover_pk>', views.list_payments_not_done, name='list_payments_not_done'),
+    path('payment_validation/<int:payment_pk>', views.payment_validation, name='payment_validation'),
 ]

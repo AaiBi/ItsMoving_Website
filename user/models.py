@@ -21,8 +21,9 @@ class Quote_Request_Payment(models.Model):
     ref = models.CharField(max_length=30)
     created = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='user/images/mover/payment/', blank=True, default="")
-    mover_quote_request = models.ForeignKey(Mover_Quote_Request, on_delete=models.CASCADE)
+    validated = models.BooleanField(default=False)
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE, default="")
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE, default="")
 
     def __str__(self):
         return self.ref

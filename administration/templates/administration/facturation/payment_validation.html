@@ -1,0 +1,92 @@
+{% extends 'administration/admin_base.html' %}
+
+{% block title %} Admin - Facturation {% endblock %}
+
+{% load static %}
+
+{% block facturation_active %} active {% endblock %}
+
+
+{% block main %}
+
+    <div class="card bg-dark">
+        <div class="card-header bg-dark" align="center">
+            <h2 class="text-white">Vérification et validation du paiement #{{quote_request_payment.ref}}</h2>
+        </div>
+
+        <p></p>
+        <p></p>
+        <div class="card-body bg-dark">
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <center><h4 class="text-white">Déménageur</h4></center>
+                    <ul>
+                        <li>
+                            Déménageur : <b class="text-white">{{quote_request_payment.mover.company_name}}</b>
+                        </li>
+                        <li>
+                            Pays : <b class="text-white">{{quote_request_payment.mover.country.name}}</b>
+                        </li>
+                        <li>
+                            Type de déménagement :
+                            <b class="text-white">{{quote_request_payment.mover.moving_type1.name}}</b>
+                        </li>
+                        <li>
+                            Téléphone : <b class="text-white">{{quote_request_payment.mover.company_phone_number}}</b>
+                        </li>
+                        <li>
+                            Email : <b class="text-white">{{quote_request_payment.mover.user.email}}</b>
+                        </li>
+                        <li>
+                            Adresse : <b class="text-white">{{quote_request_payment.mover.Adresse}}</b>
+                        </li>
+                        <li>
+                            Code postal : <b class="text-white">{{quote_request_payment.mover.Postal_Code}}</b>
+                        </li>
+                        <li>
+                            Numéro de TVA : <b class="text-white">{{quote_request_payment.mover.TVA_number}}</b>
+                        </li>
+                        <li>
+                            Statut : <b class="text-white">{{quote_request_payment.mover.company_statut}}</b>
+                        </li>
+                        <li>
+                            Nombre de demande de paiements en attente de validation:
+                            <b class="text-white">{{number_quote_request_unpaid}}</b>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-6">
+                    <center><h4 class="text-white">Infos de paiement</h4></center>
+                    <a href="{{quote_request_payment.image.url}}">
+                        <img src="{{quote_request_payment.image.url}}" style="height: 300px; width: 100%;">
+                    </a>
+                </div>
+            </div>
+
+            </br></br>
+            <!-- Form -->
+            <form method="POST">
+                {% csrf_token %}
+                <!-- Current password -->
+                <div class="mb-3">
+                    <label class="form-label text-white">
+                        Entrer le nombre de demandes de devis auquel correspond le montant du paiement
+                    </label>
+                    <input class="form-control" type="number" name="number_payment" required>
+                </div>
+                <!-- Other informations -->
+                <input type="hidden" name="validated" value="True">
+
+                <!-- Button -->
+                <div class="d-flex justify-content-center mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        Valider le paiement
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}
