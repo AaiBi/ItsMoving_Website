@@ -326,25 +326,41 @@ def payment_validation(request, payment_pk):
 
     if request.method == 'POST':
         number_payment = int(request.POST.get('number_payment'))
+        total_mover_quote_request_waiting_for_validation = Mover_Quote_Request.objects.filter(mover_id=
+                            quote_request_payment.mover.id, paid="Vérification en cours...", rejected=False).count()
+
         mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=quote_request_payment.mover.id, paid=
-                                                                    "Vérification en cours...", rejected=False)
+                                                                    "Vérification en cours...", rejected=False)\
+                                                                                                [:number_payment]
+        number_quote_request_unvalidated_after_payment = total_mover_quote_request_waiting_for_validation - number_payment
 
-        for i in range(number_payment):
+        mover_quote_request_change = Mover_Quote_Request.objects.filter(mover_id=quote_request_payment.mover.id, paid=
+                            "Vérification en cours...", rejected=False)[:number_quote_request_unvalidated_after_payment]
 
-            #modifing the mover quote request table to paid='Paye' as paid
-            for mover_quote_request in mover_quote_requests:
-                save_data1 = Mover_Quote_Request(id=mover_quote_request.id, created=mover_quote_request.created,
-                                                quote_request_id=mover_quote_request.quote_request.id,
-                                                treated=mover_quote_request.treated, rejected=
-                                                mover_quote_request.rejected, paid="Payé", mover_id=
-                                                 quote_request_payment.mover.id)
-                save_data1.save()
+        #modifing the mover quote request table to paid='Paye' as paid
+        #we validated the number of quote request paid as paid
+        for mover_quote_request in mover_quote_requests:
+            save_data1 = Mover_Quote_Request(id=mover_quote_request.id, created=mover_quote_request.created,
+                                            quote_request_id=mover_quote_request.quote_request.id,
+                                            treated=mover_quote_request.treated, rejected=
+                                            mover_quote_request.rejected, paid="Payé", mover_id=
+                                             quote_request_payment.mover.id)
+            save_data1.save()
 
-            form = Mover_Quote_Request_Paiement_Proof_Form(request.POST, instance=quote_request_payment)
-            if form.is_valid():
-                form.save()
-                messages.success(request, 'Paiement validé avec succès !')
-                return redirect('facturation_home')
+        #we change the paid from 'Vérification en cours...' to 'Non paye' after verification
+        for mover_quote_request in mover_quote_request_change:
+            save_data1 = Mover_Quote_Request(id=mover_quote_request.id, created=mover_quote_request.created,
+                                            quote_request_id=mover_quote_request.quote_request.id,
+                                            treated=mover_quote_request.treated, rejected=
+                                            mover_quote_request.rejected, paid="Non payé", mover_id=
+                                             quote_request_payment.mover.id)
+            save_data1.save()
+
+        form = Mover_Quote_Request_Paiement_Proof_Form(request.POST, instance=quote_request_payment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Paiement validé avec succès !')
+            return redirect('facturation_home')
 
     return render(request, 'administration/facturation/payment_validation.html', {'quote_request_payment':
                                                                                   quote_request_payment, 'form': form,
