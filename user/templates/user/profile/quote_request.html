@@ -75,11 +75,6 @@
                                         </a>
 										<a class="list-group-item active" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
-											{% if number_quote_request != 0 %}
-												<span class="btn btn-sm btn-success-soft btn-round me-1 mb-0">
-													{{number_quote_request}}
-												</span>
-											{% endif %}
 										</a>
 										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
 											Configuration du profil
@@ -135,7 +130,7 @@
 
 						<!-- Card header START -->
 						<div class="card-header border-bottom">
-							<h3 class="mb-0">Demande de devis</h3>
+							<h3 class="mb-0">Demande de devis de ce mois</h3>
 						</div>
 						<!-- Card header END -->
 
@@ -241,7 +236,7 @@
 											</tr>
 
 										{% else %}
-											{% for mover_quote_request in mover_quote_requests %}
+											{% for mover_quote_request in mover_quote_requests_actual_month %}
 												<!-- Table item -->
 												<tr>
 													<!-- Table data -->
@@ -302,6 +297,14 @@
 									</tbody>
 									<!-- Table body END -->
 								</table>
+
+								</br>
+								<center>
+									<a type="button" class="btn btn-primary" href="{% url 'all_quote_requests' mover.id %}" style="text-align: right">
+										Voir l'historique
+									</a>
+								</center>
+
 								<!-- Table END -->
 							</div>
 							<!-- Order list table END -->

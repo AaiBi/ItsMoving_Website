@@ -31,11 +31,14 @@ urlpatterns = [
     path('mover_request_treated/<int:mover_request_pk>', views.mover_request_treated, name='mover_request_treated'),
     path('mover_request_rejected/<int:mover_request_pk>', views.mover_request_rejected, name='mover_request_rejected'),
     path('treated_quote_request/', views.treated_quote_request, name='treated_quote_request'),
+    path('all_quote_requests/<int:mover_pk>', views.all_quote_requests, name='all_quote_requests'),
 
     # REVIEWS
     path('reviews/<int:mover_request_pk>', views.review_request, name='review_request'),
 
     # BILLING
     path('payment/<int:mover_pk>', views.payment, name='payment'),
-    path('payment_proof/<int:mover_pk>', views.add_proof_payment, name='add_proof_payment'),
+    path('payment_history/<int:mover_pk>', views.payment_history, name='payment_history'),
+    path('paiement_done_actual_month/<int:mover_pk>', views.paiement_done_actual_month, name='paiement_done_actual_month'),
+    path('paiement_not_done/<int:mover_pk>', views.paiement_not_done, name='paiement_not_done'),
 ]

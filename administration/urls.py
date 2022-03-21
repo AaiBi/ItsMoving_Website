@@ -4,7 +4,6 @@ from administration import views
 
 urlpatterns = [
     path('admin_page/', views.admin_login, name='admin_login'),
-    path('home/', views.admin_home, name='admin_home'),
     path('logout/', views.admin_logout, name='admin_logout'),
 
     #Devis
@@ -22,5 +21,6 @@ urlpatterns = [
     #Facturation
     path('Facturation/', views.facturation_home, name='facturation_home'),
     path('list_payments_not_done/<int:mover_pk>', views.list_payments_not_done, name='list_payments_not_done'),
-    path('payment_validation/<int:payment_pk>', views.payment_validation, name='payment_validation'),
+    path('list_payments_done/<int:mover_pk>', views.list_payments_done, name='list_payments_done'),
+    path('group_email_for_paiement/', views.group_email_for_paiement, name='group_email_for_paiement'),
 ]

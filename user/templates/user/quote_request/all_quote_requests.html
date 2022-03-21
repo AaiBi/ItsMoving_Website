@@ -1,6 +1,6 @@
 {% extends 'base_app/base.html' %}
 
-{% block title %} Paramètres {% endblock %}
+{% block title %} Les demandes de devis {% endblock %}
 
 {% load static %}
 
@@ -13,7 +13,7 @@
     <!-- **************** MAIN CONTENT START **************** -->
     <!-- =======================
 
-	Page Banner START -->
+    Page Banner START -->
     <section class="pt-0">
         <!-- Main banner background image -->
         <div class="container-fluid px-0">
@@ -40,20 +40,6 @@
     </section>
     <!-- =======================
     Page Banner END -->
-
-	{% if error %}
-		<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
-			{{ error }}
-		</div>
-	{% else %}
-		{% if messages %}
-			{% for message in messages %}
-				<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
-					{{message}}
-				</div>
-			{% endfor %}
-		{% endif %}
-	{% endif %}
 
     <!-- =======================
 	Page content START -->
@@ -87,13 +73,13 @@
                                         <a class="list-group-item" href="{% url 'billing' %}"><i class="bi bi-wallet2 fa-fw me-2"></i>
                                             Facturation
                                         </a>
-										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
+										<a class="list-group-item active" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
 										</a>
 										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
 											Configuration du profil
 										</a>
-										<a class="list-group-item active" href="{% url 'settings' %}"><i class="bi bi-gear fa-fw me-2"></i>
+										<a class="list-group-item" href="{% url 'settings' %}"><i class="bi bi-gear fa-fw me-2"></i>
 											Paramètres
 										</a>
 										<a class="list-group-item" href="{% url 'user_password_change' %}"><i class="bi bi-lock fa-fw me-2"></i>
@@ -124,67 +110,129 @@
 						</div>
 					{% endif %}
 
-					<!-- Counter boxes START -->
-					<div class="row g-4">
-						<!-- Counter item -->
-						<div class="col-sm-6 col-lg-4">
-							{% if mover.moving_type1.name == "National" %}
+					<!-- Card START -->
+					<div class="card border rounded-3">
 
-								<a class="d-flex justify-content-center align-items-center p-4 bg-warning bg-opacity-15 rounded-3">
-									<span class="display-6 text-warning mb-0"><i class='fa fa-globe fa-fw'></i></span>
-									<div class="ms-4">
-										<span class="mb-0 h5 fw-light">
-											Zone d'intervention: <b>{{mover.country}}</b>
-										</span>
+						{% if error %}
+							<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+								{{ error }}
+							</div>
+						{% else %}
+							{% if messages %}
+								{% for message in messages %}
+									<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+										{{message}}
 									</div>
-								</a>
-
-							{% else %}
-								<a href="{% url 'area_intervention' %}" class="d-flex justify-content-center align-items-center p-4 bg-warning bg-opacity-15 rounded-3">
-									<span class="display-6 text-warning mb-0"><i class='fa fa-globe fa-fw'></i></span>
-									<div class="ms-4">
-										<div class="d-flex">
-											<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="{{mover_countries_number}}"	data-purecounter-delay="200">0</h5>
-										</div>
-										<span class="mb-0 h5 fw-light">Zones d'intervention</span>
-									</div>
-								</a>
+								{% endfor %}
 							{% endif %}
+						{% endif %}
+
+
+						<!-- Card header START -->
+						<div class="card-header border-bottom">
+							<h3 class="mb-0">Liste de toute vos demandes de devis</h3>
 						</div>
-						<!-- Counter item -->
-						<div class="col-sm-6 col-lg-4">
-							<a href="{% url 'customer_type' %}" class="d-flex justify-content-center align-items-center p-4 bg-info bg-opacity-10 rounded-3">
-								<span class="display-6 text-info mb-0"><i class="fas fa-users fa-fw"></i></span>
-								<div class="ms-4">
-									<div class="d-flex">
-										<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="{{mover_moving_types2_number}}" data-purecounter-delay="300">0</h5>
-									</div>
-									<span class="mb-0 h5 fw-light">Type(s) de clientèle</span>
-								</div>
-							</a>
+						<!-- Card header END -->
+
+						<!-- Card body START -->
+						<div class="card-body">
+
+							<!-- Order list table START -->
+							<div class="table-responsive border-0">
+								<!-- Table START -->
+								<table class="table table-dark-gray align-middle p-4 mb-0 table-hover">
+									<!-- Table head -->
+									<thead>
+										<tr>
+											<th scope="col" class="border-0 rounded-start">Ref</th>
+											<th scope="col" class="border-0 text-center">Type de déménagement</th>
+											<th scope="col" class="border-0 text-center">Type de client</th>
+											<th scope="col" class="border-0 text-center">Départ</th>
+											<th scope="col" class="border-0 rounded-end text-center">Arrivée</th>
+											<th scope="col" class="border-0 rounded-end text-center">Date</th>
+										</tr>
+									</thead>
+
+									<!-- Table body START -->
+									<tbody>
+
+										{% for mover_quote_request in mover_quote_requests %}
+											<!-- Table item -->
+											<tr>
+												<!-- Table data -->
+												<td>
+													<h6 class="mt-2 mt-lg-0 mb-0">
+														<a href="{% url 'mover_quote_request_detail' mover_quote_request.id %}">
+															#{{mover_quote_request.quote_request.ref}}
+														</a>
+													</h6>
+												</td>
+
+												<!-- Table data -->
+												<td class="text-center">
+													{{mover_quote_request.quote_request.moving_type1.name}}
+												</td>
+
+												<!-- Table data -->
+												<td class="text-center">
+													{{mover_quote_request.quote_request.moving_type2.name}}
+												</td>
+
+												<!-- Table data -->
+												<td class="text-center">
+													{% if mover_quote_request.quote_request.moving_type1.name == 'National' %}
+														{{mover_quote_request.quote_request.City_Departure|capfirst}}
+													{% else %}
+														{{mover_quote_request.quote_request.country.name|capfirst}}
+													{% endif %}
+												</td>
+
+												<!-- Table data -->
+												<td class="text-center">
+													{% if mover_quote_request.quote_request.moving_type1.name == 'National' %}
+														{{mover_quote_request.quote_request.City_Arrival|capfirst}}
+													{% else %}
+														{{mover_quote_request.quote_request.Country_Arrival|capfirst}}
+													{% endif %}
+												</td>
+
+												<!-- Table data -->
+												<td class="text-center">
+													{% if mover_quote_request.quote_request.moving_date|date == 'Oct. 10, 1000' %}
+														{% load i18n %}
+														{% language 'fr' %}
+															{{mover_quote_request.quote_request.moving_date1|date:'d F Y'}} -
+															{{mover_quote_request.quote_request.moving_date2|date:'d F Y'}}
+														{% endlanguage %}
+													{% else %}
+														{% load i18n %}
+														{% language 'fr' %}
+															{{mover_quote_request.quote_request.moving_date|date:'d F Y'}}
+														{% endlanguage %}
+													{% endif %}
+												</td>
+											</tr>
+										{% endfor %}
+
+									</tbody>
+									<!-- Table body END -->
+								</table>
+
+								<!-- Table END -->
+							</div>
+							<!-- Order list table END -->
+
 						</div>
-						<!-- Counter item -->
-						<div class="col-sm-6 col-lg-4">
-							<a href="{% url 'quote_request_settings' %}" class="d-flex justify-content-center align-items-center p-4 bg-dark bg-opacity-10 rounded-3">
-								<span class="display-6 text-dark mb-0"><i class='fa fa-list fa-fw'></i></span>
-								<div class="ms-4">
-									<div class="d-flex">
-										<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="{{mover.number_max_quote_request}}"	data-purecounter-delay="200">
-											0
-										</h5>
-									</div>
-									<span class="mb-0 h5 fw-light">Devis/jour maximum</span>
-								</div>
-							</a>
-						</div>
+						<!-- Card body START -->
 					</div>
+						<!--Card END  -->
 				</div>
-				<!-- Counter boxes END -->
+				<!-- Main content END -->
 			</div><!-- Row END -->
 		</div>
 	</section>
 	<!-- =======================
-	Page content END --></br></br></br></br></br></br></br></br></br></br></br>
+	Page content END -->
 
     <!-- **************** MAIN CONTENT END **************** -->
 

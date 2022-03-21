@@ -89,11 +89,6 @@
                                         </a>
 										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
-											{% if number_quote_request != 0 %}
-												<span class="btn btn-sm btn-success-soft btn-round me-1 mb-0">
-													{{number_quote_request}}
-												</span>
-											{% endif %}
 										</a>
 										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
 											Configuration du profil

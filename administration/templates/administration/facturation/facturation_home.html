@@ -14,16 +14,6 @@
             <h2 class="text-white">Facturation</h2>
         </div>
 
-        <form class="rounded position-relative" method="POST">
-            {% csrf_token %}
-            <input class="form-control pe-5 bg-transparent" type="search" name="ref" placeholder="Rechercher un déménageur" aria-label="Search">
-            <button class="btn bg-transparent px-2 py-0 position-absolute top-50 end-0 translate-middle-y" type="submit" name="search" value="search">
-                <i class="fas fa-search fs-6 "></i>
-            </button>
-        </form>
-
-        <p></p>
-        <p></p>
         <div class="card-body bg-dark">
 
             <!-- Outer tabs START -->
@@ -38,28 +28,19 @@
                 <!-- Tab item -->
                 <li class="nav-item me-2 me-sm-5" role="presentation">
                     <button class="nav-link" id="movers-pills-tab-2" data-bs-toggle="pill" data-bs-target="#movers-pills-tab2" type="button" role="tab" aria-controls="movers-pills-tab2" aria-selected="false">
-                        Paiements effectués en attente de validation
-                        <span class="badge text-white bg-success rounded-1">
-                            {{number_quote_request_waiting_for_validation}}
-                        </span>
+                        Paiements effectués
                     </button>
                 </li>
                 <!-- Tab item -->
                 <li class="nav-item me-2 me-sm-5" role="presentation">
                     <button class="nav-link" id="movers-pills-tab-3" data-bs-toggle="pill" data-bs-target="#movers-pills-tab3" type="button" role="tab" aria-controls="movers-pills-tab3" aria-selected="false">
-                        Paiements effectués et validés
-                        <span class="badge text-white bg-success rounded-1">
-                            {{number_quote_request_paid}}
-                        </span>
+                        Valider un paiement
                     </button>
                 </li>
                 <!-- Tab item -->
                 <li class="nav-item me-2 me-sm-5" role="presentation">
                     <button class="nav-link" id="movers-pills-tab-4" data-bs-toggle="pill" data-bs-target="#movers-pills-tab4" type="button" role="tab" aria-controls="movers-pills-tab4" aria-selected="false">
-                        Paiements effectués en attente de validation
-                        <span class="badge text-white bg-success rounded-1">
-                            {{number_quote_request_waiting_for_validation}}
-                        </span>
+                        Envoyer un rappel de paiement
                     </button>
                 </li>
             </ul>
@@ -99,7 +80,7 @@
                                                 <tr>
                                                         <!-- Course item -->
                                                         <td>
-                                                            <a>
+                                                            <a href="{% url 'mover_detail' mover.id %}">
                                                                 <center>{{mover.ref}}</center>
                                                             </a>
                                                         </td>
@@ -166,11 +147,11 @@
                                             <!-- Table body START -->
                                             <tbody align="center">
                                                 <!-- Table item -->
-                                                {% for mover_quote_request in mover_quote_requests %}
+                                                {% for mover_quote_request in mover_quote_requests_not_paid %}
                                                     <tr>
                                                         <!-- Course item -->
                                                         <td>
-                                                            <a href="">
+                                                            <a href="{% url 'mover_detail' mover_quote_request.mover %}">
                                                                 <center>
                                                                     {% for mover in movers %}
                                                                         {% if mover.id == mover_quote_request.mover %}
@@ -253,11 +234,15 @@
                                         <!-- Table head -->
                                         <thead align="center">
                                             <tr>
-                                                <th scope="col" class="border-0 rounded-start">Déménageur</th>
+                                                <th scope="col" class="border-0 rounded-start">Ref</th>
+                                                <th scope="col" class="border-0 rounded-start">Nom</th>
                                                 <th scope="col" class="border-0 rounded-start">Pays</th>
+                                                <th scope="col" class="border-0 rounded-start">
+                                                    Type de déménagement
+                                                </th>
                                                 <th scope="col" class="border-0 rounded-end">Email</th>
                                                 <th scope="col" class="border-0 rounded-end">
-                                                    Paiements non effectués
+                                                    Paiements effectués
                                                 </th>
                                             </tr>
                                         </thead>
@@ -265,28 +250,66 @@
                                         <!-- Table body START -->
                                         <tbody align="center">
                                             <!-- Table item -->
-                                            {% for mover_quote_request_payment in mover_quote_request_payments %}
+                                            {% for mover_quote_request in mover_quote_requests_paid %}
                                                 <tr>
                                                     <!-- Course item -->
                                                     <td>
+                                                        <a href="{% url 'mover_detail' mover_quote_request.mover %}">
+                                                            <center>
+                                                                {% for mover in movers %}
+                                                                    {% if mover.id == mover_quote_request.mover %}
+                                                                        {{mover.ref}}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </center>
+                                                        </a>
+                                                    </td>
+                                                    <td>
                                                         <center>
-                                                            {{mover_quote_request_payment.mover.company_name}}
+                                                            {% for mover in movers %}
+                                                                {% if mover.id == mover_quote_request.mover %}
+                                                                    {{mover.company_name}}
+                                                                {% endif %}
+                                                            {% endfor %}
                                                         </center>
                                                     </td>
                                                     <td>
                                                         <center>
-                                                            {{mover_quote_request_payment.mover.country.name}}
+                                                            {% for mover in movers %}
+                                                                {% if mover.id == mover_quote_request.mover %}
+                                                                    {{mover.country.name}}
+                                                                {% endif %}
+                                                            {% endfor %}
                                                         </center>
                                                     </td>
                                                     <td>
                                                         <center>
-                                                            {{mover_quote_request_payment.mover.user.email}}
+                                                            {% for mover in movers %}
+                                                                {% if mover.id == mover_quote_request.mover %}
+                                                                    {{mover.moving_type1.name}}
+                                                                {% endif %}
+                                                            {% endfor %}
                                                         </center>
                                                     </td>
                                                     <td>
                                                         <center>
-                                                            <a href="{% url 'payment_validation' mover_quote_request_payment.id %}" type="button" class="btn btn-success">
-                                                                Vérifier et valider ce payment
+                                                            {% for mover in movers %}
+                                                                {% if mover.id == mover_quote_request.mover %}
+
+                                                                    {% for user in users %}
+                                                                        {% if user.id == mover.user_id %}
+                                                                            {{user.email}}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </center>
+                                                    </td>
+                                                    <td>
+                                                        <center>
+                                                            <a href="{% url 'list_payments_done' mover_quote_request.mover %}">
+                                                                {{mover_quote_request.count}}
                                                             </a>
                                                         </center>
                                                     </td>
@@ -294,6 +317,80 @@
                                             {% endfor %}
                                         </tbody>
                                     </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> <!-- Row END -->
+                </div>
+                <!-- Outer content END -->
+
+                <!-- Outer content START -->
+                <div class="tab-pane fade" id="movers-pills-tab3" role="tabpanel" aria-labelledby="movers-pills-tab-3">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row justify-content-between">
+
+                                <!-- Form -->
+                                <form method="POST" class="row">
+                                    {% csrf_token %}
+                                    <!-- Current password -->
+                                    <div class="mb-3 col-sm-6">
+                                        <label class="form-label text-white">Déménageurs </label>
+                                        <select class="form-select form-control text-opacity-50" name="mover_id" required>
+                                            {% for mover in movers %}
+                                                <option value="{{mover.id}}" class="text-dark">
+                                                    {{mover.company_name}}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-sm-6">
+                                        <label class="form-label text-white">
+                                            Nombre de demandes de devis correspondant au montant du paiement
+                                        </label>
+                                        <input class="form-control" type="number" name="number_payment" required>
+                                    </div>
+                                    <!-- Other informations -->
+                                    <input type="hidden" name="validated" value="True">
+
+                                    <!-- Button -->
+                                    <div class="d-flex justify-content-center mt-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            Valider le paiement
+                                        </button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div> <!-- Row END -->
+                </div>
+                <!-- Outer content END -->
+
+                <!-- Outer content START -->
+                <div class="tab-pane fade" id="movers-pills-tab4" role="tabpanel" aria-labelledby="movers-pills-tab-4">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row justify-content-between">
+
+                                <div class="col-sm-12">
+                                    <h5 class="text-white text-center">Email de rappel de groupe</h5>
+                                    </br>
+                                    <!-- Form -->
+
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <!-- Button -->
+                                        <center>
+                                            <div class=" mt-4">
+                                                <a type="button" class="btn btn-primary" href="{% url 'group_email_for_paiement' %}">
+                                                    Envoyer l'email de rappel de paiement
+                                                </a>
+                                            </div>
+                                        </center>
+                                    </form>
+
                                 </div>
 
                             </div>

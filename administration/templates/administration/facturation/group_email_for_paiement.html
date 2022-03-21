@@ -1,0 +1,50 @@
+{% extends 'administration/admin_base.html' %}
+
+{% block title %} Admin - Facturation {% endblock %}
+
+{% load static %}
+
+{% block facturation_active %} active {% endblock %}
+
+
+{% block main %}
+
+    <div class="card bg-dark">
+        <div class="card-header bg-dark" align="center">
+            <h2 class="text-white">Envoi d'emails de rappel de paiement</h2>
+        </div>
+
+        <div class="card-body bg-dark row">
+
+            <div class="col-sm-6">
+                <h4 class="text-white">Aperçu du message</h4>
+                </br>
+                <span class="text-white">
+                    Bonjour Mr/Mme X!</br>
+                    Vous avez actuellement X demande(s) de devis non payé, veuillez accéder à votre compte utilisateur
+                    dans l'onglet 'Facture' pour plus de détails et éventuellement faire le paiement.</br>
+                    Apres la date limite (le 20 de ce mois), votre compte risque d'être suspendu!</br>
+                    Merci !</br>
+                    Lien de connexion : XXXX
+                </span>
+            </div>
+            <div class="col-sm-6 text-success" style="text-align: center">
+                </br></br></br>
+                Êtes-vous sûr d'envoyer un email de rappel de paiement aux déménageurs qui ont des demandes de devis
+                non payés ?
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <!-- Button -->
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-success" name="group_email" value="group_email">
+                            Oui
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

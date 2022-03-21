@@ -124,92 +124,15 @@
                         </div>
                     {% endif %}
 
-					<!-- Payout box START -->
-                    <div class="row g-4 mb-4">
-                        <!-- Box item -->
-                        <div class="col-sm-6">
-                            <div class="bg-primary bg-opacity-10 h-100 p-3 rounded-3">
-                                <div class="d-flex mb-1 justify-content-between align-items-center">
-                                    <h6 class="mb-0">Ce mois </h6>
-                                    <span class="badge bg-success bg-opacity-10 text-success ms-2 mb-0">Payé</span>
-                                </div>
-                                <h2 class="mb-2 mt-2 text-success">
-                                    {{sum_quote_request_paid_actual_month_htva}}€ HTVA
-                                </h2>
-                                <a href="{% url 'paiement_done_actual_month' mover.id %}">Voir les paiements</a>
-                            </div>
-                        </div>
-
-                        <!-- Box item -->
-                        <div class="col-sm-6">
-                            <div class="bg-danger bg-opacity-10 h-100 p-3 rounded-3">
-                                <h6 class="mb-0">Payement(s) non effectué(s)</h6>
-                                <h2 class="mb-2 mt-2 bg-opacity-10 text-danger">
-                                    {{sum_quote_request_unpaid_htva}}€ htva
-                                </h2>
-                                <a href="{% url 'paiement_not_done' mover.id %}">Voir les paiements</a>
-                            </div>
-                        </div>
-
-                        <!-- Box item -->
-                        <div class="col-sm-12">
-                            <div class="bg-warning bg-opacity-10 h-100 p-3 rounded-3">
-                                <div class="d-flex mb-1 justify-content-between align-items-center">
-                                    <h3 class="mb-0">Comment faire le paiement ? </h3>
-                                </div>
-                                <h6 class="mb-2 mt-2">
-                                    Cliquez sur le bouton bleu 'Voire/Imprimer la facture' pour connaitre le montant
-                                    total à payer et faites le paiement avec l'une des deux méthodes disponibles :
-                                    <ul>
-                                        <li>
-                                            Domiciliation
-                                        </li>
-                                        <li>
-                                            Virement bancaire sur le compte suivant :
-                                        </li>
-                                    </ul>
-                                </h6>
-                                <h6 class="text-danger">
-                                    Important: La TVA ne concerne que les entreprises Belges !
-                                </h6>
-                            </div>
-                        </div>
-
-                    </div>
-                    <!-- Payout box END -->
-
                     <div class="card border rounded-3">
                         <!-- Card header START -->
-                        <div class="card-header border-bottom">
-                            <h3 class="mb-0">Paiements</h3>
+                        <div class="card-header border-bottom bg-danger">
+                            <h3 class="mb-0 text-white">Liste complete de vos paiements non effectués</h3>
                         </div>
                         <!-- Card header END -->
 
                         <!-- Card body START -->
                         <div class="card-body">
-
-                            <!-- Title and select START -->
-                            <div class="row g-3 align-items-center justify-content-between mb-4">
-                                <!-- Content -->
-                                <div class="col-md-8">
-                                    <h6 class="text-danger">
-                                        Important: Un rappel de paiement vous sera envoyé le 5 de chaque mois avec un
-                                        délai de paiement de deux semaines. Après cette période, votre compte risque d'etre
-                                        suspendus!
-                                    </h6>
-                                </div>
-
-                                <!-- Select option -->
-                                <div class="col-md-3">
-                                    <!-- Short by filter -->
-                                    {% if mover_quote_requests %}
-                                        <a type="button" class="btn btn-primary" href="{% url 'payment' mover.id %}" style="text-align: right">
-                                            Voire/Imprimer la facture
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <!-- Title and select END -->
 
                             <!-- Payout list table START -->
                             <div class="table-responsive border-0">
@@ -276,15 +199,6 @@
                                     </tbody>
                                     <!-- Table body END -->
                                 </table>
-
-                                {% if number_requests > 29 %}
-                                    </br>
-                                    <center>
-                                        <a type="button" class="btn btn-primary" href="{% url 'payment_history' mover.id %}" style="text-align: right">
-                                            Voir plus...
-                                        </a>
-                                    </center>
-                                {% endif %}
                             </div>
                             <!-- Payout list table END -->
 

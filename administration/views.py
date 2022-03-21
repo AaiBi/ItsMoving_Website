@@ -1,16 +1,18 @@
+import datetime
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db.models import Count
 from django.shortcuts import render, redirect, get_object_or_404
 
-from administration.forms import Mover_Quote_Request_Paiement_Proof_Form
+from administration.models import Movers_Email_Admin
 from base_app.forms import Mover_Form
 from base_app.models import Mover, Country, Quote_Request, Moving_Type1, Moving_Type2, Mover_Quote_Request, \
     Quote_Request_Rejected, Mover_Country
-from user.models import Payment, Quote_Request_Payment
 
 
 def admin_login(request):
@@ -31,15 +33,10 @@ def admin_login(request):
                     return redirect('admin_login')
                 else:
                     messages.success(request, 'Bienvenue !')
-                    return redirect('admin_home')
+                    return redirect('movers_home')
         else:
             messages.error(request, 'Vous n\'êtes pas autorisé à accéder à cette page !')
             return redirect('admin_login')
-
-
-@login_required
-def admin_home(request):
-    return render(request, 'administration/admin_home.html')
 
 
 @login_required
@@ -275,99 +272,97 @@ def mover_devis(request, mover_pk):
 def facturation_home(request):
     movers = Mover.objects.all()
     users = User.objects.all()
-    mover_quote_requests = Mover_Quote_Request.objects.filter(rejected=False, paid="Non payé").values('mover').\
-        order_by('mover').annotate(count=Count('mover'))
-    mover_quote_request_validation = Mover_Quote_Request.objects.filter(rejected=False, paid="Vérification en cours...")
-    mover_quote_request_payments = Quote_Request_Payment.objects.filter(validated=False)
+    mover_quote_requests_not_paid = Mover_Quote_Request.objects.filter(rejected=False, paid="Non payé").values('mover') \
+        .order_by('mover').annotate(count=Count('mover'))
+    mover_quote_requests_paid = Mover_Quote_Request.objects.filter(rejected=False, paid="Payé").values('mover') \
+        .order_by('mover').annotate(count=Count('mover'))
     number_quote_request_unpaid = Mover_Quote_Request.objects.filter(rejected=False, paid="Non payé").count()
-    number_quote_request_waiting_for_validation = Mover_Quote_Request.objects.filter(rejected=False,
-                                                                                     paid="Vérification en cours...") \
-        .count()
-    number_quote_request_paid = Mover_Quote_Request.objects.filter(rejected=False, paid="Payé").count()
+
+    if request.method == 'POST':
+        number_payment = int(request.POST.get('number_payment'))
+        mover_id = request.POST.get('mover_id')
+        mover = Mover.objects.filter(id=mover_id).last()
+        mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover_id, paid='Non payé', rejected=False) \
+            [:number_payment]
+
+        # modifing the mover quote request table to paid='Paye' as paid
+        # we validated the number of quote request paid as paid
+        for mover_quote_request in mover_quote_requests:
+            save_data1 = Mover_Quote_Request(id=mover_quote_request.id, created=mover_quote_request.created,
+                                             quote_request_id=mover_quote_request.quote_request.id,
+                                             treated=mover_quote_request.treated, rejected=
+                                             mover_quote_request.rejected, paid="Payé", mover_id=mover_id)
+            save_data1.save()
+            messages.success(request, f'Paiement pour {number_payment} demande de devis ont été validés par succès pour'
+                                      f'{mover.company_name} !')
+
     return render(request, 'administration/facturation/facturation_home.html', {'number_quote_request_unpaid':
                                                                                     number_quote_request_unpaid,
-                                                                        'number_quote_request_waiting_for_validation':
-                                                                        number_quote_request_waiting_for_validation,
-                                                                                'number_quote_request_paid':
-                                                                                number_quote_request_paid,
                                                                                 'movers': movers, 'users': users,
-                                                                                'mover_quote_requests':
-                                                                                mover_quote_requests,
-                                                                                'mover_quote_request_validation':
-                                                                                mover_quote_request_validation,
-                                                                                'mover_quote_request_payments':
-                                                                                mover_quote_request_payments})
+                                                                                'mover_quote_requests_not_paid':
+                                                                                    mover_quote_requests_not_paid,
+                                                                                'mover_quote_requests_paid':
+                                                                                    mover_quote_requests_paid})
 
 
 @login_required
 def list_payments_not_done(request, mover_pk):
     mover = get_object_or_404(Mover, pk=mover_pk)
-    number_quote_request_waiting_for_validation = Mover_Quote_Request.objects.filter(rejected=False,
-                                                                                     paid="Vérification en cours...") \
-        .count()
-    mover_quote_request_unpaids = Mover_Quote_Request.objects.filter(mover=mover, rejected=False, paid="Non payé")
+    mover_quote_request_unpaids = Mover_Quote_Request.objects.filter(mover=mover, rejected=False,
+                                                                     paid="Non payé").order_by('-id')
     return render(request, 'administration/facturation/list_payments_not_done.html', {'mover': mover,
-                                                                          'number_quote_request_waiting_for_validation':
-                                                                          number_quote_request_waiting_for_validation,
                                                                                       'mover_quote_request_unpaids':
-                                                                                      mover_quote_request_unpaids})
+                                                                                          mover_quote_request_unpaids})
 
 
 @login_required
-def payment_validation(request, payment_pk):
-    quote_request_payment = get_object_or_404(Quote_Request_Payment, pk=payment_pk)
-    number_quote_request_waiting_for_validation = Mover_Quote_Request.objects.filter(rejected=False,
-                                                                                     paid="Vérification en cours...") \
-        .count()
-    number_quote_request_unpaid = Mover_Quote_Request.objects.filter(mover_id=quote_request_payment.mover.id,
-                                                                     rejected=False, paid="Vérification en cours...")\
-        .count()
-    form = Mover_Quote_Request_Paiement_Proof_Form(instance=quote_request_payment)
+def list_payments_done(request, mover_pk):
+    mover = get_object_or_404(Mover, pk=mover_pk)
+    mover_quote_request_paids = Mover_Quote_Request.objects.filter(mover=mover, rejected=False, paid="Payé").order_by(
+        '-id')
+    return render(request, 'administration/facturation/list_payments_done.html', {'mover': mover,
+                                                                                  'mover_quote_request_paids':
+                                                                                      mover_quote_request_paids})
+
+
+@login_required
+def group_email_for_paiement(request):
+    today = datetime.date.today()
+    last_month = today.month - 1
+    movers = Mover.objects.all()
+    users = User.objects.all()
+    mover_quote_requests = Mover_Quote_Request.objects.filter(rejected=False, paid="Non payé", created__month=
+                                                                today.month)
 
     if request.method == 'POST':
-        number_payment = int(request.POST.get('number_payment'))
-        total_mover_quote_request_waiting_for_validation = Mover_Quote_Request.objects.filter(mover_id=
-                            quote_request_payment.mover.id, paid="Vérification en cours...", rejected=False).count()
-
-        mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=quote_request_payment.mover.id, paid=
-                                                                    "Vérification en cours...", rejected=False)\
-                                                                                                [:number_payment]
-        number_quote_request_unvalidated_after_payment = total_mover_quote_request_waiting_for_validation - number_payment
-
-        mover_quote_request_change = Mover_Quote_Request.objects.filter(mover_id=quote_request_payment.mover.id, paid=
-                            "Vérification en cours...", rejected=False)[:number_quote_request_unvalidated_after_payment]
-
-        #modifing the mover quote request table to paid='Paye' as paid
-        #we validated the number of quote request paid as paid
         for mover_quote_request in mover_quote_requests:
-            save_data1 = Mover_Quote_Request(id=mover_quote_request.id, created=mover_quote_request.created,
-                                            quote_request_id=mover_quote_request.quote_request.id,
-                                            treated=mover_quote_request.treated, rejected=
-                                            mover_quote_request.rejected, paid="Payé", mover_id=
-                                             quote_request_payment.mover.id)
-            save_data1.save()
 
-        #we change the paid from 'Vérification en cours...' to 'Non paye' after verification
-        for mover_quote_request in mover_quote_request_change:
-            save_data1 = Mover_Quote_Request(id=mover_quote_request.id, created=mover_quote_request.created,
-                                            quote_request_id=mover_quote_request.quote_request.id,
-                                            treated=mover_quote_request.treated, rejected=
-                                            mover_quote_request.rejected, paid="Non payé", mover_id=
-                                             quote_request_payment.mover.id)
-            save_data1.save()
+            #we check if the mover didnt receive the same email the same day
+            if not Movers_Email_Admin.objects.filter(mover_id=mover_quote_request.mover.id, created__date=today):
 
-        form = Mover_Quote_Request_Paiement_Proof_Form(request.POST, instance=quote_request_payment)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Paiement validé avec succès !')
-            return redirect('facturation_home')
+                #sending the emails to the movers
+                number_quote_request_unpaid = Mover_Quote_Request.objects.filter(rejected=False, paid="Non payé",
+                                                                                 mover_id=mover_quote_request.mover.id,
+                                                                                 created__month=today.month).count()
 
-    return render(request, 'administration/facturation/payment_validation.html', {'quote_request_payment':
-                                                                                  quote_request_payment, 'form': form,
-                                                                        'number_quote_request_waiting_for_validation':
-                                                                          number_quote_request_waiting_for_validation,
-                                                                                  'number_quote_request_unpaid':
-                                                                                  number_quote_request_unpaid})
+                subject = 'Rappel pour demandes de devis reçu non payé!'
+                recipient_email = mover_quote_request.mover.user.email
+                email_from = mover_quote_request.mover.user.email
+                recipient_list = [recipient_email, ]
+                message = f'Bonjour Mr/Mme {mover_quote_request.mover.user.last_name}!\n ' \
+                          f'Vous avez actuellement {number_quote_request_unpaid} demande(s) de devis non payé, ' \
+                          f'veuillez accédez à votre compte utilisateur dans l\'onglet \'Facture\' pour plus de ' \
+                          f'détails et éventuellement faire le paiement.\n' \
+                          f'Après la date limite (le 20 de ce mois), votre compte risque d\'être suspendu!' \
+                          f'\nMerci !\n' \
+                          f'Lien de connexion : http://127.0.0.1:8000/user/login/'
+                send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+                save_rappel_email = Movers_Email_Admin(quote_request_id=mover_quote_request.quote_request.id,
+                                                       mover_id=mover_quote_request.mover.id)
+                save_rappel_email.save()
+
+    return render(request, 'administration/facturation/group_email_for_paiement.html', {'movers': movers})
 
 ################################################# END FACTURATION  ####################################################
 ################################################# END FACTURATION  ####################################################

@@ -20745,7 +20745,13 @@ html[dir=rtl] .choices__input {
                     <div class="row">
                         <div class="col-sm-12">
 
-                            <h3 align="center">FACTURE</h3></br>
+                            <h3 align="center">
+                                FACTURE DU MOIS D'/DE
+                                {% load i18n %}
+                                {% language 'fr' %}
+                                    {{mover_quote_request_month_and_year.created|date:'F Y'|upper}}
+                                {% endlanguage %}
+                            </h3></br>
 
                             {% if mover_quote_requests %}
                                 <div class="table-responsive border-0">
@@ -20791,7 +20797,7 @@ html[dir=rtl] .choices__input {
                                         <tr>
                                             <!-- Table data -->
                                             <td>
-                                                <b>Nombre total de devis :</b> {{number_quote_request_unpaid}}
+                                                <b>Nombre total de devis :</b> {{number_quote_request_unpaid_last_month}}
                                             </td>
                                         </tr>
                                         <!-- Table item -->

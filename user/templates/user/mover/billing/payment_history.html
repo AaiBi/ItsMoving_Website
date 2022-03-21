@@ -90,11 +90,6 @@
                                         </a>
 										<a class="list-group-item" href="{% url 'quote_request' %}"><i class="bi bi-folder-check fa-fw me-2"></i>
 											Demandes de devis
-                                            {% if number_quote_request != 0 %}
-												<span class="btn btn-sm btn-success-soft btn-round me-1 mb-0">
-													{{number_quote_request}}
-												</span>
-											{% endif %}
 										</a>
 										<a class="list-group-item" href="{% url 'edit_profile' %}"><i class="bi bi-pencil-square fa-fw me-2"></i>
 											Configuration du profil
@@ -122,7 +117,6 @@
 
 				<!-- Main content START -->
 				<div class="col-xl-9">
-
                     {% if mover.activated == False %}
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             Important ! Votre compte est inactivé, veuillez nous contacter par email
@@ -133,37 +127,80 @@
                     <div class="card border rounded-3">
                         <!-- Card header START -->
                         <div class="card-header border-bottom">
-                            <h3 class="mb-0">Ajouter un paiement</h3>
+                            <h3 class="mb-0">Liste complete des Paiements</h3>
                         </div>
                         <!-- Card header END -->
 
                         <!-- Card body START -->
                         <div class="card-body">
 
-                            <!-- Form START -->
-							<form class="row g-4" method="POST" enctype="multipart/form-data">
-								{% csrf_token %}
-								<!-- Profile picture --></br></br>
-								<div class="col-12 justify-content-center align-items-center">
-									<div class="d-flex align-items-center">
-										<!-- Upload button -->
-										<label class="btn btn-primary-soft mb-0">
-											<input type="file" class="form-control-file" name="image">
-											Change
-										</label>
-									</div>
-								</div></br>
+                            <!-- Payout list table START -->
+                            <div class="table-responsive border-0">
+                                <table class="table table-dark-gray align-middle p-4 mb-0 table-hover">
+                                    <!-- Table head -->
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="border-0 rounded-start">Paiements</th>
+                                            <th scope="col" class="border-0">Montants</th>
+                                            <th scope="col" class="border-0">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <!-- Table body START -->
+                                    <tbody>
+                                        {% for mover_quote_request in mover_quote_requests %}
+                                            <!-- Table item -->
+                                            <tr>
+                                                <!-- Table data -->
+                                                <td>
+                                                    <h6 class="mt-2 mt-lg-0 mb-0">
+                                                        <a href="{% url 'mover_quote_request_detail' mover_quote_request.id %}">
+                                                            Devis #{{mover_quote_request.quote_request.ref}}
+                                                        </a>
+                                                    </h6>
+                                                </td>
 
-								<!-- Button -->
-								<div class="col-12 bg-dark-input">
-									<div class="d-grid">
-										<button class="btn btn-lg btn-primary" type="submit">
-											Ajouter
-										</button>
-									</div>
-								</div>
-							</form>
-							<!-- Form END -->
+                                                <!-- Table data -->
+                                                <td>{{payment_info.amount}}€ HTVA
+                                                    <!-- Drop down with id -->
+                                                    <a href="#" class="h6 mb-0" role="button" id="dropdownShare" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="bi bi-info-circle-fill"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-w-sm dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare">
+                                                        <li>
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="me-4 small">TVA</span>
+                                                                <span class="text-danger small">
+                                                                    +{{payment_info.tva}}€ (21%)
+                                                                </span>
+                                                            </div>
+                                                            <hr class="my-1">
+                                                        </li>
+                                                    </ul>
+                                                </td>
+
+                                                <!-- Table data -->
+                                                <td class="text-center text-sm-start">
+                                                    {% if mover_quote_request.paid == 'Non payé' %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger">
+                                                            {{mover_quote_request.paid}}
+                                                        </span>
+                                                    {% elif mover_quote_request.paid == 'Payé' %}
+                                                        <span class="badge bg-success bg-opacity-10 text-success">
+                                                            {{mover_quote_request.paid}}
+                                                        </span>
+                                                    {% elif mover_quote_request.paid == 'Vérification en cours...' %}
+                                                        <span class="badge bg-warning bg-opacity-10 text-warning">
+                                                            {{mover_quote_request.paid}}
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <!-- Table body END -->
+                                </table>
+                            </div>
+                            <!-- Payout list table END -->
 
                         </div>
                         <!-- Card body START -->

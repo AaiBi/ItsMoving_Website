@@ -15,7 +15,7 @@ from base_app.models import Mover, Country, Mover_Country, Moving_Type1, Moving_
     Mover_Moving_Type2, Quote_Request, Mover_Quote_Request, Quote_Request_Rejected, Review
 from user.forms import EditUserForm, EditUserPasswordForm, EditMoverCountryForm, \
     EditMoverMovingType2Form, MoverQuoteRequestForm, EditUserPasswordForm1
-from user.models import Movers_Password_Recovery_Codes, Payment, Quote_Request_Payment
+from user.models import Movers_Password_Recovery_Codes, Payment
 
 
 def login_user(request):
@@ -223,8 +223,10 @@ def statistic(request):
 
 @login_required
 def quote_request(request):
+    today = datetime.date.today()
     mover = Mover.objects.filter(user_id=request.user.id).last()
-    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False)
+    mover_quote_requests_actual_month = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False,
+                                                                           created__month=today.month, rejected=False)
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
 
     if 'search' in request.POST:
@@ -245,8 +247,8 @@ def quote_request(request):
             messages.error(request, 'Cette référence n\'existe pas !')
             return render(request, 'user/profile/quote_request.html')
 
-    return render(request, 'user/profile/quote_request.html', {'mover': mover, 'mover_quote_requests':
-        mover_quote_requests, 'number_quote_request': number_quote_request})
+    return render(request, 'user/profile/quote_request.html', {'mover': mover, 'mover_quote_requests_actual_month':
+        mover_quote_requests_actual_month, 'number_quote_request': number_quote_request})
 
 
 @login_required
@@ -396,23 +398,17 @@ def edit_profile(request):
 def billing(request):
     mover = Mover.objects.filter(user_id=request.user.id).last()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
-    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False).order_by('-id')
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False).order_by('-id')[:30]
+    number_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False).order_by('-id').count()
     payment_info = Payment.objects.all().last()
     today = datetime.date.today()
-    quote_request_payments = Quote_Request_Payment.objects.filter(mover_id=mover.id)
+    # quote_request_payments = Quote_Request_Payment.objects.filter(mover_id=mover.id)
 
     # total payment for the actual month
     number_quote_request_paid_actual_month = \
         Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Payé", created__month=today.month). \
             count()
     sum_quote_request_paid_actual_month_htva = number_quote_request_paid_actual_month * payment_info.amount
-
-    # total payment for the last month
-    last_month = today.month - 1
-    number_quote_request_paid_last_month = \
-        Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Payé", created__month=last_month). \
-            count()
-    sum_quote_request_paid_last_month_htva = number_quote_request_paid_last_month * payment_info.amount
 
     # total payment unpaid
     number_quote_request_unpaid = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Non payé") \
@@ -440,10 +436,8 @@ def billing(request):
                                                          'mover_quote_requests': mover_quote_requests, 'payment_info':
                                                              payment_info, 'sum_quote_request_paid_actual_month_htva':
                                                              sum_quote_request_paid_actual_month_htva,
-                                                         'sum_quote_request_paid_last_month_htva':
-                                                             sum_quote_request_paid_last_month_htva,
                                                          'sum_quote_request_unpaid_htva': sum_quote_request_unpaid_htva,
-                                                         'quote_request_payments': quote_request_payments
+                                                         'number_requests': number_requests
                                                          })
 
 
@@ -694,6 +688,15 @@ def treated_quote_request(request):
                                                                              'number_quote_request': number_quote_request})
 
 
+@login_required
+def all_quote_requests(request, mover_pk):
+    mover = get_object_or_404(Mover, pk=mover_pk)
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False)
+
+    return render(request, 'user/quote_request/all_quote_requests.html', {'mover': mover, 'mover_quote_requests':
+        mover_quote_requests})
+
+
 ################################################ END  QUOTE REQUEST  ##################################################
 
 
@@ -734,67 +737,69 @@ def review_request(request, mover_request_pk):
 #################################################### BILLING  #####################################################
 
 def payment(request, mover_pk):
+    today = datetime.date.today()
+    last_month = today.month - 1
     mover = Mover.objects.filter(id=mover_pk).last()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover_pk, treated=False, rejected=False).count()
-    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover_pk, rejected=False, paid="Non payé").order_by('-id')
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover_pk, rejected=False, created__month=
+                                                                last_month, paid="Non payé").order_by('-id')
+    mover_quote_request_month_and_year = Mover_Quote_Request.objects.filter(mover_id=mover_pk, rejected=False,
+                                                                            created__month=last_month, paid="Non payé")\
+                                                                            .last()
     payment_info = Payment.objects.all().last()
-    quote_request_payments = Quote_Request_Payment.objects.filter(mover_id=mover_pk)
 
     # total payment unpaid
-    number_quote_request_unpaid = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Non payé") \
-        .count()
-    sum_quote_request_unpaid_htva = number_quote_request_unpaid * payment_info.amount
-    sum_quote_request_unpaid_tva = number_quote_request_unpaid * payment_info.tva
+    number_quote_request_unpaid_last_month = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False,
+                                                                                paid="Non payé", created__month=
+                                                                                last_month).count()
+    sum_quote_request_unpaid_htva = number_quote_request_unpaid_last_month * payment_info.amount
+    sum_quote_request_unpaid_tva = number_quote_request_unpaid_last_month * payment_info.tva
 
     return render(request, 'user/mover/billing/payment.html', {'mover': mover, 'number_quote_request':
-        number_quote_request, 'number_quote_request_unpaid': number_quote_request_unpaid,
+        number_quote_request, 'number_quote_request_unpaid_last_month': number_quote_request_unpaid_last_month,
                                                                'mover_quote_requests': mover_quote_requests,
-                                                               'quote_request_payments': quote_request_payments,
                                                                'payment_info': payment_info,
                                                                'sum_quote_request_unpaid_htva':
                                                                    sum_quote_request_unpaid_htva,
                                                                'sum_quote_request_unpaid_tva':
-                                                                   sum_quote_request_unpaid_tva
+                                                                   sum_quote_request_unpaid_tva,
+                                                               'mover_quote_request_month_and_year':
+                                                                   mover_quote_request_month_and_year
                                                                })
 
 
-def add_proof_payment(request, mover_pk):
+def payment_history(request, mover_pk):
     mover = Mover.objects.filter(id=mover_pk).last()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover_pk, treated=False, rejected=False).count()
-    payment_info = Payment.objects.all().last()
-    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover_pk, rejected=False, paid="Non payé")
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False).order_by('-id')
 
-    if request.method == 'POST':
-        # creation of the ref
-        characters = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-        characters.extend(list('1234567890'))
-        size = 10
-        ref = ''
-        for x in range(size):
-            ref += random.choice(characters)
-        ref = ref
-        image = request.FILES['image']
+    return render(request, 'user/mover/billing/payment_history.html', {'mover': mover, 'number_quote_request':
+        number_quote_request, 'mover_quote_requests': mover_quote_requests
+                                                                       })
 
-        # saving the payment proof
-        payment_proof = Quote_Request_Payment(ref=ref, image=image, payment=payment_info, validated=False, mover=mover)
-        payment_proof.save()
 
-        # editing the Mover_Quote_Request table
-        for mover_quote_request in mover_quote_requests:
-            if mover_quote_request.created <= payment_proof.created:
-                edit_mover_quote_request = Mover_Quote_Request(id=mover_quote_request.id, created=
-                mover_quote_request.created, quote_request_id=mover_quote_request.quote_request.id,
-                                                               treated=mover_quote_request.treated,
-                                                               rejected=mover_quote_request.rejected,
-                                                               paid='Vérification en cours...'
-                                                               , mover_id=mover_quote_request.mover.id)
-                edit_mover_quote_request.save()
+def paiement_done_actual_month(request, mover_pk):
+    today = datetime.date.today()
+    mover = Mover.objects.filter(id=mover_pk).last()
+    number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover_pk, treated=False, rejected=False).count()
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Payé",
+                                                              created__month=today.month).order_by('-id')
 
-        messages.success(request, 'Reçu de paiement ajouté avec succès !')
-        return redirect('add_proof_payment', mover_pk=mover_pk)
+    return render(request, 'user/mover/billing/paiement_done_actual_month.html', {'mover': mover, 'number_quote_request'
+    : number_quote_request, 'mover_quote_requests': mover_quote_requests
+                                                                                  })
 
-    return render(request, 'user/mover/billing/add_proof_payment.html', {'mover': mover, 'number_quote_request':
-        number_quote_request})
+
+def paiement_not_done(request, mover_pk):
+    today = datetime.date.today()
+    mover = Mover.objects.filter(id=mover_pk).last()
+    number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover_pk, treated=False, rejected=False).count()
+    mover_quote_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False, paid="Non payé",
+                                                              created__month=today.month).order_by('-id')
+
+    return render(request, 'user/mover/billing/paiement_not_done.html', {'mover': mover, 'number_quote_request'
+    : number_quote_request, 'mover_quote_requests': mover_quote_requests
+                                                                         })
 
 #################################################### END BILLING  #####################################################
 #################################################### END BILLING  #####################################################

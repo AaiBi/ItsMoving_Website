@@ -15,15 +15,3 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=5, decimal_places=2, default=6.5)
     created = models.DateTimeField(auto_now_add=True)
     tva = models.DecimalField(max_digits=5, decimal_places=2, default=1.36)
-
-
-class Quote_Request_Payment(models.Model):
-    ref = models.CharField(max_length=30)
-    created = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(upload_to='user/images/mover/payment/', blank=True, default="")
-    validated = models.BooleanField(default=False)
-    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, default="")
-    mover = models.ForeignKey(Mover, on_delete=models.CASCADE, default="")
-
-    def __str__(self):
-        return self.ref
