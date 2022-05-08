@@ -15,7 +15,7 @@ from base_app.models import Mover, Country, Mover_Country, Moving_Type1, Moving_
     Mover_Moving_Type2, Quote_Request, Mover_Quote_Request, Quote_Request_Rejected, Review
 from user.forms import EditUserForm, EditUserPasswordForm, EditMoverCountryForm, \
     EditMoverMovingType2Form, MoverQuoteRequestForm, EditUserPasswordForm1
-from user.models import Movers_Password_Recovery_Codes, Payment
+from user.models import Movers_Password_Recovery_Codes, Payment, Payment_Notification
 
 
 def login_user(request):
@@ -402,7 +402,7 @@ def billing(request):
     number_requests = Mover_Quote_Request.objects.filter(mover_id=mover.id, rejected=False).order_by('-id').count()
     payment_info = Payment.objects.all().last()
     today = datetime.date.today()
-    # quote_request_payments = Quote_Request_Payment.objects.filter(mover_id=mover.id)
+    payment_notification = Payment_Notification.objects.filter(mover_id=mover.id, created__date=today).last()
 
     # total payment for the actual month
     number_quote_request_paid_actual_month = \
@@ -432,12 +432,29 @@ def billing(request):
                       f'Lien de connexion : http://127.0.0.1:8000/user/login/'
             send_mail(subject, message, email_from, recipient_list, fail_silently=False)
 
+    if request.method == 'POST':
+        save_notification = Payment_Notification(mover_id=mover.id)
+        save_notification.save()
+
+        #sending notification payment email
+        subject = 'Notification de paiement !'
+        recipient_email = 'ayebi932@gmail.com'
+        email_from = 'ayebi932@gmail.com'
+        recipient_list = [recipient_email, ]
+        message = f'Vous venez de recevoir une notification de paiement de la part de ' \
+                  f'{save_notification.mover.company_name}.' \
+                  f'\nMerci !\n'
+        send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+        messages.success(request, 'Notification de paiement envoyé avec succès !')
+
     return render(request, 'user/profile/billing.html', {'mover': mover, 'number_quote_request': number_quote_request,
                                                          'mover_quote_requests': mover_quote_requests, 'payment_info':
                                                              payment_info, 'sum_quote_request_paid_actual_month_htva':
                                                              sum_quote_request_paid_actual_month_htva,
                                                          'sum_quote_request_unpaid_htva': sum_quote_request_unpaid_htva,
-                                                         'number_requests': number_requests
+                                                         'number_requests': number_requests, 'payment_notification':
+                                                             payment_notification
                                                          })
 
 

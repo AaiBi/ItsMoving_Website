@@ -181,7 +181,17 @@
                     <div class="card border rounded-3">
                         <!-- Card header START -->
                         <div class="card-header border-bottom">
-                            <h3 class="mb-0">Paiements</h3>
+                            <h3 class="mb-0" style="float: left;">Paiements</h3>
+
+                            <span style="float: right;">
+                                {% if not payment_notification %}
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        Aviez-vous effectuer un paiement ?
+                                        <button class="btn btn-primary" type="submit">Oui</button>
+                                    </form>
+                                {% endif %}
+                            </span>
                         </div>
                         <!-- Card header END -->
 

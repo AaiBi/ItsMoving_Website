@@ -15,3 +15,8 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=5, decimal_places=2, default=6.5)
     created = models.DateTimeField(auto_now_add=True)
     tva = models.DecimalField(max_digits=5, decimal_places=2, default=1.36)
+
+
+class Payment_Notification(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)

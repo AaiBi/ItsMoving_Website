@@ -20810,19 +20810,10 @@ html[dir=rtl] .choices__input {
                     <div class="col-md-5 col-lg-4">
                         <!-- logo -->
                         <a class="me-0" href="index.html">
-                            <img class="light-mode-item h-40px" src="{% static 'base_app/assets/images/logo.jpg' %}" alt="logo">
+                            <img class="light-mode-item h-240px" src="{% static 'base_app/assets/images/logo.jpg' %}" alt="logo">
                         </a>
                         <p></p>
 
-                        <!-- Newsletter -->
-                        <form class="row row-cols-lg-auto g-2">
-                            <div class="col-12">
-                                <input type="email" class="form-control" placeholder="Enter your email address">
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-dark m-0">S'abonner</button>
-                            </div>
-                        </form>
                     </div>
                     <!-- Widget 1 END -->
 
@@ -20843,20 +20834,27 @@ html[dir=rtl] .choices__input {
                             <!-- Link block -->
                             <div class="col-6 col-sm-4">
                                 <ul class="nav flex-column">
-                                    <li class="nav-item"><a class="nav-link" href="#">À propos</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#">Nous contacter</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#">S'inscrire en tant que déménageur</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#">Déménagement Bruxelles</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'mover_inscription' %}">
+                                            S'inscrire en tant que déménageur
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'devis_page1' %}">
+                                            Je veux déménager
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
 
                             <!-- Link block -->
                             <div class="col-6 col-sm-4">
                                 <ul class="nav flex-column">
-                                    <li class="nav-item"><a class="nav-link pt-0" href="#"><i class="fab fa-facebook-square text-facebook me-2"></i>Facebook</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#"><i class="fab fa-instagram-square text-instagram-gradient me-2"></i>Instagram</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#"><i class="fab fa-twitter-square text-twitter me-2"></i>Twitter</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#"><i class="fab fa-linkedin text-linkedin me-2"></i>Linkedin</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'contact_page' %}">
+                                            Nous contacter
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -20872,13 +20870,17 @@ html[dir=rtl] .choices__input {
                     <div class="col-12">
                         <div class="d-md-flex justify-content-between align-items-center pt-2 pb-4 text-center">
                             <!-- copyright text -->
-                            <div class="text-primary-hover"> Copyrights <a href="#" class="text-reset">©2021 Eduport</a>. All rights reserved. </div>
+                            <div class="text-primary-hover"> Copyrights ©2021. Made by
+                                <a href="https://www.linkedin.com/in/ibrahima-ba-65255a1b3/" class="text-reset">
+                                     Ibrahima Ba
+                                </a>. All rights reserved.
+                            </div>
                             <!-- copyright links-->
                             <div class="mt-3 mt-md-0">
                                 <ul class="list-inline mb-0">
-                                    <li class="list-inline-item"><a class="nav-link" href="#">Terms of use</a></li>
-                                    <li class="list-inline-item"><a class="nav-link" href="#">Privacy policy</a></li>
-                                    <li class="list-inline-item pe-0"><a class="nav-link" href="#">Cookies</a></li>
+                                    <li class="list-inline-item"><a class="nav-link">Terms of use</a></li>
+                                    <li class="list-inline-item"><a class="nav-link">Privacy policy</a></li>
+                                    <li class="list-inline-item pe-0"><a class="nav-link">Cookies</a></li>
                                 </ul>
                             </div>
                         </div>
