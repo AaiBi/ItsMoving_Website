@@ -1,4 +1,6 @@
 import datetime
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -9,6 +11,10 @@ from base_app.models import Mover, Moving_Type1, Moving_Type2, Mover_Moving_Type
     Number_Mover_Quote_Request_PerDay, Number_Distribution_Quote_Request, Movers_Email
 import random
 
+#html email
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 def index(request):
     return render(request, 'base_app/index.html')
@@ -117,30 +123,34 @@ def mover_inscription_step2(request, new_user_id, mover_id):
                     else:
                         if mover_info.moving_type1.name == 'National':
                             # Sending email
-                            subject = 'Bienvenue chez ItsMoving'
+                            subject = 'Bienvenu chez ItsMoving'
                             recipient_email = mover_info.user.email
+                            recipient_last_name = mover_info.user.last_name
                             email_from = mover_info.user.email
-                            recipient_list = [recipient_email, ]
 
-                            message = 'Félicitations !\nVotre compte a été crée avec succès, il sera activer d\'ici ' \
-                                      '24h !'
-                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+                            # sending html mail
+                            html_content = render_to_string("base_app/inscription_email_template.html",
+                                                            {'last_name': recipient_last_name,
+                                                             'email_from': email_from})
+                            text_centent = strip_tags(html_content)
+                            email = EmailMultiAlternatives(
+                                # subject
+                                subject,
+                                # content
+                                text_centent,
+                                # from email
+                                settings.EMAIL_HOST_USER,
+                                # receiver list
+                                [recipient_email]
+                            )
+                            email.attach_alternative(html_content, "text/html")
+                            email.send()
 
                             messages.success(request,
-                                             'Félicitations, l\'inscription est terminée, il ne vous reste qu\'à '
-                                             'renseigner les regions dans lesquelles vous allez intervenir !')
+                                             'Félicitations, Votre compte a été crée avec succès, il sera activé d\'ici '
+                                             '24h !')
                             return redirect('login_user')
                         else:
-                            # Sending email
-                            subject = 'Bienvenue chez ItsMoving'
-                            recipient_email = mover_info.user.email
-                            email_from = mover_info.user.email
-                            recipient_list = [recipient_email, ]
-
-                            message = 'Félicitations !\nVotre compte a été crée avec succès, il sera activer d\'ici ' \
-                                      '24h !'
-                            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
-
                             savedata = Mover_Moving_Type2(moving_type2_name=data, mover=mover_info)
                             savedata.save()
                         continue
@@ -164,6 +174,7 @@ def mover_inscription_step3(request, new_user_id, mover_id):
         if request.method == 'POST':
             country_name = request.POST.getlist('country_name[]')
             if country_name:
+                send_email = False
                 # Filling Mover_Moving_Type2 table
                 for data in country_name:
                     if Mover_Country.objects.filter(country_name=data, mover=mover_info):
@@ -173,7 +184,32 @@ def mover_inscription_step3(request, new_user_id, mover_id):
                         country_info = Country.objects.filter(name=data).last()
                         savedata = Mover_Country(country_name=data, country=country_info, mover=mover_info)
                         savedata.save()
+                        send_email = True
 
+                if send_email:
+                    # Sending email
+                    subject = 'Bienvenu chez ItsMoving'
+                    recipient_email = mover_info.user.email
+                    recipient_last_name = mover_info.user.last_name
+                    email_from = mover_info.user.email
+
+                    # sending html mail
+                    html_content = render_to_string("base_app/inscription_email_template.html",
+                                                    {'last_name': recipient_last_name,
+                                                     'email_from': email_from})
+                    text_centent = strip_tags(html_content)
+                    email = EmailMultiAlternatives(
+                        # subject
+                        subject,
+                        # content
+                        text_centent,
+                        # from email
+                        settings.EMAIL_HOST_USER,
+                        # receiver list
+                        [recipient_email]
+                    )
+                    email.attach_alternative(html_content, "text/html")
+                    email.send()
                 messages.success(request,
                                  'Félicitations, l\'inscription est terminée, il ne vous reste qu\'à renseigner'
                                  ' les regions dans lesquelles vous allez intervenir !')
@@ -192,19 +228,37 @@ def contact_page(request):
     if request.method == "POST":
         full_name = request.POST.get('full_name')
 
-        recipient_email = 'sheyp.sarl@gmail.com'
+        recipient_email = 'ayebi932@gmail.com'
 
         email_from = request.POST.get('email')
         message = request.POST.get('message')
         recipient_list = [recipient_email, ]
 
-        message1 = f'Nouveau message de la part de {full_name} \n Email: {email_from} \n' \
-                   f'Contenu du message: {message}'
-        send_mail(full_name, message1, email_from, recipient_list, fail_silently=False)
+        #message1 = f'Nouveau message de la part de {full_name} \n Email: {email_from} \n' \
+        #           f'Contenu du message: {message}'
+        #send_mail(full_name, message1, email_from, recipient_list, fail_silently=False)
+
+        #sending html mail
+        html_content = render_to_string("base_app/email_template.html", {'title': 'test email', 'full_name': full_name,
+                                                                         'email_from': email_from, 'message':
+                                                                         message})
+        text_centent = strip_tags(html_content)
+        email = EmailMultiAlternatives(
+            #subject
+            "testing",
+            #content
+            text_centent,
+            #from email
+            settings.EMAIL_HOST_USER,
+            #receiver list
+            [recipient_email]
+        )
+        email.attach_alternative(html_content, "text/html")
+        email.send()
 
         messages.success(request, f'Votre message à été envoyé avec succès, nous vous contacterons très bientôt !')
 
-    return render(request, 'base_app/contact_page.html')
+    return render(request, 'base_app/contact_page.html', {'title': 'send an email'})
 
 
 def devis_page1(request):
@@ -486,15 +540,36 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                         if not Movers_Email.objects.filter(quote_request__id=
                                                                        savedata2.quote_request.id,
                                                                        mover__id=savedata2.mover.id):
+                                            # Sending email
                                             subject = 'ItsMoving - Nouvelle demande de devis'
                                             recipient_email = mover_info.user.email
+                                            recipient_last_name = mover_info.user.last_name
+                                            company_name = mover_info.company_name
+                                            moving_type_name_received = moving_type1.name
                                             email_from = mover_info.user.email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                      f'plus de détails. Merci !'
-                                            send_mail(subject, message, email_from, recipient_list,
-                                                      fail_silently=False)
+                                            message = f'Une nouvelle demande de devis {moving_type_name_received} ' \
+                                                      f'est disponible, Veuillez vous connecter à votre compte afin ' \
+                                                      f'de consulter les détails.'
+
+                                            # sending html mail
+                                            html_content = render_to_string("base_app/quote_request_notification_email_template.html",
+                                                                            {'last_name': recipient_last_name,
+                                                                             'company_name': company_name,
+                                                                             'message': message,
+                                                                             'email_from': email_from})
+                                            text_centent = strip_tags(html_content)
+                                            email = EmailMultiAlternatives(
+                                                # subject
+                                                subject,
+                                                # content
+                                                text_centent,
+                                                # from email
+                                                settings.EMAIL_HOST_USER,
+                                                # receiver list
+                                                [recipient_email]
+                                            )
+                                            email.attach_alternative(html_content, "text/html")
+                                            email.send()
 
                                             save_mover_email = Movers_Email(quote_request_id=
                                                                             savedata2.quote_request.id,
@@ -550,15 +625,36 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                         if not Movers_Email.objects.filter(quote_request__id=
                                                                        savedata2.quote_request.id,
                                                                        mover__id=savedata2.mover.id):
+                                            # Sending email
                                             subject = 'ItsMoving - Nouvelle demande de devis'
                                             recipient_email = mover_info.user.email
+                                            recipient_last_name = mover_info.user.last_name
+                                            company_name = mover_info.company_name
+                                            moving_type_name_received = moving_type1.name
                                             email_from = mover_info.user.email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                      f'plus de détails. Merci !'
-                                            send_mail(subject, message, email_from, recipient_list,
-                                                      fail_silently=False)
+                                            message = f'Une nouvelle demande de devis {moving_type_name_received} ' \
+                                                      f'est disponible, Veuillez vous connecter à votre compte afin ' \
+                                                      f'de consulter les détails.'
+
+                                            # sending html mail
+                                            html_content = render_to_string("base_app/quote_request_notification_email_template.html",
+                                                                            {'last_name': recipient_last_name,
+                                                                             'company_name': company_name,
+                                                                             'message': message,
+                                                                             'email_from': email_from})
+                                            text_centent = strip_tags(html_content)
+                                            email = EmailMultiAlternatives(
+                                                # subject
+                                                subject,
+                                                # content
+                                                text_centent,
+                                                # from email
+                                                settings.EMAIL_HOST_USER,
+                                                # receiver list
+                                                [recipient_email]
+                                            )
+                                            email.attach_alternative(html_content, "text/html")
+                                            email.send()
 
                                             save_mover_email = Movers_Email(quote_request_id=
                                                                             savedata2.quote_request.id,
@@ -634,15 +730,37 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                 if Movers_Email.objects.filter(quote_request__id=
                                                                                savedata2.quote_request.id,
                                                                                mover__id=savedata2.mover.id):
+                                                    # Sending email
                                                     subject = 'ItsMoving - Nouvelle demande de devis'
                                                     recipient_email = mover_info.user.email
+                                                    recipient_last_name = mover_info.user.last_name
+                                                    company_name = mover_info.company_name
+                                                    moving_type_name_received = moving_type1.name
                                                     email_from = mover_info.user.email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                              f'plus de détails. Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    message = f'Une nouvelle demande de devis {moving_type_name_received} ' \
+                                                              f'est disponible, Veuillez vous connecter à votre compte afin ' \
+                                                              f'de consulter les détails.'
+
+                                                    # sending html mail
+                                                    html_content = render_to_string(
+                                                        "base_app/quote_request_notification_email_template.html",
+                                                        {'last_name': recipient_last_name,
+                                                         'company_name': company_name,
+                                                         'message': message,
+                                                         'email_from': email_from})
+                                                    text_centent = strip_tags(html_content)
+                                                    email = EmailMultiAlternatives(
+                                                        # subject
+                                                        subject,
+                                                        # content
+                                                        text_centent,
+                                                        # from email
+                                                        settings.EMAIL_HOST_USER,
+                                                        # receiver list
+                                                        [recipient_email]
+                                                    )
+                                                    email.attach_alternative(html_content, "text/html")
+                                                    email.send()
 
                                                     save_mover_email = Movers_Email(quote_request_id=
                                                                                     savedata2.quote_request.id,
@@ -702,15 +820,37 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                                mover__id=savedata2.mover.id):
                                                     continue
                                                 else:
+                                                    # Sending email
                                                     subject = 'ItsMoving - Nouvelle demande de devis'
                                                     recipient_email = mover_info.user.email
+                                                    recipient_last_name = mover_info.user.last_name
+                                                    company_name = mover_info.company_name
+                                                    moving_type_name_received = moving_type1.name
                                                     email_from = mover_info.user.email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                              f'plus de détails. Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    message = f'Une nouvelle demande de devis {moving_type_name_received} ' \
+                                                              f'est disponible, Veuillez vous connecter à votre compte afin ' \
+                                                              f'de consulter les détails.'
+
+                                                    # sending html mail
+                                                    html_content = render_to_string(
+                                                        "base_app/quote_request_notification_email_template.html",
+                                                        {'last_name': recipient_last_name,
+                                                         'company_name': company_name,
+                                                         'message': message,
+                                                         'email_from': email_from})
+                                                    text_centent = strip_tags(html_content)
+                                                    email = EmailMultiAlternatives(
+                                                        # subject
+                                                        subject,
+                                                        # content
+                                                        text_centent,
+                                                        # from email
+                                                        settings.EMAIL_HOST_USER,
+                                                        # receiver list
+                                                        [recipient_email]
+                                                    )
+                                                    email.attach_alternative(html_content, "text/html")
+                                                    email.send()
 
                                                     save_mover_email = Movers_Email(quote_request_id=
                                                                                     savedata2.quote_request.id,
@@ -722,15 +862,31 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
 
                     # Sending email to the client
                     for quote_request in Quote_Request.objects.filter(email_sent_to_customer=False):
+                        # Sending email
                         subject = 'ItsMoving - Accusé de reception'
                         recipient_email = quote_request.email
+                        recipient_last_name = quote_request.lastname
                         email_from = quote_request.email
-                        recipient_list = [recipient_email, ]
-                        message = f'Bonjour Mr/Mme {quote_request.lastname}!\nVotre demande de devis #{quote_request.ref}' \
-                                  f' a bien été reçu,' \
-                                  f' vous aurez un retour très bientôt, Merci !'
-                        send_mail(subject, message, email_from, recipient_list,
-                                  fail_silently=False)
+                        message = f'Votre demande de devis a bien été reçu, vous aurez un retour de 5 de nos ' \
+                                  f'professionnels dans les heures à venir.'
+
+                        # sending html mail
+                        html_content = render_to_string("base_app/quote_request_notification_email_template.html",
+                                                        {'last_name': recipient_last_name, 'message': message,
+                                                         'email_from': email_from})
+                        text_centent = strip_tags(html_content)
+                        email = EmailMultiAlternatives(
+                            # subject
+                            subject,
+                            # content
+                            text_centent,
+                            # from email
+                            settings.EMAIL_HOST_USER,
+                            # receiver list
+                            [recipient_email]
+                        )
+                        email.attach_alternative(html_content, "text/html")
+                        email.send()
 
                         # we modify the quote to mark the email as sent
                         edit_quote_request_email_sent = Quote_Request(ref=quote_request.ref, country_id=
@@ -862,15 +1018,37 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                         if not Movers_Email.objects.filter(quote_request__id=savedata2.quote_request.id,
                                                                            mover__id=
                                                                            savedata2.mover.id):
+                                            # Sending email
                                             subject = 'ItsMoving - Nouvelle demande de devis'
                                             recipient_email = mover_info.user.email
+                                            recipient_last_name = mover_info.user.last_name
+                                            company_name = mover_info.company_name
+                                            moving_type_name_received = moving_type1.name
                                             email_from = mover_info.user.email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                      f'plus de détails. Merci !'
-                                            send_mail(subject, message, email_from, recipient_list,
-                                                      fail_silently=False)
+                                            message = f'Une nouvelle demande de devis {moving_type_name_received} ' \
+                                                      f'est disponible, Veuillez vous connecter à votre compte afin ' \
+                                                      f'de consulter les détails.'
+
+                                            # sending html mail
+                                            html_content = render_to_string(
+                                                "base_app/quote_request_notification_email_template.html",
+                                                {'last_name': recipient_last_name,
+                                                 'company_name': company_name,
+                                                 'message': message,
+                                                 'email_from': email_from})
+                                            text_centent = strip_tags(html_content)
+                                            email = EmailMultiAlternatives(
+                                                # subject
+                                                subject,
+                                                # content
+                                                text_centent,
+                                                # from email
+                                                settings.EMAIL_HOST_USER,
+                                                # receiver list
+                                                [recipient_email]
+                                            )
+                                            email.attach_alternative(html_content, "text/html")
+                                            email.send()
 
                                             save_mover_email = Movers_Email(quote_request_id=
                                                                             savedata2.quote_request.id,
@@ -931,15 +1109,37 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                                        mover__id=savedata2.mover.id):
                                             continue
                                         else:
+                                            # Sending email
                                             subject = 'ItsMoving - Nouvelle demande de devis'
                                             recipient_email = mover_info.user.email
+                                            recipient_last_name = mover_info.user.last_name
+                                            company_name = mover_info.company_name
+                                            moving_type_name_received = moving_type1.name
                                             email_from = mover_info.user.email
-                                            recipient_list = [recipient_email, ]
-                                            message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                      f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                      f'plus de détails. Merci !'
-                                            send_mail(subject, message, email_from, recipient_list,
-                                                      fail_silently=False)
+                                            message = f'Une nouvelle demande de devis {moving_type_name_received} ' \
+                                                      f'est disponible, Veuillez vous connecter à votre compte afin ' \
+                                                      f'de consulter les détails.'
+
+                                            # sending html mail
+                                            html_content = render_to_string(
+                                                "base_app/quote_request_notification_email_template.html",
+                                                {'last_name': recipient_last_name,
+                                                 'company_name': company_name,
+                                                 'message': message,
+                                                 'email_from': email_from})
+                                            text_centent = strip_tags(html_content)
+                                            email = EmailMultiAlternatives(
+                                                # subject
+                                                subject,
+                                                # content
+                                                text_centent,
+                                                # from email
+                                                settings.EMAIL_HOST_USER,
+                                                # receiver list
+                                                [recipient_email]
+                                            )
+                                            email.attach_alternative(html_content, "text/html")
+                                            email.send()
 
                                             save_mover_email = Movers_Email(quote_request_id=
                                                                             savedata2.quote_request.id,
@@ -1014,15 +1214,37 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                 if not Movers_Email.objects.filter(quote_request__id=
                                                                                    savedata2.quote_request.id,
                                                                                    mover__id=savedata2.mover.id):
+                                                    # Sending email
                                                     subject = 'ItsMoving - Nouvelle demande de devis'
                                                     recipient_email = mover_info.user.email
+                                                    recipient_last_name = mover_info.user.last_name
+                                                    company_name = mover_info.company_name
+                                                    moving_type_name_received = moving_type1.name
                                                     email_from = mover_info.user.email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                              f'plus de détails. Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    message = f'Une nouvelle demande de devis {moving_type_name_received} ' \
+                                                              f'est disponible, Veuillez vous connecter à votre compte afin ' \
+                                                              f'de consulter les détails.'
+
+                                                    # sending html mail
+                                                    html_content = render_to_string(
+                                                        "base_app/quote_request_notification_email_template.html",
+                                                        {'last_name': recipient_last_name,
+                                                         'company_name': company_name,
+                                                         'message': message,
+                                                         'email_from': email_from})
+                                                    text_centent = strip_tags(html_content)
+                                                    email = EmailMultiAlternatives(
+                                                        # subject
+                                                        subject,
+                                                        # content
+                                                        text_centent,
+                                                        # from email
+                                                        settings.EMAIL_HOST_USER,
+                                                        # receiver list
+                                                        [recipient_email]
+                                                    )
+                                                    email.attach_alternative(html_content, "text/html")
+                                                    email.send()
 
                                                     save_mover_email = Movers_Email(quote_request_id=
                                                                                     savedata2.quote_request.id,
@@ -1078,15 +1300,37 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                 if not Movers_Email.objects.filter(quote_request__id=
                                                                                    savedata2.quote_request.id,
                                                                                    mover__id=savedata2.mover.id):
+                                                    # Sending email
                                                     subject = 'ItsMoving - Nouvelle demande de devis'
                                                     recipient_email = mover_info.user.email
+                                                    recipient_last_name = mover_info.user.last_name
+                                                    company_name = mover_info.company_name
+                                                    moving_type_name_received = moving_type1.name
                                                     email_from = mover_info.user.email
-                                                    recipient_list = [recipient_email, ]
-                                                    message = f'Bonjour {mover_info.company_name}!\nVous venez de recevoir une ' \
-                                                              f'nouvelle demande de devis, veuillez accéder à votre compte pour ' \
-                                                              f'plus de détails. Merci !'
-                                                    send_mail(subject, message, email_from, recipient_list,
-                                                              fail_silently=False)
+                                                    message = f'Une nouvelle demande de devis {moving_type_name_received} ' \
+                                                              f'est disponible, Veuillez vous connecter à votre compte afin ' \
+                                                              f'de consulter les détails.'
+
+                                                    # sending html mail
+                                                    html_content = render_to_string(
+                                                        "base_app/quote_request_notification_email_template.html",
+                                                        {'last_name': recipient_last_name,
+                                                         'company_name': company_name,
+                                                         'message': message,
+                                                         'email_from': email_from})
+                                                    text_centent = strip_tags(html_content)
+                                                    email = EmailMultiAlternatives(
+                                                        # subject
+                                                        subject,
+                                                        # content
+                                                        text_centent,
+                                                        # from email
+                                                        settings.EMAIL_HOST_USER,
+                                                        # receiver list
+                                                        [recipient_email]
+                                                    )
+                                                    email.attach_alternative(html_content, "text/html")
+                                                    email.send()
 
                                                     save_mover_email = Movers_Email(quote_request_id=
                                                                                     savedata2.quote_request.id,
@@ -1098,15 +1342,31 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
 
                 # Sending email to the client
                 for quote_request in Quote_Request.objects.filter(email_sent_to_customer=False):
+                    # Sending email
                     subject = 'ItsMoving - Accusé de reception'
                     recipient_email = quote_request.email
+                    recipient_last_name = quote_request.lastname
                     email_from = quote_request.email
-                    recipient_list = [recipient_email, ]
-                    message = f'Bonjour Mr/Mme {quote_request.lastname}!\nVotre demande de devis #{quote_request.ref}' \
-                              f' a bien été reçu,' \
-                              f' vous aurez un retour très bientôt, Merci !'
-                    send_mail(subject, message, email_from, recipient_list,
-                              fail_silently=False)
+                    message = f'Votre demande de devis a bien été reçu, vous aurez un retour de 5 de nos ' \
+                              f'professionnels dans les heures à venir.'
+
+                    # sending html mail
+                    html_content = render_to_string("base_app/quote_request_notification_email_template.html",
+                                                    {'last_name': recipient_last_name, 'message': message,
+                                                     'email_from': email_from})
+                    text_centent = strip_tags(html_content)
+                    email = EmailMultiAlternatives(
+                        # subject
+                        subject,
+                        # content
+                        text_centent,
+                        # from email
+                        settings.EMAIL_HOST_USER,
+                        # receiver list
+                        [recipient_email]
+                    )
+                    email.attach_alternative(html_content, "text/html")
+                    email.send()
 
                     # we modify the quote to mark the email as sent
                     edit_quote_request_email_sent = Quote_Request(ref=quote_request.ref, country_id=
