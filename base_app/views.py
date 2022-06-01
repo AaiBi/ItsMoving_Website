@@ -709,7 +709,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                 savedata2.save()
 
                                                 # Sending email to the Mover
-                                                if Movers_Email.objects.filter(quote_request__id=
+                                                if not Movers_Email.objects.filter(quote_request__id=
                                                                                savedata2.quote_request.id,
                                                                                mover__id=savedata2.mover.id):
                                                     # Sending email
@@ -797,11 +797,9 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                                 savedata2.save()
 
                                                 # Sending email to the Mover
-                                                if Movers_Email.objects.filter(quote_request__id=
+                                                if not Movers_Email.objects.filter(quote_request__id=
                                                                                savedata2.quote_request.id,
                                                                                mover__id=savedata2.mover.id):
-                                                    continue
-                                                else:
                                                     # Sending email
                                                     subject = 'ItsMoving - Nouvelle demande de devis'
                                                     recipient_email = mover_info.user.email
@@ -1086,11 +1084,9 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, City_Depa
                                         savedata2.save()
 
                                         # Sending email to the Mover
-                                        if Movers_Email.objects.filter(quote_request__id=
+                                        if not Movers_Email.objects.filter(quote_request__id=
                                                                        savedata2.quote_request.id,
                                                                        mover__id=savedata2.mover.id):
-                                            continue
-                                        else:
                                             # Sending email
                                             subject = 'ItsMoving - Nouvelle demande de devis'
                                             recipient_email = mover_info.user.email
