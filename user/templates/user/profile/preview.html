@@ -136,7 +136,7 @@
 						{% if mover.moving_type1.name == 'International' and not mover_countries %}
 							<div class="alert alert-danger alert-dismissible fade show" role="alert">
 								Important ! Votre profil est incomplet, veuillez <b>définir les pays dans lesquels
-								vous allez intervenir à l'international.</b>
+								vous allez intervenir.</b>
 							</div>
 						{% endif %}
 
@@ -344,7 +344,7 @@
 											</li>
 											<li class="list-group-item px-0">
 												<span class="h6 fw-light"><i class="fas fa-fw fa-headphones text-primary me-1 me-sm-3"></i>Téléphone:</span>
-												<span>{{mover.company_phone_number_indicatif}} {{mover.employee_number}}</span>
+												<span>{{mover.company_phone_number}}</span>
 											</li>
 											<li class="list-group-item px-0">
 												<span class="h6 fw-light"><i class="fas fa-fw fa-globe text-primary me-1 me-sm-3"></i>Site web:</span>
@@ -388,7 +388,7 @@
 										<hr>
 										{% if mover.moving_type1.name == "National" %}
 											<h3 class="mb-0" align="center">Zone d'intervention</h3>
-											<div class="accordion accordion-icon accordion-shadow mt-4 text-start position-relative" id="accordionExample5">
+											<div class="accordion accordion-shadow mt-4 text-start position-relative" id="accordionExample5">
 
 												<!-- Item -->
 												<div class="accordion-item mb-3">
@@ -401,7 +401,7 @@
 											</div>
 										{% else %}
 											<h3 class="mb-0" align="center">Zones d'intervention</h3>
-											<div class="accordion accordion-icon accordion-shadow mt-4 text-start position-relative" id="accordionExample2">
+											<div class="accordion accordion-shadow mt-4 text-start position-relative" id="accordionExample2">
 
 											{% for country in countries %}
 												{% for mover_country in mover_countries %}
@@ -413,28 +413,6 @@
 																	{{country.name}}
 																</button>
 															</h5>
-															<!-- Body -->
-															<div id="collapse-{{country.id}}" class="accordion-collapse collapse" aria-labelledby="heading-{{country.id}}" data-bs-parent="#accordionExample2">
-																<div class="accordion-body mt-3">
-																	<p>
-																	{% for mover_region in mover_regions %}
-																		{% for region in regions %}
-																			{% if mover_region.region_id == region.id %}
-
-																				{% if mover_region.country_id == country.id %}
-
-																					<h3 class="badge bg-info bg-opacity-10 text-info">
-																						{{region.name}}
-																					</h3></br>
-
-																				{% endif %}
-
-																			{% endif %}
-																		{% endfor %}
-																	{% endfor %}
-																	</p>
-																</div>
-															</div>
 														</div>
 													{%endif%}
 												{%endfor%}

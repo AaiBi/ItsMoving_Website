@@ -26,19 +26,21 @@
                                 <tbody>
                                     <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                         <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 20px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                                            Bonjour Mr {{last_name|capfirst}}!
+                                            Bonjour Mr/Mme {{last_name|capfirst}}!
                                         </td>
                                     </tr>
                                     <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                         <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 20px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
                                             <p>
-                                                {{message}}
+                                                Nous avons besoin de votre avis à propos de votre dernier déménagement.
+                                                Cliquer sur ce lien ci-dessous pour laisser une note et nous aider à
+                                                améliorer nos services:
                                             </p>
 
                                             <p>
                                                 <center>
-                                                    <a href="https://www.itsmoving.be/user/login/" class="btn-primary" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #f7c32e; margin: 0; border-color: #f7c32e; border-style: solid; border-width: 8px 16px;">
-                                                       Accéder à mon compte
+                                                    <a href="https://www.itsmoving.be/user/reviews/{{mover_quote_request_id}}" class="btn-primary" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #f7c32e; margin: 0; border-color: #f7c32e; border-style: solid; border-width: 8px 16px;">
+                                                       Accéder à la page de notation
                                                     </a>
                                                 </center>
                                             </p>

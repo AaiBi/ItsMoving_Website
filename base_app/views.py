@@ -228,33 +228,15 @@ def contact_page(request):
     if request.method == "POST":
         full_name = request.POST.get('full_name')
 
-        recipient_email = 'ayebi932@gmail.com'
-
+        recipient_email = 'support@itsmoving.be'
+        subject = "Bien";
         email_from = request.POST.get('email')
         message = request.POST.get('message')
         recipient_list = [recipient_email, ]
 
-        #message1 = f'Nouveau message de la part de {full_name} \n Email: {email_from} \n' \
-        #           f'Contenu du message: {message}'
-        #send_mail(full_name, message1, email_from, recipient_list, fail_silently=False)
-
-        #sending html mail
-        html_content = render_to_string("base_app/email_template.html", {'title': 'test email', 'full_name': full_name,
-                                                                         'email_from': email_from, 'message':
-                                                                         message})
-        text_centent = strip_tags(html_content)
-        email = EmailMultiAlternatives(
-            #subject
-            "testing",
-            #content
-            text_centent,
-            #from email
-            settings.EMAIL_HOST_USER,
-            #receiver list
-            [recipient_email]
-        )
-        email.attach_alternative(html_content, "text/html")
-        email.send()
+        message1 = f'Nouveau message de la part de {full_name} \n ' \
+                   f'Contenu du message: {message}'
+        send_mail(subject, message1, email_from, recipient_list)
 
         messages.success(request, f'Votre message à été envoyé avec succès, nous vous contacterons très bientôt !')
 

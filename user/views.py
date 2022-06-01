@@ -1,15 +1,18 @@
-from datetime import date
+
+from django.conf import settings as conf_settings
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 import random
-
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db.models import Count, Sum
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from base_app.forms import Mover_Form
 from base_app.models import Mover, Country, Mover_Country, Moving_Type1, Moving_Type2, \
     Mover_Moving_Type2, Quote_Request, Mover_Quote_Request, Quote_Request_Rejected, Review
@@ -345,36 +348,6 @@ def edit_profile(request):
         else:
             mover_form = Mover_Form(instance=mover)
 
-    if 'social_media_link_form' in request.POST:
-        if request.method == 'POST':
-            # print(request.POST.get('ref'))
-            # print(request.POST.get('company_name'))
-            # print(request.POST.get('company_phone_number'))
-            # print(request.POST.get('Adresse'))
-            # print(request.POST.get('employee_number'))
-            # print(request.POST.get('number_max_quote_request'))
-            # print(request.POST.get('website'))
-            # print(request.POST.get('TVA_number'))
-            # print(request.POST.get('Postal_Code'))
-            # print(request.POST.get('City'))
-            # print(request.POST.get('company_statut'))
-            # print(request.POST.get('company_description'))
-            # print(request.POST.get('logo'))
-            # print(request.POST.get('validated'))
-            # print(request.POST.get('activated'))
-            # print(request.POST.get('country'))
-            try:
-                mover_form = Mover_Form(request.POST, instance=mover)
-                if mover_form.is_valid():
-                    mover_form.save()
-                    messages.success(request, 'Modification effectué avec succès !')
-                    return redirect('edit_profile')
-            except ValueError:
-                return render(request, 'user/profile/edit_profile.html', {'mover': mover, 'mover_form': mover_form,
-                                                                          'error': 'Mauvaises données !'})
-        else:
-            mover_form = Mover_Form(instance=mover)
-
     if 'password_edit' in request.POST:
         if request.method == 'POST':
             password_edit_form = EditUserPasswordForm(request.user, request.POST)
@@ -604,12 +577,16 @@ def quote_request_settings(request):
 
     if request.method == 'POST':
         form = Mover_Form(request.POST, instance=mover)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.country = get_object_or_404(Country, id=request.POST.get('country'))
-            form.moving_type1 = get_object_or_404(Moving_Type1, id=request.POST.get('moving_type1'))
-            form.save()
-            messages.success(request, 'Modification effectuée !')
+        if int(request.POST.get('number_max_quote_request')) > 0:
+            if form.is_valid():
+                form = form.save(commit=False)
+                form.country = get_object_or_404(Country, id=request.POST.get('country'))
+                form.moving_type1 = get_object_or_404(Moving_Type1, id=request.POST.get('moving_type1'))
+                form.save()
+                messages.success(request, 'Modification effectuée !')
+                return redirect('quote_request_settings')
+        else:
+            messages.error(request, 'Veuillez entrer un nombre supérieur à 0 !')
             return redirect('quote_request_settings')
 
     return render(request, 'user/mover/settings/quote_request_settings.html', {'mover': mover, 'form': form,
@@ -646,16 +623,30 @@ def mover_request_treated(request, mover_request_pk):
             company_name = mover_quote_request.mover.company_name
             customer_lastname = mover_quote_request.quote_request.lastname
 
+            # Sending email
             subject = f'Comment s\'est passé votre déménagement avec {company_name} ?'
             recipient_email = mover_quote_request.quote_request.email
             email_from = mover_quote_request.quote_request.email
-            recipient_list = [recipient_email, ]
             mover_quote_request_id = mover_quote_request.id
-            message = f'Bonjour Mr/Mme {customer_lastname}!\n Nous avions besoin de votre avis à propos de votre dernier' \
-                      f' déménagement.\n' \
-                      f'Cliquer sur ce lien pour nous donner votre avis et nous aider à améliorer nos services: \n' \
-                      f'https://itsmoving.pythonanywhere.com/user/reviews/{mover_quote_request_id}'
-            send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
+            # sending html mail
+            html_content = render_to_string("user/notation_email_template.html",
+                                            {'last_name': customer_lastname,
+                                             'mover_quote_request_id': mover_quote_request_id,
+                                             'email_from': email_from})
+            text_centent = strip_tags(html_content)
+            email = EmailMultiAlternatives(
+                # subject
+                subject,
+                # content
+                text_centent,
+                # from email
+                conf_settings.EMAIL_HOST_USER,
+                # receiver list
+                [recipient_email]
+            )
+            email.attach_alternative(html_content, "text/html")
+            email.send()
 
             form.save()
             messages.success(request, 'Vous aviez valider que cette demande a été traitée avec succès !')
@@ -681,7 +672,24 @@ def mover_request_rejected(request, mover_request_pk):
                 else:
                     savedata = Quote_Request_Rejected(reason=reason, mover_quote_request=mover_quote_request)
                     form.save()
+
+                    # Sending email
+                    # Sending email
+                    subject = 'Rejet de demande de Devis'
+                    recipient_email = 'support@itsmoving.be'
+                    company_name = mover_quote_request.mover.company_name
+                    quote_request_ref = mover_quote_request.quote_request.ref
+                    email_from = 'support@itsmoving.be'
+                    recipient_list = [recipient_email, ]
+
+                    message = f'Bonjour !\n' \
+                              f'La demande de devis avec la référence {quote_request_ref} a été rejetée par ' \
+                              f'{company_name}.\n' \
+                              f'Veuillez vous connecter pour plus de details.'
+                    send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+
                     savedata.save()
+
                     messages.success(request, 'Demande rejetée avec succès !')
                     return redirect('quote_request')
 

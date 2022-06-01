@@ -12,9 +12,9 @@ class Movers_Password_Recovery_Codes(models.Model):
 
 
 class Payment(models.Model):
-    amount = models.DecimalField(max_digits=5, decimal_places=2, default=6.5)
+    amount = models.DecimalField(max_digits=5, decimal_places=2, default=4.99)
     created = models.DateTimeField(auto_now_add=True)
-    tva = models.DecimalField(max_digits=5, decimal_places=2, default=1.36)
+    tva = models.DecimalField(max_digits=5, decimal_places=2, default=1.05)
 
 
 class Payment_Notification(models.Model):

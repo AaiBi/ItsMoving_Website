@@ -138,12 +138,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'ayebi932@gmail.com'
-EMAIL_HOST_PASSWORD = 'jpkrcbvvifcwlpah' #past the key or password app here
+EMAIL_HOST_USER = 'contact.itsmoving@gmail.com'
+EMAIL_HOST_PASSWORD = 'wvaoubecinxrcvik' #past the key or password app here
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'default from email'
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

@@ -220,10 +220,9 @@
 												Pays
 											</label>
 											<select class="form-select form-control text-opacity-50" name="country">
-												<option selected value="{{mover.country.id}}" class="text-dark">{{mover.country.name}}</option>
-												{% for country in countries %}
-													<option value="{{country.id}}" class="text-dark">{{country.name}}</option>
-												{% endfor %}
+												<option selected value="{{mover.country.id}}" class="text-dark">
+													{{mover.country.name}}
+												</option>
 											</select>
 										</div>
 										<!-- moving type -->
@@ -232,7 +231,9 @@
 												Type de déménagement
 											</label>
 											<select class="form-select form-control text-opacity-50" name="moving_type1">
-												<option selected value="{{mover.country.id}}" class="text-dark">{{mover.moving_type1.name}}</option>
+												<option selected value="{{mover.moving_type1.id}}" class="text-dark">
+													{{mover.moving_type1.name}}
+												</option>
 												{% for data in moving_type1 %}
 													<option value="{{data.id}}" class="text-dark">{{data.name}}</option>
 												{% endfor %}
