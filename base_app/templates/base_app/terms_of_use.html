@@ -1,0 +1,206 @@
+{% extends 'base_app/base.html' %}
+
+{% block title %} Conditions d'utilisation {% endblock %}
+
+{% load static %}
+
+{% block css_styles %}
+
+{% endblock %}
+
+{% block main %}
+    <!-- **************** MAIN CONTENT START **************** -->
+
+        <!-- =======================
+        Page Banner START --></br></br></br></br></br>
+
+        {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
+                {{ error }}
+            </div>
+        {% else %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
+                        {{message}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        <section class="pt-5 pb-0" style="background-image:url({% static 'base_app/assets/images/element/map.svg' %}); background-position: center left; background-size: cover;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 mx-auto">
+                        <!-- Title -->
+                        <h1 class="mb-4 text-center">Nos conditions d'utilisation</h1></br></br>
+
+                        <ul>
+                            <li>
+                                <h4>INFORMATIONS SUR LE SITE INTERNET</h4>
+                                <p>
+                                    Le site internet est fourni par la S.P.R.L Skynet Service (<b>BCE n° BE0694.647.286
+                                    </b>) enregistrée au registre des personnes morales de Bruxelles en BELGIQUE
+                                    (ci-après « la S.P.R.L Skynet Service) et dont le siège social est établi à
+                                    l’adresse suivante : <b>S.P.R.L Skynet Service Boulevard Bischoffsheim 39 boite 04,
+                                    1000 Bruxelles Belgique</b>.
+                                </p>
+                            </li>
+                            <li>
+                                <h4>APPLICATION DES CONDITIONS GEìNEìRALES D'UTILISATION</h4>
+                                <p>
+                                    1. Les présentes conditions générales d’utilisation (ci-après « Conditions générales »)
+                                    indiquent les droits, obligations et limitations qui vous sont applicables en tant
+                                    qu’utilisateur (ci-après « Utilisateur ») lors de vos accès à notre site internet
+                                    <a href="www.itsmoving.be">www.itsmoving.be</a> (Ci-après « le site ») et de tous
+                                    les services offerts via celui-ci (ci-après « les services »).
+                                </p>
+                                <p>
+                                    2. L’accès et/ou l’utilisation du site emporte l’acceptation avec prise d’effet
+                                    immédiate des conditions générales et de toute modification qui y est apportée,
+                                    sans préjudices d’éventuelles conditions contractuelles particulières applicables.
+                                </p>
+                                <p>
+                                    3. La nullité, la caducité ou le caractère non-exécutoire de l’une des dispositions
+                                    des Conditions générales avec les dispositions légales ou règlementaires en vigueur,
+                                    n’affectera pas la validité des autres dispositions des Conditions générales qui
+                                    conserveront leur pleine force légale.
+                                </p>
+                                <p>
+                                    4. Le contenu compris dans le Site, incluant ces conditions générales, peut être
+                                    modifié à la seule discrétion de la <b>S.P.R.L Skynet Service</b> et ce, sans
+                                    préavis. L’Utilisateur est tenu par de telles modifications, le cas échéant et
+                                    est supposé prendre connaissance périodiquement des changements y ayant été
+                                    apportées.
+                                </p>
+                                <p>
+                                    5. Pour toute question concernant le site internet, la <b>S.P.R.L Skynet Service</b>
+                                    peut être contactée par e-mail à l’adresse :
+                                    <i class="far fa-fw fa-envelope me-2"></i>support@itsmoving.be.
+                                </p>
+                            </li>
+                            <li>
+                                <h4>DISPONIBILITÉ DU SITE</h4>
+                                <p>
+                                    1. La <b>S.P.R.L Skynet Service</b> se réserve le droit de modifier, suspendre ou
+                                    interrompre, à tout moment, toute caractéristique du site, y compris la
+                                    disponibilité de toute fonctionnalité, base de données et/ou contenu.
+                                </p>
+                                <p>
+                                    2. La <b>S.P.R.L Skynet Service</b> ne sera pas responsable à votre égard ou à l’égard
+                                    de tiers pour la résiliation ou pour la suspension permanente ou temporaire de tout
+                                    ou une partie du site.
+                                </p>
+                            </li>
+                            <li>
+                                <h4>LIMITATIONS DE RESPONSABILITÉS</h4>
+                                <p>
+                                    1. Les informations contenues sur ce site sont aussi précises que possibles et le
+                                    site est périodiquement remis à jour, mais peut toutefois contenir des
+                                    inexactitudes, des omissions ou des lacunes.
+                                </p>
+                                <p>
+                                    2. Si l’utilisateur constate une lacune, erreur ou ce qui parait être un
+                                    dysfonctionnement, il lui sera loisible de le signaler aÌ la <b>S.P.R.L Skynet
+                                    Service</b> en décrivant le problème de la manière la plus précise possible
+                                    (page posant problème, type d’ordinateur et de navigateur utilisé, ...)
+                                    à l’adresse e-mail : <i class="far fa-fw fa-envelope me-2"></i>support@itsmoving.be.
+                                </p>
+                                <p>
+                                    3. En conséquence, la <b>S.P.R.L Skynet Service</b> ne pourrait être tenue
+                                    responsable d’un quelconque dommage subi par l’ordinateur de l’utilisateur
+                                    ou d’une quelconque perte de données consécutives au téléchargement où autres.
+                                </p>
+                            </li>
+                            <li>
+                                <h4>CONFIDENTIALITÉ DES INFORMATIONS ÉCHANGÉES ET DONNÉES PERSONNELLES - COOKIES</h4>
+                                <p>
+                                    1. Les données aÌ caractère personnel que l'utilisateur communique lors d'un contact
+                                    ou d'une demande d'information sont uniquement traitées par le <b>S.P.R.L Skynet
+                                    Service</b> en vue de pouvoir répondre aÌ la demande de l'utilisateur.
+                                    Les données aÌ caractère personnel de l'utilisateur ne sont en aucun cas
+                                    communiquées à des tiers sans le consentement de l'utilisateur.</br>
+                                    Les données aÌ caractère personnel ne sont transmises qu'au personnel chargé
+                                    de traiter les demandes. Ces données peuvent être communiquées à des personnes
+                                    extérieures à la <b>S.P.R.L Skynet Service</b> lorsque cela s'avère nécessaire
+                                    pour le traitement de la demande de l'utilisateur.</br>
+                                    Si l'utilisateur refuse de communiquer certaines données indispensables, il se
+                                    peut que la <b>S.P.R.L Skynet Service</b> ne soit pas en mesure de traiter la
+                                    demande.</br>
+                                    Conformément à la loi du 8 décembre 1992 relative aÌ la protection de la vie
+                                    privée aÌ l'égard des traitements de données aÌ caractère personnel, chaque
+                                    personne concernée par le traitement de données peut consulter ses données
+                                    personnelles, les faire rectifier ou, si elle a de bonnes raisons, les faire
+                                    supprimer. AÌ cet effet, elle envoie une lettre accompagnée d'une copie de sa
+                                    carte d'identité aÌ l'adresse susmentionnée ou envoie un courrier électronique
+                                    à l'adresse suivante : <i class="far fa-fw fa-envelope me-2"></i>
+                                    support@itsmoving.be.</br>
+                                    Vous pouvez obtenir des renseignements complémentaires concernant la protection
+                                    de la vie privée auprès de la Commission pour la protection de la vie privée
+                                    établie aÌ 139 rue Haute aÌ 1000 BRUXELLES en BELGIQUE.
+                                </p>
+                                <p>
+                                    2. Comme le requiert l'article 129, 1° de la loi relative aux communications
+                                    électroniques du 13 juin 2005, la <b>S.P.R.L Skynet Service</b> entend informer
+                                    les visiteurs du site de l'utilisation de cookies.</br>
+                                    Les cookies sont de petits fichiers texte qui sont enregistrées sur le disque dur
+                                    de l'ordinateur de l'utilisateur du site. Ils contiennent des informations,
+                                    comme par exemple, la préférence linguistique de l'internaute, de manière à ce
+                                    qu'il ne doive pas à nouveau introduire ces informations lors d'une prochaine
+                                    visite sur ce même site Internet. Certains cookies permettent un affichage
+                                    graphique optimal, d'autres permettent qu'une application Internet fonctionne
+                                    correctement. Si vous ne voulez pas qu'un site Internet installe des cookies
+                                    sur votre ordinateur, vous pouvez paramétrer votre navigateur aÌ cet effet.</br>
+                                    Lorsque vous désactivez les cookies, tenez toutefois compte du fait que certains
+                                    éléments graphiques ne s'afficheront peut-être pas correctement ou que vous ne
+                                    pourrez pas utiliser certaines applications.
+                                </p>
+                            </li>
+                            <li>
+                                <h4>PROPRIÉTÉ INTELLECTUELLE</h4>
+                                <p>
+                                    1. Les noms, images, logos ou tout autre signe distinctif présentés sur le site
+                                    identifiant la S.P.R.L Skynet service, ses partenaires, des tiers ou leurs
+                                    produits et services (et notamment les marques) sont des contenus protégés au
+                                    titre du droit des marques et/ou du droit d’auteur.
+                                </p>
+                                <p>
+                                    2. La structure générale, les contenus éditoriaux, images, sons, vidéos ou
+                                    multimédias, les logiciels et les bases de données utilisées et tous les autres
+                                    contenus présentés sur le site sont protégés au titre du droit d’auteur, des droits
+                                    voisins et/ou du droit sui generis du producteur de base de données.</br>
+                                    La S.P.R.L Skynet Service, ses partenaires ou des tiers sont seuls titulaires des
+                                    droits de propriété intellectuelle susmentionnés sur l’ensemble des contenus
+                                    présentés sur le site.</br>
+                                    Sous la seule réserve de l’application restrictive des exceptions légales,
+                                    toute utilisation, reproduction ou représentation, totale ou partielle, des signes
+                                    distinctifs ou contenus présentés sur le site sans l’autorisation écrite préalable
+                                    de la S.P.R.L Skynet Service, de ses partenaires ou de tiers, est interdite et est
+                                    constitutive de délit civil et pénal de contrefaçon.
+                                </p>
+                                <p>
+                                    3. L’Utilisateur s’engage à ne pas altérer, détruire, occulter, ou encore retirer
+                                    toute notice de droit d’auteur ou de tout droit de propriétés, labels ou marques
+                                    figurant sur ou intégrée dans tout ou une partie du Site.
+                                </p>
+                            </li>
+                            <li>
+                                <h4>LOI APPLICABLE ET TRIBUNAUX COMPÉTENTS</h4>
+                                <p>
+                                    1. Les Conditions Générales sont régies par la loi belge.
+                                </p>
+                                <p>
+                                    2. Les Cours et Tribunaux de Bruxelles seront seuls compétents.
+                                </p>
+                            </li>
+                        </ul>
+                        </br></br></br></br></br></br></br></br></br></br></br></br></br></br>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- =======================
+        Page Banner END -->
+
+    <!-- **************** MAIN CONTENT END **************** -->
+{% endblock %}

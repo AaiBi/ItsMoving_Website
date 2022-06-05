@@ -16,8 +16,13 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+
 def index(request):
     return render(request, 'base_app/index.html')
+
+
+def terms_of_use(request):
+    return render(request, 'base_app/terms_of_use.html')
 
 
 def mover_inscription(request):

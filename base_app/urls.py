@@ -9,6 +9,7 @@ urlpatterns = [
     path('mover_inscription_step3/<int:new_user_id>/<int:mover_id>', views.mover_inscription_step3, name='mover_inscription_step3'),
 
     path('contact/', views.contact_page, name='contact_page'),
+    path('terms_of_use/', views.terms_of_use, name='terms_of_use'),
     path('international_moving/', views.article1_international_moving, name='article1_international_moving'),
     path('belgium_moving/', views.article2_belgium_moving, name='article2_belgium_moving'),
 
