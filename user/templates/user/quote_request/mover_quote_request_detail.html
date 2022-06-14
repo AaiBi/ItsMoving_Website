@@ -178,10 +178,17 @@
 										</b>
 									</li>
 									<li>
-										Ville:
-										<b class="text-info">
-											{{mover_quote_request.quote_request.City_Departure|capfirst}}
-										</b>
+										Region:
+										{% if mover_quote_request.quote_request.moving_type1.name == 'National' %}
+											<b class="text-info">
+												{{mover_quote_request.quote_request.region.name|capfirst}} -
+												{{mover_quote_request.quote_request.country.name|capfirst}}
+											</b>
+										{% else %}
+											<b class="text-info">
+												{{mover_quote_request.quote_request.region.name|capfirst}}
+											</b>
+										{% endif %}
 									</li>
 									<li>
 										Adresse:
@@ -230,10 +237,18 @@
 										</b>
 									</li>
 									<li>
-										Ville:
-										<b class="text-info">
-											{{mover_quote_request.quote_request.City_Arrival|capfirst}}
-										</b>
+										{% if mover_quote_request.quote_request.moving_type1.name == 'National' %}
+											Region:
+											<b class="text-info">
+												{{mover_quote_request.quote_request.region.name|capfirst}} -
+												{{mover_quote_request.quote_request.country.name|capfirst}}
+											</b>
+										{% else %}
+											Ville:
+											<b class="text-info">
+												{{mover_quote_request.quote_request.City_Arrival_for_international_moving|capfirst}}
+											</b>
+										{% endif %}
 									</li>
 									<li>
 										Adresse:

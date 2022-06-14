@@ -190,7 +190,7 @@
 										<input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
 										<input type="hidden" name="website" value="{{mover.website}}">
 										<input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
-										<input type="hidden" name="City" value="{{mover.City}}">
+										<input type="hidden" name="region" value="{{mover.region.id}}">
 										<input type="hidden" name="company_statut" value="{{mover.company_statut}}">
 										<input type="hidden" name="company_description" value="{{mover.company_description}}">
 										<input type="hidden" name="validated" value="{{mover.validated}}">
@@ -210,12 +210,12 @@
 									<form class="row g-4" method="POST" enctype="multipart/form-data">
 										{% csrf_token %}
 										<!-- Name company -->
-										<div class="col-md-6">
+										<div class="col-md-4">
 											<label class="form-label">Nom de l'entreprise</label>
 											<input type="text" class="form-control" name="company_name" value="{{mover.company_name}}">
 										</div>
 										<!-- country -->
-										<div class="col-md-6">
+										<div class="col-md-4">
 											<label class="form-label text-opacity-50">
 												Pays
 											</label>
@@ -226,7 +226,7 @@
 											</select>
 										</div>
 										<!-- moving type -->
-										<div class="col-md-6">
+										<div class="col-md-4">
 											<label class="form-label text-opacity-50">
 												Type de déménagement
 											</label>
@@ -238,11 +238,6 @@
 													<option value="{{data.id}}" class="text-dark">{{data.name}}</option>
 												{% endfor %}
 											</select>
-										</div>
-										<!-- city -->
-										<div class="col-md-6">
-											<label class="form-label">Ville</label>
-											<input type="text" class="form-control" name="City" value="{{mover.City}}">
 										</div>
 										<!-- adresse -->
 										<div class="col-md-4">
@@ -292,6 +287,7 @@
 											<input type="hidden" name="logo" value="/user/images/profil_image/random_image.png">
 										{% endif %}
 										<input type="hidden" name="ref" value="{{mover.ref}}">
+										<input type="hidden" name="region" value="{{mover.region.id}}">
 										<input type="hidden" name="validated" value="{{mover.validated}}">
 										<input type="hidden" name="activated" value="{{mover.activated}}">
 										<input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">

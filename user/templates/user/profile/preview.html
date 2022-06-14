@@ -129,7 +129,14 @@
 						{% if mover.number_max_quote_request == 0 %}
 							<div class="alert alert-danger alert-dismissible fade show" role="alert">
 								Important ! Votre profil est incomplet, veuillez renseigner <b>le nombre de
-								devis maximum que vous souhaitez recevoir par jour</b>
+								devis maximum que vous souhaitez recevoir par jour.</b>
+							</div>
+						{% endif %}
+
+						{% if not mover_regions %}
+							<div class="alert alert-danger alert-dismissible fade show" role="alert">
+								Important ! Votre compte est incomplet, veuillez renseigner <b>les regions de la
+								Belgique</b> dans lesquelles vous souhaitez intervenir.
 							</div>
 						{% endif %}
 
@@ -386,6 +393,7 @@
 										</div>
 										<!-- Counter END -->
 										<hr>
+
 										{% if mover.moving_type1.name == "National" %}
 											<h3 class="mb-0" align="center">Zone d'intervention</h3>
 											<div class="accordion accordion-shadow mt-4 text-start position-relative" id="accordionExample5">
@@ -397,6 +405,7 @@
 															{{mover.country}}
 														</button>
 													</h5>
+
 												</div>
 											</div>
 										{% else %}
@@ -408,11 +417,26 @@
 													{% if mover_country.country_id == country.id %}
 														<!-- Item -->
 														<div class="accordion-item mb-3">
-															<h5 class="accordion-header font-base" id="heading-{{country.id}}">
+															<div class="accordion-header font-base" id="heading-{{country.id}}">
 																<button class="accordion-button fw-bold collapsed rounded pe-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{country.id}}" aria-expanded="false" aria-controls="collapse-{{country.id}}">
-																	{{country.name}}
+																	<h5>{{country.name}}</h5>
 																</button>
-															</h5>
+															</div>
+															{% if country.name == "Belgique" %}
+																<!-- Body -->
+																<div id="collapse-{{country.id}}" class="accordion-collapse collapse show" aria-labelledby="heading-{{country.id}}" data-bs-parent="#accordionExample2">
+																	<div class="accordion-body mt-3">
+																		{% for mover_region in mover_regions %}
+																			<center>
+																				<h6>
+																					<b>{{mover_region.region.name}}</b>
+																					</br>
+																				</h6>
+																			</center>
+																		{% endfor %}
+																	</div>
+																</div>
+															{% endif %}
 														</div>
 													{%endif%}
 												{%endfor%}

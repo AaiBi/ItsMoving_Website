@@ -187,19 +187,19 @@
 
 												<!-- Table data -->
 												<td class="text-center">
-													{% if quote_request.moving_type1.name == 'National' %}
-														{{quote_request.City_Departure|capfirst}}
+													{% if mover_quote_request.quote_request.moving_type1.name == 'National' %}
+														{{mover_quote_request.quote_request.region.name|capfirst}}
 													{% else %}
-														{{quote_request.country.name|capfirst}}
+														{{mover_quote_request.quote_request.country.name|capfirst}}
 													{% endif %}
 												</td>
 
 												<!-- Table data -->
 												<td class="text-center">
-													{% if quote_request.moving_type1.name == 'National' %}
-														{{quote_request.City_Arrival|capfirst}}
+													{% if mover_quote_request.quote_request.moving_type1.name == 'National' %}
+														{{mover_quote_request.quote_request.Region_Arrival_for_national_moving|capfirst}}
 													{% else %}
-														{{quote_request.Country_Arrival|capfirst}}
+														{{mover_quote_request.quote_request.Country_Arrival|capfirst}}
 													{% endif %}
 												</td>
 

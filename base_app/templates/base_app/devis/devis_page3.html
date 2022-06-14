@@ -138,7 +138,7 @@
 									<span class="badge bg-light text-dark"><h3>2</h3></span>
 								</div>
 								<div class="col-sm-2">
-									<span class="badge bg-primary text-dark"><h3>3</h3></span>
+									<span class="badge bg-primary"><h3 class="text-white">3</h3></span>
 								</div>
 								<div class="col-sm-2">
 									<span class="badge bg-light text-dark"><h3>4</h3></span>
@@ -181,12 +181,31 @@
 											{% endfor %}
 										</select>
 									</div>
+									<!-- City -->
+									<div class="col-md-6 bg-dark-input">
+										<label class="form-label text-white text-opacity-50">
+											Ville
+											<span class="text-danger">*</span>
+										</label>
+										<input type="text" class="form-control" name="City_Arrival_for_international_moving" required>
+									</div>
+									<input type="hidden" name="Region_Arrival_for_national_moving" value="0">
+								{% else %}
+									<!--Country-->
+									<div class="col-md-6 bg-dark-input">
+										<label class="form-label text-white text-opacity-50">
+											Region <span class="text-danger">*</span>
+										</label>
+										<select class="form-select form-control text-opacity-50" name="Region_Arrival_for_national_moving" required="">
+											<option selected disabled value="">-------------------------</option>
+											{% for data in regions %}
+												<option value="{{data.id}}" class="text-dark">{{data.name}}</option>
+											{% endfor %}
+										</select>
+									</div>
+									<input type="hidden" name="Country_Arrival" value="0">
+									<input type="hidden" name="City_Arrival_for_international_moving" value="0">
 								{% endif %}
-								<!-- City -->
-								<div class="col-md-6 bg-dark-input">
-									<label class="form-label text-white text-opacity-50">Ville <span class="text-danger">*</span></label>
-									<input type="text" class="form-control" name="City_Arrival" required>
-								</div>
 
 								<!-- Adresse -->
 								<div class="col-md-6 bg-dark-input">

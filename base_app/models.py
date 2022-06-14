@@ -9,6 +9,14 @@ class Country(models.Model):
         return self.name
 
 
+class Region(models.Model):
+    name = models.CharField(max_length=300)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
 class Moving_Type1(models.Model):  # can be national opr international
     name = models.CharField(max_length=300)
 
@@ -33,16 +41,15 @@ class Mover(models.Model):
     website = models.CharField(max_length=300, default="")
     TVA_number = models.CharField(max_length=30, default="")
     Postal_Code = models.IntegerField(default=0)
-    City = models.CharField(max_length=300, default="")
     company_statut = models.CharField(max_length=300, default="")
     company_description = models.TextField(default="")
     logo = models.ImageField(upload_to='user/images/profil_image/', blank=True, default="")
     validated = models.BooleanField(default=False)
     activated = models.BooleanField(default=False)
-
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default="")
     country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, default="")
     moving_type1 = models.ForeignKey(Moving_Type1, on_delete=models.CASCADE, default="")
 
     def __str__(self):
@@ -67,17 +74,23 @@ class Mover_Country(models.Model):
     mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
 
 
+class Mover_Region(models.Model):
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, default="")
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)
+
+
 class Quote_Request(models.Model):
     ref = models.CharField(max_length=30)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
-    City_Departure = models.CharField(max_length=300)
     Adresse_Departure = models.CharField(max_length=300)
     Postal_Code_Departure = models.IntegerField()
     Residence_Number_or_Name_Departure = models.CharField(max_length=300)
     Residence_Departure = models.CharField(max_length=300)
     Number_Room_Departure = models.IntegerField()
     Country_Arrival = models.CharField(max_length=300, default="")
-    City_Arrival = models.CharField(max_length=300)
+
+    City_Arrival_for_international_moving = models.CharField(max_length=300, default="")
+    Region_Arrival_for_national_moving = models.CharField(max_length=300, default="")
+
     Adresse_Arrival = models.CharField(max_length=300)
     Residence_Number_or_Name_Arrival = models.CharField(max_length=300)
     Postal_Code_Arrival = models.IntegerField()
@@ -90,7 +103,6 @@ class Quote_Request(models.Model):
     firstname = models.CharField(max_length=300, default="")
     lastname = models.CharField(max_length=300, default="")
     email = models.EmailField(default="")
-    email_sent_to_customer = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=30, default="")
     created = models.DateTimeField(auto_now_add=True)
     distributed = models.BooleanField(default=False)
@@ -99,6 +111,8 @@ class Quote_Request(models.Model):
     moving_date2 = models.DateTimeField(auto_now_add=False)
     moving_type1 = models.ForeignKey(Moving_Type1, on_delete=models.CASCADE)
     moving_type2 = models.ForeignKey(Moving_Type2, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, default="")
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, default="")
 
     def __str__(self):
         return self.ref
@@ -146,3 +160,10 @@ class Movers_Email(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE, default="")
     mover = models.ForeignKey(Mover, on_delete=models.CASCADE, default="")
+
+
+class Customers_Notification_Email(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    moving_possibility = models.BooleanField(default=False) # If True: movers available for the region or country
+    quote_request = models.ForeignKey(Quote_Request, on_delete=models.CASCADE)
+    mover = models.ForeignKey(Mover, on_delete=models.CASCADE)

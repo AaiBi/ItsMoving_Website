@@ -15,9 +15,9 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from base_app.forms import Mover_Form
 from base_app.models import Mover, Country, Mover_Country, Moving_Type1, Moving_Type2, \
-    Mover_Moving_Type2, Quote_Request, Mover_Quote_Request, Quote_Request_Rejected, Review
+    Mover_Moving_Type2, Quote_Request, Mover_Quote_Request, Quote_Request_Rejected, Review, Region, Mover_Region
 from user.forms import EditUserForm, EditUserPasswordForm, EditMoverCountryForm, \
-    EditMoverMovingType2Form, MoverQuoteRequestForm, EditUserPasswordForm1
+    EditMoverMovingType2Form, MoverQuoteRequestForm, EditUserPasswordForm1, EditMoverRegionForm
 from user.models import Movers_Password_Recovery_Codes, Payment, Payment_Notification
 
 
@@ -134,7 +134,9 @@ def preview(request):
     mover = Mover.objects.filter(user_id=request.user.id).last()
     form1 = EditUserForm(instance=request.user)
     countries = Country.objects.all()
+    regions = Region.objects.all()
     mover_countries = Mover_Country.objects.filter(mover=mover)
+    mover_regions = Mover_Region.objects.filter(mover=mover)
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
     number_quote_request1 = Mover_Quote_Request.objects.filter(mover_id=mover.id).count()
     reviews = Review.objects.filter(mover_quote_request__mover_id=mover.id)
@@ -189,7 +191,8 @@ def preview(request):
                                                          'reliability_percentage': reliability_percentage,
                                                          'quality_percentage': quality_percentage,
                                                          'speed_percentage': speed_percentage, 'total_reviews':
-                                                             total_reviews, 'total_sum': total_sum})
+                                                             total_reviews, 'total_sum': total_sum, 'regions': regions,
+                                                         'mover_regions': mover_regions})
 
 
 @login_required
@@ -282,6 +285,7 @@ def edit_profile(request):
     password_edit_form = EditUserPasswordForm(request.user)
     mover_form = Mover_Form(instance=mover)
     countries = Country.objects.all()
+    regions = Region.objects.all()
     moving_type1 = Moving_Type1.objects.all()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
 
@@ -320,6 +324,7 @@ def edit_profile(request):
 
                 if mover_form.is_valid():
                     mover_form.country = get_object_or_404(Country, id=request.POST.get('country'))
+                    mover_form.region = get_object_or_404(Region, id=request.POST.get('region'))
                     mover_form.moving_type1 = get_object_or_404(Moving_Type1, id=request.POST.get('moving_type1'))
                     mover_form.save()
                     messages.success(request, 'Votre logo a été modifié avec succès !')
@@ -336,6 +341,7 @@ def edit_profile(request):
                 mover_form = Mover_Form(request.POST, instance=mover)
                 if mover_form.is_valid():
                     mover_form.country = get_object_or_404(Country, id=request.POST.get('country'))
+                    mover_form.region = get_object_or_404(Region, id=request.POST.get('region'))
                     mover_form.moving_type1 = get_object_or_404(Moving_Type1, id=request.POST.get('moving_type1'))
                     mover_form.save()
                     messages.success(request, 'Modification effectué avec succès !')
@@ -343,7 +349,7 @@ def edit_profile(request):
             except ValueError:
                 return render(request, 'user/profile/edit_profile.html', {'mover': mover, 'mover_form': mover_form,
                                                                           'countries': countries, 'moving_type1':
-                                                                              moving_type1,
+                                                                              moving_type1, 'regions': regions,
                                                                           'error': 'Mauvaises données !'})
         else:
             mover_form = Mover_Form(instance=mover)
@@ -364,7 +370,7 @@ def edit_profile(request):
         , 'password_edit_form': password_edit_form, 'mover_form':
                                                                   mover_form, 'countries': countries, 'moving_type1':
                                                                   moving_type1, 'number_quote_request':
-                                                                  number_quote_request})
+                                                                  number_quote_request, 'regions': regions})
 
 
 @login_required
@@ -461,12 +467,14 @@ def area_intervention(request):
     mover_countries = Mover_Country.objects.filter(mover=mover)
     mover_countries_number = Mover_Country.objects.filter(mover=mover).count()
     number_quote_request = Mover_Quote_Request.objects.filter(mover_id=mover.id, treated=False, rejected=False).count()
-    # mover_movingtype1_number = Mover_Moving_Type1.objects.filter(mover=mover).count()
+    regions = Region.objects.all()
+    mover_regions = Mover_Region.objects.filter(mover=mover)
 
     if request.method == 'GET':
         return render(request, 'user/mover/settings/area_intervention.html',
                       {'mover': mover, 'countries': countries, 'mover_countries': mover_countries,
-                       'mover_countries_number': mover_countries_number, 'number_quote_request': number_quote_request})
+                       'mover_countries_number': mover_countries_number, 'number_quote_request': number_quote_request,
+                       'mover_regions': mover_regions, 'regions': regions})
 
     if 'add_country' in request.POST:
         if request.method == 'POST':
@@ -486,6 +494,24 @@ def area_intervention(request):
                 messages.error(request, 'Veuillez faire au moins une sélection !')
                 return redirect('area_intervention')
 
+    if 'add_region' in request.POST:
+        if request.method == 'POST':
+            region_id = request.POST.getlist('region_id[]')
+            if request.POST.getlist('region_id[]'):
+                for data in region_id:
+                    if Mover_Region.objects.filter(region__id=data, mover=mover):
+                        messages.error(request, 'Erreur ! Cette sélection existe déjà dans notre base de données !')
+                        return redirect('area_intervention')
+                    else:
+                        region = Region.objects.filter(id=data).last()
+                        savedata = Mover_Region(region=region, mover=mover)
+                        savedata.save()
+                        messages.success(request, 'Nouvelle region de Bruxelles ajoutée avec succès !')
+                return redirect('area_intervention')
+            else:
+                messages.error(request, 'Veuillez faire au moins une sélection !')
+                return redirect('area_intervention')
+
 
 @login_required
 def delete_mover_country(request, mover_country_pk, mover_pk):
@@ -500,6 +526,21 @@ def delete_mover_country(request, mover_country_pk, mover_pk):
                           number_quote_request})
     if request.method == 'POST':
         mover_country.delete()
+        messages.success(request, 'Suppression effectuée !')
+        return redirect('area_intervention')
+
+
+@login_required
+def delete_mover_region(request, mover_region_pk, mover_pk):
+    mover = get_object_or_404(Mover, pk=mover_pk)
+    mover_region = get_object_or_404(Mover_Region, pk=mover_region_pk)
+
+    if request.method == 'GET':
+        form = EditMoverRegionForm(instance=mover_region)
+        return render(request, 'user/mover/settings/delete_mover_region.html',
+                      {'mover_region': mover_region, 'form': form, 'mover': mover})
+    if request.method == 'POST':
+        mover_region.delete()
         messages.success(request, 'Suppression effectuée !')
         return redirect('area_intervention')
 
@@ -581,6 +622,7 @@ def quote_request_settings(request):
             if form.is_valid():
                 form = form.save(commit=False)
                 form.country = get_object_or_404(Country, id=request.POST.get('country'))
+                form.region = get_object_or_404(Region, id=request.POST.get('region'))
                 form.moving_type1 = get_object_or_404(Moving_Type1, id=request.POST.get('moving_type1'))
                 form.save()
                 messages.success(request, 'Modification effectuée !')

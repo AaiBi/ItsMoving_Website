@@ -117,181 +117,327 @@
 				<!-- Main content START -->
 				<div class="col-xl-9">
 
-					<!-- Counter boxes START -->
-					<div class="row g-4">
-						<!-- Counter item -->
-						<div class="col-sm-12">
-							<a href="{% url 'area_intervention' %}" class="d-flex justify-content-center align-items-center p-4 bg-warning bg-opacity-15 rounded-3">
-								<span class="display-6 text-warning mb-0">
-									<i class='fa fa-globe fa-fw'></i>
-								</span>
-								<div class="ms-4">
-									<h3 class="card-header-title mb-0">Pays d'intervention</h3>
-								</div>
-							</a>
-						</div>
-					</div>
-					<!-- Counter boxes END -->
-
-					<!-- Edit profile START -->
-					<div class="card border rounded-3">
-						<!-- Card body START -->
-						<div class="card-body">
-							<div class="card position-relative d-sm-flex bg-opacity-10">
-								<!-- Card body START -->
-								<div class="card-body">
-
-									<div class="table-responsive-lg border-0">
-										<table class="table table-dark-gray align-middle p-4 mb-0 table-hover">
-											<!-- Table head -->
-											<thead align="center">
-												<tr>
-													<th scope="col" class="border-0 rounded-start">Pays</th>
-													<th scope="col" class="border-0 rounded-end">Action</th>
-												</tr>
-											</thead>
-
-											<!-- Table body START -->
-											<tbody align="center">
-												<!-- Table item -->
-												{% for country in countries %}
-													{% for mover_country in mover_countries %}
-														{% if mover_country.country_id == country.id %}
-															<tr>
-																<!-- Course item -->
-																<td>
-																	<center>{{country.name}}</center>
-																</td>
-																<!-- Action item -->
-																<td>
-																	<a href="{% url 'delete_mover_country' mover_country.id mover.id %}" class="btn btn-sm btn-danger-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Appuyer pour supprimer">
-																		<i class="fas fa-fw fa-times"></i>
-																	</a>
-																</td>
-															</tr>
-														{% endif %}
-													{% endfor %}
-												{% endfor %}
-											</tbody>
-										</table>
+					<div class="container-fluid">
+						<div class="row">
+							<p class="text-danger text-center">
+								Pour supprimer un pays ou une region, appuyer sur le bouton X.
+							</p>
+							<div class="col-sm-6">
+								<!-- Counter boxes START -->
+								<div class="row g-4">
+									<!-- Counter item -->
+									<div class="col-sm-12">
+										<a href="{% url 'area_intervention' %}" class="d-flex justify-content-center align-items-center p-4 bg-warning bg-opacity-15 rounded-3">
+											<span class="display-6 text-warning mb-0">
+												<i class='fa fa-globe fa-fw'></i>
+											</span>
+											<div class="ms-4">
+												<h3 class="card-header-title mb-0">Pays d'intervention</h3>
+											</div>
+										</a>
 									</div>
-
-									{% if mover_countries_number != 5 %}
-										<hr>
-										<!-- Form START -->
-										<form class="row g-3 mt-2 position-relative z-index-9" method="POST">
-											{% csrf_token %}
-											<!-- Company Name -->
-											<div class="col-lg-12">
-												<div class="form-check">
-													{% for data in countries %}
-														<input class="form-check-input" type="checkbox" value="{{data.name}}" name="country_name[]"/>
-														<label class="form-check-label">
-															<h5>{{data.name}}</h5>
-														</label></br>
-													{% endfor %}
-												</div>
-											</div>
-											</br>
-
-											<!-- Button -->
-											<div class="col-12" align="center">
-												<button type="submit" name="add_country" value="add_country" class="btn btn-primary mb-0">Ajouter un autre pays</button>
-											</div>
-										</form>
-										<!-- Form END -->
-									{% endif %}
 								</div>
-								<!-- Card body END -->
+								<!-- Counter boxes END -->
 
-<!--								&lt;!&ndash; START &ndash;&gt;-->
-<!--									<div class="card border position-relative mb-4 d-sm-flex bg-primary bg-opacity-10 border border-primary p-3 rounded">-->
-<!--										&lt;!&ndash; Card header &ndash;&gt;-->
-<!--										<div class="card-header bg-primary bg-opacity-10 border-bottom">-->
-<!--											<h4 class="card-header-title mb-0">Regions d'intervention</h4>-->
-<!--										</div>-->
-<!--										&lt;!&ndash; Card body START &ndash;&gt;-->
-<!--										<div class="card-body">-->
-<!--											{% for country in countries %}-->
-<!--												{% for mover_country in mover_countries %}-->
-<!--													{% if mover_country.country_id == country.id %}-->
-<!--														<h5>{{country.name}}</h5>-->
+								<!-- Edit profile START -->
+								<div class="card border rounded-3">
+									<!-- Card body START -->
+									<div class="card-body">
+										<div class="card position-relative d-sm-flex bg-opacity-10">
+											<!-- Card body START -->
+											<div class="card-body">
 
-<!--														{% for mover_region in mover_regions %}-->
-<!--															{% for region in regions %}-->
-<!--																{% if mover_region.region_id == region.id %}-->
+												<div class="table-responsive-lg border-0">
+													<table class="table table-dark-gray align-middle p-4 mb-0 table-hover">
+														<!-- Table head -->
+														<thead align="center">
+															<tr>
+																<th scope="col" class="border-0 rounded-start">Pays</th>
+																<th scope="col" class="border-0 rounded-end">Action</th>
+															</tr>
+														</thead>
 
-<!--																	{% if mover_region.country_id == country.id %}-->
-<!--																		<a type="button" class="btn btn-primary badge bg-primary bg-opacity-10" href="{% url 'delete_mover_region' mover_region.id mover.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Message">-->
-<!--																			<h5 class="text-primary">{{region.name}}</h5>-->
-<!--																		</a>-->
-<!--																	{% endif %}-->
+														<!-- Table body START -->
+														<tbody align="center">
+															<!-- Table item -->
+															{% for country in countries %}
+																{% for mover_country in mover_countries %}
+																	{% if mover_country.country_id == country.id %}
+																		<tr>
+																			<!-- Course item -->
+																			<td>
+																				<center>{{country.name}}</center>
+																			</td>
+																			<!-- Action item -->
+																			<td>
+																				{% if country.name != "Belgique" %}
+																					<a href="{% url 'delete_mover_country' mover_country.id mover.id %}" class="btn btn-sm btn-danger-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Appuyer pour supprimer">
+																						<i class="fas fa-fw fa-times"></i>
+																					</a>
+																				{% endif %}
+																			</td>
+																		</tr>
+																	{% endif %}
+																{% endfor %}
+															{% endfor %}
+														</tbody>
+													</table>
+												</div>
 
-<!--																{% endif %}-->
-<!--															{% endfor %}-->
-<!--														{% endfor %}-->
+												{% if mover_countries_number != 5 %}
+													<hr>
+													<!-- Form START -->
+													<form class="row g-3 mt-2 position-relative z-index-9" method="POST">
+														{% csrf_token %}
+														<!-- Company Name -->
+														<div class="col-lg-12">
+															<div class="form-check">
+																{% for data in countries %}
+																	<input class="form-check-input" type="checkbox" value="{{data.name}}" name="country_name[]"/>
+																	<label class="form-check-label">
+																		<h5>{{data.name}}</h5>
+																	</label></br>
+																{% endfor %}
+															</div>
+														</div>
+														</br>
 
-<!--													{% endif %}-->
-<!--												{% endfor %}-->
-<!--											{% endfor %}-->
+														<!-- Button -->
+														<div class="col-12" align="center">
+															<button type="submit" name="add_country" value="add_country" class="btn btn-primary mb-0">Ajouter un autre pays</button>
+														</div>
+													</form>
+													<!-- Form END -->
+												{% endif %}
+											</div>
+											<!-- Card body END -->
 
-<!--											<hr>-->
-<!--											&lt;!&ndash; Form START &ndash;&gt;-->
-<!--											<form class="row g-3 mt-2 position-relative z-index-9" method="POST">-->
-<!--												{% csrf_token %}-->
-<!--												&lt;!&ndash; region &ndash;&gt;-->
-<!--												<div class="col-sm-12 mb-3">-->
-<!--													<label class="form-label">Regions<sup class="text-danger ms-1">*</sup></label>-->
-<!--													<select class="form-select form-control" name="region_name" required="">-->
-<!--														<option selected disabled value="">-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
-<!--														{% for country in countries %}-->
-<!--															{% for region in regions %}-->
-<!--																{% if region.country_id == country.id %}-->
-<!--																	<option value="{{region.name}}" class="text-dark">{{region.name}} - {{country.name|upper}}</option>-->
-<!--																{% endif %}-->
-<!--															{% endfor %}-->
-<!--														{% endfor %}-->
-<!--													</select>-->
-<!--												</div>-->
-<!--												</br>-->
+			<!--								&lt;!&ndash; START &ndash;&gt;-->
+			<!--									<div class="card border position-relative mb-4 d-sm-flex bg-primary bg-opacity-10 border border-primary p-3 rounded">-->
+			<!--										&lt;!&ndash; Card header &ndash;&gt;-->
+			<!--										<div class="card-header bg-primary bg-opacity-10 border-bottom">-->
+			<!--											<h4 class="card-header-title mb-0">Regions d'intervention</h4>-->
+			<!--										</div>-->
+			<!--										&lt;!&ndash; Card body START &ndash;&gt;-->
+			<!--										<div class="card-body">-->
+			<!--											{% for country in countries %}-->
+			<!--												{% for mover_country in mover_countries %}-->
+			<!--													{% if mover_country.country_id == country.id %}-->
+			<!--														<h5>{{country.name}}</h5>-->
 
-<!--												&lt;!&ndash; Button &ndash;&gt;-->
-<!--												<div class="col-12" align="center">-->
-<!--													<button type="submit" name="add_region" value="add_region" class="btn btn-primary mb-0">Ajouter une region</button>-->
-<!--												</div>-->
-<!--											</form>-->
-<!--											&lt;!&ndash; Form END &ndash;&gt;-->
-<!--										</div>-->
-<!--										&lt;!&ndash; Card body END &ndash;&gt;-->
-<!--									</div>-->
-<!--									&lt;!&ndash; END &ndash;&gt;-->
+			<!--														{% for mover_region in mover_regions %}-->
+			<!--															{% for region in regions %}-->
+			<!--																{% if mover_region.region_id == region.id %}-->
+
+			<!--																	{% if mover_region.country_id == country.id %}-->
+			<!--																		<a type="button" class="btn btn-primary badge bg-primary bg-opacity-10" href="{% url 'delete_mover_region' mover_region.id mover.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Message">-->
+			<!--																			<h5 class="text-primary">{{region.name}}</h5>-->
+			<!--																		</a>-->
+			<!--																	{% endif %}-->
+
+			<!--																{% endif %}-->
+			<!--															{% endfor %}-->
+			<!--														{% endfor %}-->
+
+			<!--													{% endif %}-->
+			<!--												{% endfor %}-->
+			<!--											{% endfor %}-->
+
+			<!--											<hr>-->
+			<!--											&lt;!&ndash; Form START &ndash;&gt;-->
+			<!--											<form class="row g-3 mt-2 position-relative z-index-9" method="POST">-->
+			<!--												{% csrf_token %}-->
+			<!--												&lt;!&ndash; region &ndash;&gt;-->
+			<!--												<div class="col-sm-12 mb-3">-->
+			<!--													<label class="form-label">Regions<sup class="text-danger ms-1">*</sup></label>-->
+			<!--													<select class="form-select form-control" name="region_name" required="">-->
+			<!--														<option selected disabled value="">-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
+			<!--														{% for country in countries %}-->
+			<!--															{% for region in regions %}-->
+			<!--																{% if region.country_id == country.id %}-->
+			<!--																	<option value="{{region.name}}" class="text-dark">{{region.name}} - {{country.name|upper}}</option>-->
+			<!--																{% endif %}-->
+			<!--															{% endfor %}-->
+			<!--														{% endfor %}-->
+			<!--													</select>-->
+			<!--												</div>-->
+			<!--												</br>-->
+
+			<!--												&lt;!&ndash; Button &ndash;&gt;-->
+			<!--												<div class="col-12" align="center">-->
+			<!--													<button type="submit" name="add_region" value="add_region" class="btn btn-primary mb-0">Ajouter une region</button>-->
+			<!--												</div>-->
+			<!--											</form>-->
+			<!--											&lt;!&ndash; Form END &ndash;&gt;-->
+			<!--										</div>-->
+			<!--										&lt;!&ndash; Card body END &ndash;&gt;-->
+			<!--									</div>-->
+			<!--									&lt;!&ndash; END &ndash;&gt;-->
+										</div>
+
+										</br></br></br></br></br>
+									</div>
+									<!-- Card body END -->
+								</div>
+								<!-- Edit profile END -->
 							</div>
 
-							</br></br></br></br></br>
+							<div class="col-sm-6">
+								<!-- Counter boxes START -->
+								<div class="row g-4">
+									<!-- Counter item -->
+									<div class="col-sm-12">
+										<a href="{% url 'area_intervention' %}" class="d-flex justify-content-center align-items-center p-4 bg-primary bg-opacity-15 rounded-3">
+											<span class="display-6 text-primary mb-0">
+												<i class='fa fa-globe fa-fw'></i>
+											</span>
+											<div class="ms-4">
+												<h3 class="card-header-title mb-0">Regions Belge d'intervention</h3>
+											</div>
+										</a>
+									</div>
+								</div>
+								<!-- Counter boxes END -->
+
+								<!-- Edit profile START -->
+								<div class="card border rounded-3">
+									<!-- Card body START -->
+									<div class="card-body">
+										<div class="card position-relative d-sm-flex bg-opacity-10">
+											<!-- Card body START -->
+											<div class="card-body">
+
+												<div class="table-responsive-lg border-0">
+													<table class="table table-dark-gray align-middle p-4 mb-0 table-hover">
+														<!-- Table head -->
+														<thead align="center">
+															<tr>
+																<th scope="col" class="border-0 rounded-start">Region(s)</th>
+																<th scope="col" class="border-0 rounded-end">Action</th>
+															</tr>
+														</thead>
+
+														<!-- Table body START -->
+														<tbody align="center">
+															<!-- Table item -->
+															{% for mover_region in mover_regions %}
+																<tr>
+																	<!-- Course item -->
+																	<td>
+																		<center>{{mover_region.region.name}}</center>
+																	</td>
+																	<!-- Action item -->
+																	<td>
+																		<a href="{% url 'delete_mover_region' mover_region.id mover_region.mover.id %}" class="btn btn-sm btn-danger-soft btn-round me-1 mb-0" data-bs-toggle="tooltip" data-bs-placement="top" title="Appuyer pour supprimer">
+																			<i class="fas fa-fw fa-times"></i>
+																		</a>
+																	</td>
+																</tr>
+															{% endfor %}
+														</tbody>
+													</table>
+												</div>
+
+												<hr>
+												<!-- Form START -->
+												<form class="row g-3 mt-2 position-relative z-index-9" method="POST">
+													{% csrf_token %}
+													<!-- Company Name -->
+													<div class="col-lg-12">
+														<div class="form-check">
+															{% for data in regions %}
+																<input class="form-check-input" type="checkbox" value="{{data.id}}" name="region_id[]"/>
+																<label class="form-check-label">
+																	<h5>{{data.name}}</h5>
+																</label></br>
+															{% endfor %}
+														</div>
+													</div>
+													</br>
+
+													<!-- Button -->
+													<div class="col-12" align="center">
+														<button type="submit" name="add_region" value="add_region" class="btn btn-primary mb-0">
+															Ajouter une region
+														</button>
+													</div>
+												</form>
+												<!-- Form END -->
+											</div>
+											<!-- Card body END -->
+
+			<!--								&lt;!&ndash; START &ndash;&gt;-->
+			<!--									<div class="card border position-relative mb-4 d-sm-flex bg-primary bg-opacity-10 border border-primary p-3 rounded">-->
+			<!--										&lt;!&ndash; Card header &ndash;&gt;-->
+			<!--										<div class="card-header bg-primary bg-opacity-10 border-bottom">-->
+			<!--											<h4 class="card-header-title mb-0">Regions d'intervention</h4>-->
+			<!--										</div>-->
+			<!--										&lt;!&ndash; Card body START &ndash;&gt;-->
+			<!--										<div class="card-body">-->
+			<!--											{% for country in countries %}-->
+			<!--												{% for mover_country in mover_countries %}-->
+			<!--													{% if mover_country.country_id == country.id %}-->
+			<!--														<h5>{{country.name}}</h5>-->
+
+			<!--														{% for mover_region in mover_regions %}-->
+			<!--															{% for region in regions %}-->
+			<!--																{% if mover_region.region_id == region.id %}-->
+
+			<!--																	{% if mover_region.country_id == country.id %}-->
+			<!--																		<a type="button" class="btn btn-primary badge bg-primary bg-opacity-10" href="{% url 'delete_mover_region' mover_region.id mover.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Message">-->
+			<!--																			<h5 class="text-primary">{{region.name}}</h5>-->
+			<!--																		</a>-->
+			<!--																	{% endif %}-->
+
+			<!--																{% endif %}-->
+			<!--															{% endfor %}-->
+			<!--														{% endfor %}-->
+
+			<!--													{% endif %}-->
+			<!--												{% endfor %}-->
+			<!--											{% endfor %}-->
+
+			<!--											<hr>-->
+			<!--											&lt;!&ndash; Form START &ndash;&gt;-->
+			<!--											<form class="row g-3 mt-2 position-relative z-index-9" method="POST">-->
+			<!--												{% csrf_token %}-->
+			<!--												&lt;!&ndash; region &ndash;&gt;-->
+			<!--												<div class="col-sm-12 mb-3">-->
+			<!--													<label class="form-label">Regions<sup class="text-danger ms-1">*</sup></label>-->
+			<!--													<select class="form-select form-control" name="region_name" required="">-->
+			<!--														<option selected disabled value="">-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
+			<!--														{% for country in countries %}-->
+			<!--															{% for region in regions %}-->
+			<!--																{% if region.country_id == country.id %}-->
+			<!--																	<option value="{{region.name}}" class="text-dark">{{region.name}} - {{country.name|upper}}</option>-->
+			<!--																{% endif %}-->
+			<!--															{% endfor %}-->
+			<!--														{% endfor %}-->
+			<!--													</select>-->
+			<!--												</div>-->
+			<!--												</br>-->
+
+			<!--												&lt;!&ndash; Button &ndash;&gt;-->
+			<!--												<div class="col-12" align="center">-->
+			<!--													<button type="submit" name="add_region" value="add_region" class="btn btn-primary mb-0">Ajouter une region</button>-->
+			<!--												</div>-->
+			<!--											</form>-->
+			<!--											&lt;!&ndash; Form END &ndash;&gt;-->
+			<!--										</div>-->
+			<!--										&lt;!&ndash; Card body END &ndash;&gt;-->
+			<!--									</div>-->
+			<!--									&lt;!&ndash; END &ndash;&gt;-->
+										</div>
+
+										</br></br></br></br></br>
+									</div>
+									<!-- Card body END -->
+								</div>
+								<!-- Edit profile END -->
+							</div>
+
 						</div>
-						<!-- Card body END -->
 					</div>
-					<!-- Edit profile END -->
-
-					{% if mover %}
-						<!-- =======================
-						Mover account START -->
-
-
-
-						<!-- =======================
-						End Mover account -->
-					{% else %}
-						<!-- =======================
-						Simple User account START -->
-
-						{%if user.is_authenticated %}
-
-
-						{% endif %}
-						<!-- =======================
-						End Simple User account -->
-					{% endif %}
 
 				</div>
 				<!-- Main content END -->

@@ -161,7 +161,11 @@
                                     <h3>
                                         <span class="text-primary" style="text-transform: uppercase;">Devenez notre partenaire et accéder à une clientèle plus large !</span>
                                         </br>
-                                        <h3><span class="badge bg-primary">Étape 1/2</span></h3>
+                                        <h3>
+                                            <span class="badge bg-primary">
+                                                Étape 1/2
+                                            </span>
+                                        </h3>
                                     </h3>
                                 </div>
                             </div>
@@ -197,21 +201,27 @@
                                     <input type="tel" class="form-control" name="company_phone_number" required>
                                 </div>
                                 <!--Country-->
-								<div class="col-lg-4">
+								<div class="col-lg-3">
 									<label class="form-label text-opacity-50">
-										Pays <span class="text-danger">*</span>
+										Pays de résidence *
 									</label>
 									<select class="form-select form-control text-opacity-50" name="country_id" required="">
                                         <option value="{{country.id}}" class="text-dark">{{country.name}}</option>
 									</select>
 								</div>
-                                <!-- City -->
-                                <div class="col-lg-4">
-                                    <label class="form-label">Ville *</label>
-                                    <input type="text" class="form-control" name="City" required>
-                                </div>
+                                <!--Region-->
+								<div class="col-lg-3">
+									<label class="form-label text-opacity-50">
+										Region de résidence *
+									</label>
+									<select class="form-select form-control text-opacity-50" name="region_id" required="">
+                                        {% for region in regions %}
+                                            <option value="{{region.id}}" class="text-dark">{{region.name}}</option>
+                                        {% endfor %}
+									</select>
+								</div>
                                 <!-- adresse -->
-                                <div class="col-lg-4">
+                                <div class="col-lg-6">
                                     <label class="form-label">Adresse *</label>
                                     <input type="text" class="form-control" name="Adresse" required>
                                 </div>
@@ -222,13 +232,13 @@
                                 </div>
                                 <!-- Postal Code -->
                                 <div class="col-lg-4">
-                                    <label class="form-label">Nombre d'employés *</label>
-                                    <input type="number" class="form-control" name="employee_number" required>
-                                </div>
-                                <!-- Postal Code -->
-                                <div class="col-lg-4">
                                     <label class="form-label">Numéro de TVA *</label>
                                     <input type="text" class="form-control" name="TVA_number" required>
+                                </div>
+                                <!-- employee number -->
+                                <div class="col-lg-4">
+                                    <label class="form-label">Nombre d'employés *</label>
+                                    <input type="number" class="form-control" name="employee_number" required>
                                 </div>
 
                                 <!-- Button -->

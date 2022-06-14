@@ -261,7 +261,7 @@
 													<!-- Table data -->
 													<td class="text-center">
 														{% if mover_quote_request.quote_request.moving_type1.name == 'National' %}
-															{{mover_quote_request.quote_request.City_Departure|capfirst}}
+															{{mover_quote_request.quote_request.region.name|capfirst}}
 														{% else %}
 															{{mover_quote_request.quote_request.country.name|capfirst}}
 														{% endif %}
@@ -270,7 +270,7 @@
 													<!-- Table data -->
 													<td class="text-center">
 														{% if mover_quote_request.quote_request.moving_type1.name == 'National' %}
-															{{mover_quote_request.quote_request.City_Arrival|capfirst}}
+															{{mover_quote_request.quote_request.Region_Arrival_for_national_moving|capfirst}}
 														{% else %}
 															{{mover_quote_request.quote_request.Country_Arrival|capfirst}}
 														{% endif %}
