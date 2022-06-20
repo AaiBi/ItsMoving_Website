@@ -395,9 +395,10 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, region_id
     region = get_object_or_404(Region, pk=region_id)
 
     if moving_type1_id == 1:
-        Region_Arrival_for_national_moving = 0
+        Region_Arrival_for_national_moving = get_object_or_404(Region, id=Region_Arrival_for_national_moving)
+        Region_Arrival_for_national_moving = Region_Arrival_for_national_moving.name
     else:
-        Region_Arrival_for_national_moving = get_object_or_404(Region, name=Region_Arrival_for_national_moving)
+        Region_Arrival_for_national_moving = 0
     current_date = datetime.datetime.today()
     global mover_available
 
