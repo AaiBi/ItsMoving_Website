@@ -222,7 +222,7 @@ def mover_active_unactive(request, mover_pk):
         if request.POST.get('activated') == 'False':
             if form.is_valid():
                 form.save()
-                messages.error(request, 'Profil désactivé !')
+                messages.success(request, 'Profil désactivé !')
                 return redirect('movers_home')
 
     return render(request, 'administration/movers/mover_active_unactive.html', {'mover': mover, 'countries': countries,
