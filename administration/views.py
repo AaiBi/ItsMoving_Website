@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from administration.models import Movers_Email_Admin
 from base_app.forms import Mover_Form
 from base_app.models import Mover, Country, Quote_Request, Moving_Type1, Moving_Type2, Mover_Quote_Request, \
-    Quote_Request_Rejected, Mover_Country
+    Quote_Request_Rejected, Mover_Country, Region
 
 
 def admin_login(request):
@@ -97,6 +97,7 @@ def devis_detail(request, quote_request_pk):
     quote_requests_rejected = Quote_Request_Rejected.objects.filter(mover_quote_request__rejected=True,
                                                                     mover_quote_request__quote_request__id=
                                                                     quote_request_pk)
+    regions = Region.objects.all()
 
     if request.method == 'GET':
         return render(request, 'administration/devis/devis_detail.html', {'devis': devis, 'countries': countries,
@@ -108,7 +109,8 @@ def devis_detail(request, quote_request_pk):
             , 'number_quote_requests_rejected':
                                                                               number_quote_requests_rejected,
                                                                           'quote_requests_rejected':
-                                                                              quote_requests_rejected})
+                                                                              quote_requests_rejected, 'regions':
+                                                                          regions})
 
 
 @login_required

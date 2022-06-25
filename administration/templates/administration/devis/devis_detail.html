@@ -178,8 +178,14 @@
                                                     </li>
                                                     <li>
                                                         <h5>
-                                                            Ville:
-                                                            <span class="text-info">{{devis.City_Departure|capfirst}}</span>
+                                                            Region:
+                                                            {% for region in regions %}
+                                                                {% if region.id == devis.region.id %}
+                                                                    <span class="text-info">
+                                                                        {{devis.region.name|capfirst}}
+                                                                    </span>
+                                                                {% endif %}
+                                                            {% endfor %}
                                                         </h5>
                                                     </li>
                                                     <li>
@@ -252,8 +258,21 @@
                                                     </li>
                                                     <li>
                                                         <h5>
-                                                            Ville:
-                                                            <span class="text-info">{{devis.City_Arrival|capfirst}}</span>
+                                                            {% for data1 in moving_type1 %}
+                                                                {% if data1.id == devis.moving_type1_id %}
+                                                                    {% if data1.name == "International" %}
+                                                                        Ville:
+                                                                        <span class="text-info">{{devis.City_Arrival_for_international_moving|capfirst}}</span>
+                                                                    {% else %}
+                                                                        {% for country in countries %}
+                                                                            {% if country.id == devis.country_id %}
+                                                                                Region:
+                                                                                <span class="text-info">{{devis.region.name|capfirst}}</span>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endfor %}
                                                         </h5>
                                                     </li>
                                                     <li>

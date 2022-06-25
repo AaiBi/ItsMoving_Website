@@ -845,7 +845,7 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, region_id
                                     recipient_email = savedata.email
                                     recipient_last_name = savedata.lastname
                                     email_from = savedata.email
-                                    message = f'{request.ref} - Mover : {mover.company_name}'
+                                    message = f''
 
                                     # sending html mail
                                     html_content = render_to_string(

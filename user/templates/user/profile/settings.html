@@ -127,7 +127,7 @@
 					<!-- Counter boxes START -->
 					<div class="row g-4">
 						<!-- Counter item -->
-						<div class="col-sm-6 col-lg-4">
+						<div class="col-sm-6">
 							{% if mover.moving_type1.name == "National" %}
 
 								<a href="{% url 'area_intervention' %}" class="d-flex justify-content-center align-items-center p-4 bg-warning bg-opacity-15 rounded-3">
@@ -152,19 +152,19 @@
 							{% endif %}
 						</div>
 						<!-- Counter item -->
-						<div class="col-sm-6 col-lg-4">
-							<a href="{% url 'customer_type' %}" class="d-flex justify-content-center align-items-center p-4 bg-info bg-opacity-10 rounded-3">
-								<span class="display-6 text-info mb-0"><i class="fas fa-users fa-fw"></i></span>
-								<div class="ms-4">
-									<div class="d-flex">
-										<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="{{mover_moving_types2_number}}" data-purecounter-delay="300">0</h5>
-									</div>
-									<span class="mb-0 h5 fw-light">Type(s) de clientèle</span>
-								</div>
-							</a>
-						</div>
+<!--						<div class="col-sm-6 col-lg-4">-->
+<!--							<a href="{% url 'customer_type' %}" class="d-flex justify-content-center align-items-center p-4 bg-info bg-opacity-10 rounded-3">-->
+<!--								<span class="display-6 text-info mb-0"><i class="fas fa-users fa-fw"></i></span>-->
+<!--								<div class="ms-4">-->
+<!--									<div class="d-flex">-->
+<!--										<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="{{mover_moving_types2_number}}" data-purecounter-delay="300">0</h5>-->
+<!--									</div>-->
+<!--									<span class="mb-0 h5 fw-light">Type(s) de clientèle</span>-->
+<!--								</div>-->
+<!--							</a>-->
+<!--						</div>-->
 						<!-- Counter item -->
-						<div class="col-sm-6 col-lg-4">
+						<div class="col-sm-6">
 							<a href="{% url 'quote_request_settings' %}" class="d-flex justify-content-center align-items-center p-4 bg-dark bg-opacity-10 rounded-3">
 								<span class="display-6 text-dark mb-0"><i class='fa fa-list fa-fw'></i></span>
 								<div class="ms-4">
