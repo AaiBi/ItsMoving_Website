@@ -112,7 +112,7 @@
                     <li class="nav-item me-2 me-sm-5" role="presentation">
                         <button class="nav-link" id="devis-pills-tab-2" data-bs-toggle="pill" data-bs-target="#devis-pills-tab2" type="button" role="tab" aria-controls="devis-pills-tab2" aria-selected="false">
                             Devis non distribués
-                            <span class="badge text-white bg-success rounded-1">{{movers_unactivated_count}}</span>
+                            <span class="badge text-white bg-success rounded-1">{{len_request_not_distributed}}</span>
                         </button>
                     </li>
                     <!-- Tab item -->
@@ -217,6 +217,13 @@
                             <div class="col-12">
                                 <div class="row justify-content-between">
 
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success" name="distribution">
+                                            Distribuer les {{len_request_not_distributed}} devis non distribués
+                                        </button>
+                                    </form>
+
                                     <div class="table-responsive-lg border-0">
 
                                         <table class="table table-dark-gray align-middle p-4 mb-0 text-white">
@@ -236,8 +243,8 @@
                                             <tbody align="center">
                                                 <!-- Table item -->
                                                 {% for quote_request in quote_requests %}
-                                                    {% for distributed_request in distributed_requests %}
-                                                        {% if distributed_request.quote_request_id != quote_request.id %}
+                                                    {% for data in request_not_distributed %}
+                                                        {% if quote_request.id == data %}
                                                             <tr>
                                                                 <!-- Course item -->
                                                                 <td>
