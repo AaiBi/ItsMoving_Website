@@ -133,7 +133,7 @@
 							</div>
 						{% endif %}
 
-						{% if not mover_regions %}
+						{% if mover.moving_type1.name == 'National' and not mover_regions %}
 							<div class="alert alert-danger alert-dismissible fade show" role="alert">
 								Important ! Votre compte est incomplet, veuillez renseigner <b>les regions de la
 								Belgique</b> dans lesquelles vous souhaitez intervenir.

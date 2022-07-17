@@ -153,6 +153,16 @@ def mover_inscription_step2(request, new_user_id, mover_id):
                             email.attach_alternative(html_content, "text/html")
                             email.send()
 
+                            # sending email to itsmoving
+                            recipient_email = 'contact.itsmoving@gmail.com'
+                            subject = 'Inscription d\'un nouveau déménageur'
+                            email_from = 'contact.itsmoving@gmail.com'
+                            recipient_list = [recipient_email, ]
+
+                            message1 = f'L\'entreprise de déménagement {mover_info.company_name.capitalize()} vient de ' \
+                                       f's\'inscrire sur la plateforme et attend d\'être activer. \n'
+                            send_mail(subject, message1, email_from, recipient_list)
+
                             messages.success(request,
                                              'Félicitations, Votre compte a été crée avec succès, il sera activé d\'ici '
                                              '24h !')
@@ -217,9 +227,21 @@ def mover_inscription_step3(request, new_user_id, mover_id):
                     )
                     email.attach_alternative(html_content, "text/html")
                     email.send()
+
+                    # sending email to itsmoving
+                    recipient_email = 'contact.itsmoving@gmail.com'
+                    subject = 'Inscription d\'un nouveau déménageur'
+                    email_from = 'contact.itsmoving@gmail.com'
+                    recipient_list = [recipient_email, ]
+
+                    message1 = f'L\'entreprise de déménagement {mover_info.company_name.capitalize()} vient de ' \
+                               f's\'inscrire sur la plateforme et attend d\'être activer. \n'
+                    send_mail(subject, message1, email_from, recipient_list)
+
                 messages.success(request,
                                  'Félicitations, l\'inscription est terminée, il ne vous reste qu\'à renseigner'
-                                 ' les regions dans lesquelles vous allez intervenir !')
+                                 ' les regions dans lesquelles vous allez intervenir et le nombre de devis maximum que '
+                                 'vous souhaitez recevoir par jour !')
                 return redirect('login_user')
 
             else:
@@ -235,14 +257,16 @@ def contact_page(request):
     if request.method == "POST":
         full_name = request.POST.get('full_name')
 
-        recipient_email = 'support@itsmoving.be'
-        subject = "Bien";
+        recipient_email = 'contact.itsmoving@gmail.com'
+        subject = request.POST.get('subject')
         email_from = request.POST.get('email')
+        #print(email_from)
         message = request.POST.get('message')
         recipient_list = [recipient_email, ]
 
-        message1 = f'Nouveau message de la part de {full_name} \n ' \
-                   f'Contenu du message: {message}'
+        message1 = f'Nouveau message de la part de Mr. {full_name.capitalize()}! \n' \
+                   f'Email du client : {email_from}\n'\
+                   f'Contenu du message: \n{message}'
         send_mail(subject, message1, email_from, recipient_list)
 
         messages.success(request, f'Votre message à été envoyé avec succès, nous vous contacterons très bientôt !')
