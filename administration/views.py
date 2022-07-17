@@ -323,7 +323,7 @@ def devis_home(request):
                                         recipient_email = mover_info.user.email
                                         recipient_last_name = mover_info.user.last_name
                                         company_name = mover_info.company_name
-                                        moving_type_name_received = moving_type1.name
+                                        moving_type_name_received = request.moving_type1.name
                                         email_from = mover_info.user.email
                                         message = f'Une nouvelle demande de devis {moving_type_name_received} ' \
                                                   f'est disponible, Veuillez vous connecter à votre compte afin ' \
