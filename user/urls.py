@@ -26,6 +26,7 @@ urlpatterns = [
     path('delete_mover_moving_type1/<int:moving_type_pk>/<int:mover_pk>', views.delete_mover_moving_type1, name='delete_mover_moving_type1'),
     path('delete_mover_moving_type2/<int:moving_type_pk>/<int:mover_pk>', views.delete_mover_moving_type2, name='delete_mover_moving_type2'),
     path('quote_request_settings/', views.quote_request_settings, name='quote_request_settings'),
+    path('mover_account_pause/<int:mover_pk>', views.mover_account_pause, name='mover_account_pause'),
 
     # QUOTE REQUEST
     path('mover_quote_request_detail/<int:mover_request_pk>', views.mover_quote_request_detail, name='mover_quote_request_detail'),

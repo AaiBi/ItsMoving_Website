@@ -1,6 +1,6 @@
 {% extends 'base_app/base.html' %}
 
-{% block title %} Paramètres {% endblock %}
+{% block title %} Avis {% endblock %}
 
 {% load static %}
 
@@ -13,7 +13,7 @@
     <!-- **************** MAIN CONTENT START **************** -->
     <!-- =======================
 
-	Page Banner START -->
+    Page Banner START -->
     <section class="pt-0">
         <!-- Main banner background image -->
         <div class="container-fluid px-0">
@@ -40,20 +40,6 @@
     </section>
     <!-- =======================
     Page Banner END -->
-
-	{% if error %}
-		<div class="alert alert-danger alert-dismissible fade show" id="alert1" role="alert">
-			{{ error }}
-		</div>
-	{% else %}
-		{% if messages %}
-			{% for message in messages %}
-				<div class="alert {{message.tags}} alert-dismissible fade show" id="alert2" role="alert">
-					{{message}}
-				</div>
-			{% endfor %}
-		{% endif %}
-	{% endif %}
 
     <!-- =======================
 	Page content START -->
@@ -117,82 +103,87 @@
 				<!-- Main content START -->
 				<div class="col-xl-9">
 
-					{% if mover.pause == True %}
-						<div class="alert alert-warning alert-dismissible fade show" role="alert">
-							Important ! Votre compte est en pause, vous ne pouvez pas recevoir de demandes de devis.
-						</div>
-					{% endif %}
-
-					{% if mover.activated == False %}
+                    {% if mover.activated == False %}
 						<div class="alert alert-danger alert-dismissible fade show" role="alert">
 							Important ! Votre compte est inactivé, veuillez nous contacter par email
 							<b>support@itsmoving.be</b>.
 						</div>
 					{% endif %}
 
-					<!-- Counter boxes START -->
-					<div class="row g-4">
-						<!-- Counter item -->
-						<div class="col-sm-6">
-							{% if mover.moving_type1.name == "National" %}
+                    <!-- Student review START -->
+                    <div class="card border rounded-3">
+                        <!-- Header START -->
+                        <div class="card-header border-bottom">
+                            <div class="row justify-content-between align-middle">
+                                <!-- Title -->
+                                <div class="col-sm-6">
+                                    <h3 class="card-header-title mb-2 mb-sm-0">
 
-								<a href="{% url 'area_intervention' %}" class="d-flex justify-content-center align-items-center p-4 bg-info bg-opacity-15 rounded-3">
-									<span class="display-6 text-warning mb-0"><i class='fa fa-globe fa-fw'></i></span>
-									<div class="ms-4">
-										<span class="mb-0 h5 fw-light">
-											Zone d'intervention: <b>{{mover.country}}</b>
-										</span>
-									</div>
-								</a>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Header END -->
 
-							{% else %}
-								<a href="{% url 'area_intervention' %}" class="d-flex justify-content-center align-items-center p-4 bg-info bg-opacity-15 rounded-3">
-									<span class="display-6 text-warning mb-0"><i class='fa fa-globe fa-fw'></i></span>
-									<div class="ms-4">
-										<div class="d-flex">
-											<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="{{mover_countries_number}}"	data-purecounter-delay="200">0</h5>
-										</div>
-										<span class="mb-0 h5 fw-light">Zones d'intervention</span>
-									</div>
-								</a>
-							{% endif %}
-						</div>
-						<div class="col-sm-6">
-							<a href="{% url 'quote_request_settings' %}" class="d-flex justify-content-center align-items-center p-4 bg-dark bg-opacity-10 rounded-3">
-								<span class="display-6 text-dark mb-0"><i class='fa fa-list fa-fw'></i></span>
-								<div class="ms-4">
-									<div class="d-flex">
-										<h5 class="purecounter mb-0 fw-bold" data-purecounter-start="0" data-purecounter-end="{{mover.number_max_quote_request}}"	data-purecounter-delay="200">
-											0
-										</h5>
-									</div>
-									<span class="mb-0 h5 fw-light">Devis/jour maximum</span>
-								</div>
-							</a>
-						</div>
-						<div class="col-sm-6">
-							{% if mover.pause == False %}
-								<div class="d-flex justify-content-center align-items-center p-4 bg-warning bg-opacity-10 rounded-3">
-									<a href="{% url 'mover_account_pause' mover.id %}" type="button" class="btn btn-warning">
-										Mettre mon compte en pause
-									</a>
-								</div>
-							{% else %}
-								<div class="d-flex justify-content-center align-items-center p-4 bg-success bg-opacity-10 rounded-3">
-									<a href="{% url 'mover_account_pause' mover.id %}" type="button" class="btn btn-success">
-										Désactiver la pause
-									</a>
-								</div>
-							{% endif %}
-						</div>
-					</div>
+                        <!-- Reviews START -->
+                        <div class="card-body text-dark h4">
+
+                            {% if mover.pause == False %}
+                                En mettant votre compte en pause, vous désactivez la reception de demande de devis.</br></br>
+                                <p class="text-danger">
+                                    Voulez-vous vraiment mettre en pause votre compte ?
+                            {% else %}
+                                <p class="text-success">
+                                    Voulez-vous désactivez la pause de votre compte ?
+                            {% endif %}
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        {% if mover.pause == False %}
+                                            <input type="hidden" name="pause" value="True">
+                                        {% else %}
+                                            <input type="hidden" name="pause" value="False">
+                                        {% endif %}
+                                        <input type="hidden" name="ref" value="{{mover.ref}}">
+
+                                        <input type="hidden" name="company_name" value="{{mover.company_name}}">
+                                        <input type="hidden" name="company_phone_number" value="{{mover.company_phone_number}}">
+                                        <input type="hidden" name="Adresse" value="{{mover.Adresse}}">
+                                        <input type="hidden" name="employee_number" value="{{mover.employee_number}}">
+                                        <input type="hidden" name="number_max_quote_request" value="{{mover.number_max_quote_request}}">
+                                        <input type="hidden" name="website" value="{{mover.website}}">
+                                        <input type="hidden" name="TVA_number" value="{{mover.TVA_number}}">
+                                        <input type="hidden" name="Postal_Code" value="{{mover.Postal_Code}}">
+                                        <input type="hidden" name="company_statut" value="{{mover.company_statut}}">
+                                        <input type="hidden" name="company_description" value="{{mover.company_description}}">
+                                        <input type="hidden" name="logo" value="{{mover.logo}}">
+                                        <input type="hidden" name="activated" value="{{mover.activated}}">
+                                        <input type="hidden" name="country" value="{{mover.country.id}}">
+                                        <input type="hidden" name="moving_type1" value="{{mover.moving_type1.id}}">
+                                        <input type="hidden" name="region" value="{{mover.region.id}}">
+                                        {% if mover.pause == False %}
+                                            <button type="submit" class="btn btn-danger text-white bg-danger-soft-hover">
+                                                Oui
+                                            </button>
+                                        {% else %}
+                                            <button type="submit" class="btn btn-success text-white bg-success-soft-hover">
+                                                Oui
+                                            </button>
+                                        {% endif %}
+                                    </form>
+                                </p>
+
+
+                        </div>
+                        <!-- Reviews END -->
+                    </div>
+                    <!-- Student review END -->
 				</div>
-				<!-- Counter boxes END -->
+				<!-- Main content END -->
 			</div><!-- Row END -->
 		</div>
 	</section>
 	<!-- =======================
-	Page content END --></br></br></br></br></br></br></br></br></br></br></br>
+	Page content END -->
 
     <!-- **************** MAIN CONTENT END **************** -->
 

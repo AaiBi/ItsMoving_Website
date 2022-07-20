@@ -90,7 +90,7 @@ def devis_home(request):
             # ####################NATIONAL REQUEST DISTRIBUTION START#####################
             if request.moving_type1.name == 'National':
 
-                movers = Mover.objects.filter(activated=True)
+                movers = Mover.objects.filter(activated=True, pause=False)
                 for mover in movers:
 
                     # we select the movers who deliver in the departure region of the request
@@ -495,7 +495,7 @@ def devis_home(request):
             #####################INTERNATIONAL REQUEST DISTRIBUTION START#####################
             elif request.moving_type1.name == 'International':
 
-                movers = Mover.objects.filter(moving_type1__name='International', activated=True)
+                movers = Mover.objects.filter(moving_type1__name='International', activated=True, pause=False)
                 for mover in movers:
 
                     # we select the mover who work in the country of destination of the request

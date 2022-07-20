@@ -8,7 +8,7 @@ class Mover_Form(forms.ModelForm):
         fields = [
             'ref', 'company_name', 'company_phone_number', 'Adresse', 'employee_number', 'number_max_quote_request',
             'website', 'TVA_number', 'Postal_Code', 'company_statut', 'company_description',
-            'logo', 'validated', 'activated', 'country', 'moving_type1', 'region'
+            'logo', 'pause', 'activated', 'country', 'moving_type1', 'region'
         ]
 
 

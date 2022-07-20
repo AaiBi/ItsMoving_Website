@@ -44,7 +44,7 @@ class Mover(models.Model):
     company_statut = models.CharField(max_length=300, default="")
     company_description = models.TextField(default="")
     logo = models.ImageField(upload_to='user/images/profil_image/', blank=True, default="")
-    validated = models.BooleanField(default=False)
+    pause = models.BooleanField(default=False)
     activated = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default="")

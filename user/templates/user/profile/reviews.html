@@ -103,6 +103,12 @@
 				<!-- Main content START -->
 				<div class="col-xl-9">
 
+                    {% if mover.pause == True %}
+						<div class="alert alert-warning alert-dismissible fade show" role="alert">
+							Important ! Votre compte est en pause, vous ne pouvez pas recevoir de demandes de devis.
+						</div>
+					{% endif %}
+
                     {% if mover.activated == False %}
 						<div class="alert alert-danger alert-dismissible fade show" role="alert">
 							Important ! Votre compte est inactivé, veuillez nous contacter par email

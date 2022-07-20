@@ -636,10 +636,27 @@ def quote_request_settings(request):
                                                                                    number_quote_request})
 
 
-#################################################  SETTINGS END    #####################################################
+@login_required
+def mover_account_pause(request, mover_pk):
+    mover = get_object_or_404(Mover, pk=mover_pk)
+    form = Mover_Form(instance=mover)
+
+    if request.method == 'GET':
+        return render(request, 'user/mover/settings/mover_account_pause.html', {'mover': mover, 'form': form})
+
+    if request.method == 'POST':
+        form = Mover_Form(request.POST, instance=mover)
+        if form.is_valid():
+            form.save()
+            if request.POST.get('pause') == 'False':
+                messages.success(request, 'La désactivez de la pause de votre compte a été faite avec succès !')
+            if request.POST.get('pause') == 'True':
+                messages.success(request, 'Votre compte a été mis en pause avec succès !')
+            return redirect('settings')
+# ##############################################  SETTINGS END    #####################################################
 
 
-################################################# QUOTE REQUEST    ####################################################
+# ############################################### QUOTE REQUEST    ####################################################
 
 @login_required
 def mover_quote_request_detail(request, mover_request_pk):
