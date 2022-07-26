@@ -1,5 +1,4 @@
 import datetime
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
@@ -855,67 +854,6 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, region_id
 
                                                 edit_quote_request_email_sent.save()
 
-                            if not mover_available:
-                                if not Customers_Notification_Email.objects.filter(
-                                    quote_request__email=request.email, quote_request__ref=request.ref
-                                ):
-                                    save_client_notification_email = Customers_Notification_Email(
-                                        moving_possibility=False, quote_request_id=request.id, mover_id=mover.id
-                                    )
-                                    save_client_notification_email.save()
-
-                                    # We send an email to the customer
-                                    subject = 'ItsMoving - Accusé de reception'
-                                    recipient_email = savedata.email
-                                    recipient_last_name = savedata.lastname
-                                    email_from = savedata.email
-                                    message = f''
-
-                                    # sending html mail
-                                    html_content = render_to_string(
-                                        "base_app/quote_request_client_notification_email_template.html",
-                                        {'last_name': recipient_last_name, 'message': message,
-                                         'email_from': email_from})
-                                    text_centent = strip_tags(html_content)
-                                    email = EmailMultiAlternatives(
-                                        # subject
-                                        subject,
-                                        # content
-                                        text_centent,
-                                        # from email
-                                        settings.EMAIL_HOST_USER,
-                                        # receiver list
-                                        [recipient_email]
-                                    )
-                                    email.attach_alternative(html_content, "text/html")
-                                    email.send()
-
-                                    # we modify the quote to mark the email as sent
-                                    edit_quote_request_email_sent = Quote_Request(
-                                        ref=request.ref, country_id=request.country.id, id=request.id, created=
-                                        request.created, Adresse_Departure=request.Adresse_Departure,
-                                        Postal_Code_Departure=request.Postal_Code_Departure,
-                                        Residence_Number_or_Name_Departure=request.Residence_Number_or_Name_Departure,
-                                        Residence_Departure=request.Residence_Departure, Number_Room_Departure=request.
-                                        Number_Room_Departure, Country_Arrival=request.Country_Arrival,
-                                        City_Arrival_for_international_moving=request.
-                                        City_Arrival_for_international_moving, Adresse_Arrival=request.Adresse_Arrival,
-                                        Region_Arrival_for_national_moving=request.Region_Arrival_for_national_moving,
-                                        Residence_Number_or_Name_Arrival=request.Residence_Number_or_Name_Arrival,
-                                        Postal_Code_Arrival=request.Postal_Code_Arrival, Residence_Arrival=request.
-                                        Residence_Arrival, packing_service=request.packing_service, packaging_materials
-                                        =request.packaging_materials, furniture_assembly_disassembly=request.
-                                        furniture_assembly_disassembly, furniture_storage=request.furniture_storage,
-                                        Additional_informations=request.Additional_informations, firstname=request.
-                                        firstname, lastname=request.lastname, email=request.email, region_id=request.
-                                        region.id, phone_number=request.phone_number, distributed=request.distributed,
-                                        moving_date=request.moving_date, moving_date1=request.moving_date1,
-                                        moving_date2=request.moving_date2, moving_type1_id=request.moving_type1.id,
-                                        moving_type2_id=request.moving_type2.id
-                                    )
-
-                                    edit_quote_request_email_sent.save()
-
                     ####################END NATIONAL REQUEST DISTRIBUTION START###################
 
                     #####################INTERNATIONAL REQUEST DISTRIBUTION START#####################
@@ -1646,67 +1584,6 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, region_id
                                                 )
 
                                                 edit_quote_request_email_sent.save()
-
-                            if not mover_available:
-                                if not Customers_Notification_Email.objects.filter(
-                                    quote_request__email=request.email, quote_request__ref=request.ref
-                                ):
-                                    save_client_notification_email = Customers_Notification_Email(
-                                        moving_possibility=False, quote_request_id=request.id, mover_id=mover.id
-                                    )
-                                    save_client_notification_email.save()
-
-                                    # We send an email to the customer
-                                    subject = 'ItsMoving - Accusé de reception'
-                                    recipient_email = savedata.email
-                                    recipient_last_name = savedata.lastname
-                                    email_from = savedata.email
-                                    message = f'{request.ref} - Mover : {mover.company_name}'
-
-                                    # sending html mail
-                                    html_content = render_to_string(
-                                        "base_app/quote_request_client_notification_email_template.html",
-                                        {'last_name': recipient_last_name, 'message': message,
-                                         'email_from': email_from})
-                                    text_centent = strip_tags(html_content)
-                                    email = EmailMultiAlternatives(
-                                        # subject
-                                        subject,
-                                        # content
-                                        text_centent,
-                                        # from email
-                                        settings.EMAIL_HOST_USER,
-                                        # receiver list
-                                        [recipient_email]
-                                    )
-                                    email.attach_alternative(html_content, "text/html")
-                                    email.send()
-
-                                    # we modify the quote to mark the email as sent
-                                    edit_quote_request_email_sent = Quote_Request(
-                                        ref=request.ref, country_id=request.country.id, id=request.id, created=
-                                        request.created, Adresse_Departure=request.Adresse_Departure,
-                                        Postal_Code_Departure=request.Postal_Code_Departure,
-                                        Residence_Number_or_Name_Departure=request.Residence_Number_or_Name_Departure,
-                                        Residence_Departure=request.Residence_Departure, Number_Room_Departure=request.
-                                        Number_Room_Departure, Country_Arrival=request.Country_Arrival,
-                                        City_Arrival_for_international_moving=request.
-                                        City_Arrival_for_international_moving, Adresse_Arrival=request.Adresse_Arrival,
-                                        Region_Arrival_for_national_moving=request.Region_Arrival_for_national_moving,
-                                        Residence_Number_or_Name_Arrival=request.Residence_Number_or_Name_Arrival,
-                                        Postal_Code_Arrival=request.Postal_Code_Arrival, Residence_Arrival=request.
-                                        Residence_Arrival, packing_service=request.packing_service, packaging_materials
-                                        =request.packaging_materials, furniture_assembly_disassembly=request.
-                                        furniture_assembly_disassembly, furniture_storage=request.furniture_storage,
-                                        Additional_informations=request.Additional_informations, firstname=request.
-                                        firstname, lastname=request.lastname, email=request.email, region_id=request.
-                                        region.id, phone_number=request.phone_number, distributed=request.distributed,
-                                        moving_date=request.moving_date, moving_date1=request.moving_date1,
-                                        moving_date2=request.moving_date2, moving_type1_id=request.moving_type1.id,
-                                        moving_type2_id=request.moving_type2.id
-                                    )
-
-                                    edit_quote_request_email_sent.save()
 
                     # ###################END NATIONAL REQUEST DISTRIBUTION START###################
 
