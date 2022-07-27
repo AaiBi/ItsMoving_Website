@@ -505,7 +505,16 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, region_id
                                          Region_Arrival_for_national_moving)
                 savedata.save()
 
-                ######################## Automatic distribution for the requests to the movers ####################
+                # send reception new request email
+                recipient_email = 'contact.itsmoving@gmail.com'
+                subject = 'Nouvelle demande de devis'
+                email_from = 'contact.itsmoving@gmail.com'
+                recipient_list = [recipient_email, ]
+
+                message1 = f'Une nouvelle demande de devis {savedata.ref} est disponible.'
+                send_mail(subject, message1, email_from, recipient_list)
+
+                # ####################### Automatic distribution for the requests to the movers ####################
                 requests = Quote_Request.objects.all().order_by('-id')
 
                 mover_available = False
@@ -526,7 +535,6 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, region_id
                                 (region__name=request.Region_Arrival_for_national_moving, mover_id=mover.id)
 
                             if movers_departure_regions and movers_arrival_regions:
-                                print(mover.company_name)
                                 mover_available = True
 
                                 max_request_day = Number_Mover_Quote_Request_PerDay.objects.filter(
@@ -1236,7 +1244,16 @@ def devis_page5(request, moving_type1_id, moving_type2_id, country_id, region_id
                                          Region_Arrival_for_national_moving)
                 savedata.save()
 
-                ######################## Automatic distribution for the requests to the movers ####################
+                # send reception new request email
+                recipient_email = 'contact.itsmoving@gmail.com'
+                subject = 'Nouvelle demande de devis'
+                email_from = 'contact.itsmoving@gmail.com'
+                recipient_list = [recipient_email, ]
+
+                message1 = f'Une nouvelle demande de devis {savedata.ref} est disponible.'
+                send_mail(subject, message1, email_from, recipient_list)
+
+                # ####################### Automatic distribution for the requests to the movers ####################
                 requests = Quote_Request.objects.all().order_by('-id')
 
                 mover_available = False
